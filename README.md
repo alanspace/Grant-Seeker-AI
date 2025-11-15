@@ -38,3 +38,36 @@
 1. Clone the repository:
    ```bash
    git clone https://github.com/[YourUsername]/adk-grant-seeker-copilot.git
+
+### Installation Steps
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/[YourUsername]/adk-grant-seeker-copilot.git
+Navigate to the project directory:
+code
+Bash
+cd adk-grant-seeker-copilot
+Create and activate a virtual environment:
+code
+Bash
+python -m venv venv
+source venv/bin/activate
+Install the required dependencies:
+code
+Bash
+pip install -r requirements.txt
+Run the application:
+code
+Bash
+streamlit run app.py
+4. Our Team
+Shek Lun (You): Technical Lead & Architect
+Nakazzi Kiyaga-Mulindwa: Project & Presentation Lead
+Hemanth Reganti: AI & Backend Lead
+Gopika Devi: Frontend & UI Developer
+code
+Code
+**Step 4: Clone the Repository**
+
+Now, on your local machine, clone the repository so you can start adding code:
+`git clone https://github.com/[YourUsername]/adk-grant-seeker-copilot.git`
