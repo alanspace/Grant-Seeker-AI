@@ -110,7 +110,7 @@ Our system is built on a collaborative multi-agent architecture managed by a cen
 
 *   **Shek Lun:** Technical Lead & Backend Owner
 *   **Hemanth Reganti:** Chief Architect & Strategic Advisor
-*   **Ujjwal Devi:** Frontend & UI Developer
+*   **Ujjwal Ruhal:** Frontend & UI Developer
 *   **Nakazzi Kiyaga-Mulindwa:** Project & Presentation Lead
 
 ---
