@@ -15,7 +15,7 @@ results_container = st.container()
 
 if st.button("Search Grants"):
     with st.spinner("🔎 Finding the best matching grants..."):
-        with open("dummy_data/grants.json") as f:
+        with open("sample_data/grants.json") as f:
             grants = json.load(f)
 
     with results_container:

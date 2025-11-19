@@ -4,7 +4,7 @@ import json
 st.title("✍️ Draft Proposal")
 
 # Load proposal text
-with open("dummy_data/proposal.json") as f:
+with open("sample_data/proposal.json") as f:
     proposal = json.load(f)["proposal"]
 
 

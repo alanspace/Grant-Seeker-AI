@@ -4,7 +4,7 @@ import json
 st.title("📄 Grant Details")
 
 # Load the selected grant details
-with open("dummy_data/grant_details.json") as f:
+with open("sample_data/grant_details.json") as f:
     details = json.load(f)
 
 
