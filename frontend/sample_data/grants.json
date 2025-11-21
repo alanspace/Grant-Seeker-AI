@@ -1,0 +1,14 @@
+[
+  {
+    "id": 1,
+    "title": "Community Development Grant",
+    "amount": "$10,000",
+    "deadline": "2025-03-01"
+  },
+  {
+    "id": 2,
+    "title": "Youth Innovation Fund",
+    "amount": "$5,000",
+    "deadline": "2025-02-15"
+  }
+]
