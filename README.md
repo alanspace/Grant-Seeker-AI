@@ -102,6 +102,7 @@ Our system is built on a collaborative multi-agent architecture managed by a cen
     ```
 5.  **Run the application:**
     ```bash
+    cd frontend
     streamlit run app.py
     ```
 ---
