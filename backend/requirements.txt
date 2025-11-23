@@ -4,3 +4,4 @@ google-generativeai
 requests
 beautifulsoup4
 streamlit
+scrapegraphai

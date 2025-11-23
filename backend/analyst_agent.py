@@ -80,3 +80,40 @@ if __name__ == "__main__":
     print(f"Analyzing {test_url}...")
     result = analyze_grant_webpage(test_url)
     print(json.dumps(result, indent=2))
+
+
+# # analyst_agent.py (New Version)
+# import os
+# from scrapegraphai.graphs import SmartScraperGraph
+# from dotenv import load_dotenv
+
+# load_dotenv()
+
+# def analyze_grant_webpage(url: str) -> dict:
+#     """
+#     Uses AI to scrape the grant page for specific details.
+#     """
+#     # Define the configuration for ScrapeGraphAI
+#     graph_config = {
+#         "llm": {
+#             "api_key": os.getenv("GEMINI_API_KEY"),
+#             "model": "google_genai/gemini-pro",
+#         },
+#     }
+
+#     # Define what we want to extract (The Schema)
+#     prompt = "Extract the following information: Grant Deadline, Eligibility Criteria, Funding Amount, and Application Requirements."
+
+#     # Run the Smart Scraper
+#     smart_scraper = SmartScraperGraph(
+#         prompt=prompt,
+#         source=url,
+#         config=graph_config
+#     )
+
+#     try:
+#         result = smart_scraper.run()
+#         # result is already a clean JSON dictionary!
+#         return result
+#     except Exception as e:
+#         return {"error": str(e)}

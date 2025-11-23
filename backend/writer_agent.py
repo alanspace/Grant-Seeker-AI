@@ -31,8 +31,8 @@ def draft_proposal_section(project_details, grant_requirements):
     # Initialize the model
     # We use 'gemini-pro' (or a similar available model) for text generation.
     # model = genai.GenerativeModel('gemini-pro')
-    model = genai.GenerativeModel('gemini-pro-latest')
-    
+    # model = genai.GenerativeModel('gemini-pro-latest')
+    model = genai.GenerativeModel('gemini-flash-latest')
     # Construct the prompt
     # Prompt engineering is crucial here. We instruct the model to adopt a specific persona 
     # (professional grant writer) and provide clear context (project details) and a specific goal (grant requirements).
