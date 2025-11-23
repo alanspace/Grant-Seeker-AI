@@ -3,10 +3,14 @@ import json
 
 st.title("📄 Grant Details")
 
-# Load the selected grant details
-with open("sample_data/grant_details.json") as f:
-    details = json.load(f)
+# Check if a grant is selected
+if 'selected_grant' not in st.session_state or not st.session_state.selected_grant:
+    st.warning("No grant selected. Please go back to search.")
+    if st.button("🔙 Go to Search"):
+        st.switch_page("pages/1_🔍_Search_Grants.py")
+    st.stop()
 
+details = st.session_state.selected_grant
 
 # ---------------------- HEADER CARD ----------------------
 st.markdown(f"""
@@ -19,6 +23,15 @@ st.markdown(f"""
     box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 ">
     <h2 style="margin: 0; font-weight: 700; color:#2a2f3b;">{details['title']}</h2>
+    <p style="margin: 10px 0 0 0; font-size: 16px; color: #555;">{details.get('description', '')}</p>
+    <div style="margin-top: 15px;">
+        <span style="background: #e0e7ff; color: #4338ca; padding: 4px 12px; border-radius: 20px; font-size: 14px; font-weight: 500; margin-right: 10px;">
+            💰 {details['amount']}
+        </span>
+        <span style="background: #ecfdf5; color: #047857; padding: 4px 12px; border-radius: 20px; font-size: 14px; font-weight: 500;">
+            📅 Deadline: {details['deadline']}
+        </span>
+    </div>
 </div>
 """, unsafe_allow_html=True)
 
@@ -30,7 +43,7 @@ These conditions must be met to qualify for this grant:
 """)
 
 st.markdown("<div style='margin-left: 15px; font-size:16px;'>", unsafe_allow_html=True)
-for item in details["eligibility"]:
+for item in details.get("eligibility", []):
     st.markdown(f"✔️ {item}")
 st.markdown("</div>", unsafe_allow_html=True)
 
@@ -42,7 +55,7 @@ Prepare the following information to complete the application:
 """)
 
 st.markdown("<div style='margin-left: 15px; font-size:16px;'>", unsafe_allow_html=True)
-for item in details["requirements"]:
+for item in details.get("requirements", []):
     st.markdown(f"📄 {item}")
 st.markdown("</div>", unsafe_allow_html=True)
 
@@ -53,9 +66,7 @@ st.markdown("""
 <div style="text-align:center; margin-top: 25px;">
 """, unsafe_allow_html=True)
 
-st.page_link(
-    "pages/3_✍️_Draft_Proposal.py",
-    label="✍️ Generate Proposal",
-)
+if st.button("✍️ Generate Proposal", type="primary"):
+    st.switch_page("pages/3_✍️_Draft_Proposal.py")
 
 st.markdown("</div>", unsafe_allow_html=True)
