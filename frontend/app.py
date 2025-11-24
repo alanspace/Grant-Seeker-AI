@@ -13,7 +13,6 @@ footer {visibility: hidden;}
 </style>
 """, unsafe_allow_html=True)
 
-
 # ------ Hero Section ------
 st.markdown("""
     <div style="text-align: center; padding-top: 40px; padding-bottom: 10px;">
