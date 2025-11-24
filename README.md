@@ -1,10 +1,10 @@
-# The Grant Seeker's Co-Pilot
+# Grant Co-Pilot
 
 **An "Agents for Good" Multi-Agent System for the Google ADK Capstone Project**
 
 ![Project Status: In Progress](https://img.shields.io/badge/status-in--progress-yellow)
 
-A sophisticated AI assistant that automates the entire grant-seeking lifecycle, empowering non-profits and researchers to secure funding more efficiently.
+A sophisticated AI assistant that automates the grant-seeking lifecycle, empowering non-profits and researchers to secure funding more efficiently.
 
 ---
 
@@ -22,19 +22,20 @@ A sophisticated AI assistant that automates the entire grant-seeking lifecycle, 
 5. [Setup and Run the Project](#5-setup-and-run-the-project)
 6. [Our Team](#6-our-team)
 7. [Future Work](#7-future-work)
+8. [Acknowledgements](#8-acknowledgements)
 
 ---
 
 ## 1. The Pitch
 
 ### The Problem
-*(Nakazzi to fill in: Clearly define the target user (e.g., a grant writer at a small environmental non-profit). Describe the pain points in detail: the countless hours spent searching databases, the complexity of decoding unique requirements for each grant, and the challenge of writing tailored, persuasive proposals under tight deadlines.)*
+*(Nakazzi to fill in: Define the target user (e.g., a grant writer at a small non-profit). Describe the pain points: countless hours spent searching, the complexity of decoding unique requirements for each grant, and the challenge of writing tailored proposals.)*
 
 ### Our Solution
-*(Nakazzi to fill in: Describe our AI agent system as the solution. Explain that it's a collaborative team of specialist agents that automate the most burdensome tasks: discovery, analysis, and drafting. Frame it as an intelligent partner that empowers organizations to focus on their mission, not on paperwork.)*
+*(Nakazzi to fill in: Describe our AI agent system as a collaborative team of specialist agents that automate the most burdensome tasks: discovery, analysis, and drafting. Frame it as an intelligent partner that empowers organizations to focus on their mission, not paperwork.)*
 
 ### The Value
-*(Nakazzi to fill in: Quantify the benefits. Our solution saves hundreds of hours per grant cycle, increases the quality and consistency of proposals, and ultimately democratizes access to funding for under-resourced but high-impact organizations.)*
+*(Nakazzi to fill in: Quantify the benefits. Our solution saves hours per grant cycle, increases the quality of proposals, and democratizes access to funding for under-resourced organizations.)*
 
 ---
 
@@ -42,17 +43,19 @@ A sophisticated AI assistant that automates the entire grant-seeking lifecycle, 
 
 Our application provides a simple, three-step workflow for the user:
 
-1.  **Input Project Details:** The user enters a description of their project, its goals, and its mission into a simple web form.
-2.  **Discover & Analyze:** The **Scout Agent** searches the web for relevant grant opportunities. For each opportunity, the **Analyst Agent** reads the webpage or PDF to extract key information like deadlines, eligibility, and required proposal sections.
-3.  **Draft Proposal:** The user selects a grant, and the **Writer Agent** uses the user's project details and the analyst's findings to generate a complete, tailored first draft of the grant proposal, ready for human review.
+1.  **Input Project Details:** The user enters a description of their project into our web interface.
+2.  **Discover & Analyze:** The user clicks "Find Grants." In the background, our **Sequential Agent Workflow** begins:
+    *   The **Discovery Agent** uses the Tavily API to find relevant grant opportunities on the web.
+    *   The **Analysis Agent** then takes that list of URLs, revisits them with Tavily to read the full content, and extracts key details like budget, deadline, and eligibility into a structured JSON format.
+3.  **Draft Proposal:** The user selects a grant from the structured list. Our **Writer Agent** then takes the user's project details and the analyzed grant data to generate a complete, tailored first draft of the grant proposal, ready for human review.
 
 ---
 
 ## 3. Technical Architecture
 
-Our system is built on a collaborative multi-agent architecture managed by a central **Orchestrator**.
+Our system is built using the **Google Agent Development Kit (ADK)** and follows a **Sequential Multi-Agent** pattern. This ensures a reliable, deterministic workflow where each specialized agent performs its task in a specific order.
 
-*(Nakazzi, with help from Hemanth & Shek Lun, to fill in: A brief description of how the Orchestrator delegates tasks to the Scout, Analyst, and Writer agents, and how data flows between them. The diagram is key here.)*
+*(Nakazzi, with help from Shek Lun & Ante, to fill in: A brief description of the sequential flow: Discovery -> Analysis. The diagram is key here.)*
 
 ![Architecture Diagram](docs/architecture.png) <!-- The tech team will create this diagram using a tool like diagrams.net -->
 
@@ -61,10 +64,10 @@ Our system is built on a collaborative multi-agent architecture managed by a cen
 ## 4. Technology Stack
 
 *   **Core Framework:** Google Agent Development Kit (ADK)
-*   **Language:** Python 3.10+
-*   **AI Model:** Google Gemini
+*   **Language:** Python 3.11+
+*   **AI Model:** Google Gemini (`gemini-pro-latest`)
+*   **Agent Tools:** Tavily (via Remote MCP) for web search and scraping.
 *   **Frontend:** Streamlit
-*   **Key Libraries:** Google Search API, BeautifulSoup4, PyMuPDF
 *   **Deployment:** Docker, Google Cloud Run
 
 ---
@@ -76,29 +79,34 @@ Our system is built on a collaborative multi-agent architecture managed by a cen
 *   An API key for Google Gemini
 *   An API key and Custom Search Engine ID from Google Custom Search Engine
 
+## 5. Setup and Run the Project
+
+### Prerequisites
+*   Conda for environment management.
+*   An API key for Google Gemini.
+*   An API key for Tavily.
+
 ### Installation Steps
 1.  **Clone the repository:**
     ```bash
-    git clone https://github.com/YourUsername/adk-grant-seeker-copilot.git
+    git clone https://github.com/[YourUsername]/adk-grant-seeker-copilot.git
     cd adk-grant-seeker-copilot
     ```
-2.  **Create and activate a virtual environment:**
+2.  **Create and activate the Conda environment:**
     ```bash
-    python -m venv venv
-    source venv/bin/activate
-    # On Windows, use: venv\Scripts\activate
+    conda create -n grantseeker-env python=3.11 -y
+    conda activate grantseeker-env
     ```
 3.  **Install the required dependencies:**
     ```bash
     pip install -r requirements.txt
     ```
 4.  **Set up your API keys:**
-    *   Create a file named `.env` in the root directory of the project.
-    *   Add your API keys to this file in the following format:
+    *   Create a file named `.env` in the root directory.
+    *   Add your API keys to this file:
     ```
     GEMINI_API_KEY="YOUR_GEMINI_API_KEY"
-    GOOGLE_API_KEY="YOUR_GOOGLE_API_KEY"
-    SEARCH_ENGINE_ID="YOUR_SEARCH_ENGINE_ID"
+    TAVILY_API_KEY="YOUR_TAVILY_API_KEY"
     ```
 5.  **Run the application:**
     ```bash
@@ -108,9 +116,9 @@ Our system is built on a collaborative multi-agent architecture managed by a cen
 
 ## 6. Our Team
 
-*   **Shek Lun:** Technical Lead & Backend Owner
-*   **Hemanth Reganti:** Chief Architect & Strategic Advisor
-*   **Ujjwal Devi:** Frontend & UI Developer
+*   **Shek Lun:** Technical Lead & AI Architect
+*   **Ante Krtalić:** Backend & DevOps Engineer
+*   **Mayank Kumar:** Frontend Developer
 *   **Nakazzi Kiyaga-Mulindwa:** Project & Presentation Lead
 
 ---
@@ -119,7 +127,10 @@ Our system is built on a collaborative multi-agent architecture managed by a cen
 
 While this prototype demonstrates our core vision, we have a clear roadmap for future development:
 
-*   **Expanded Grant Sources:** Integrate directly with major grant databases like GrantStation and Foundation Directory Online via their APIs.
-*   **Budgeting Agent:** Introduce a new agent that helps users draft a budget justification section based on their project details.
-*   **Feedback & Revision Loop:** Allow users to provide feedback on the generated text, which the Writer Agent can use to revise and improve the draft.
-*   **Analytics Dashboard:** Provide users with insights into the types of grants they are most often matched with and their application success rates.
+*   **Expanded Grant Sources:** Integrate directly with major grant databases via their APIs.
+*   **Budgeting Agent:** Introduce a new agent that helps users draft a budget justification section.
+*   **Feedback & Revision Loop:** Allow users to provide feedback on the generated text, which the Writer Agent can use to revise the draft.
+
+## 8. Acknowledgements
+
+We would like to extend a special thank you to **Ujjwal Ruhal** for his valuable contributions during the initial UI conceptualization phase of this project.
