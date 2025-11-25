@@ -5,7 +5,6 @@ This version should be more stable and avoid the 500 INTERNAL errors
 import os
 import asyncio
 import json
-import httpx
 from dotenv import load_dotenv
 from google.adk.agents import LlmAgent
 from google.adk.models import Gemini
@@ -14,6 +13,7 @@ from google.adk.sessions import InMemorySessionService
 from google import genai
 from google.genai import types
 from pydantic import BaseModel
+from tavily_client import TavilyClient
 
 # Load environment variables
 load_dotenv()
@@ -39,49 +39,8 @@ retry_config = types.HttpRetryOptions(
     http_status_codes=[429, 500, 503, 504],
 )
 
-# Helper function to search using Tavily API directly
-async def tavily_search(query: str, max_results: int = 5) -> list[dict]:
-    """Search using Tavily API directly"""
-    url = "https://api.tavily.com/search"
-    payload = {
-        "api_key": TAVILY_API_KEY,
-        "query": query,
-        "max_results": max_results,
-        "search_depth": "basic",
-        "include_answer": False,
-        "include_raw_content": False
-    }
-    
-    async with httpx.AsyncClient(timeout=30.0) as client:
-        try:
-            response = await client.post(url, json=payload)
-            response.raise_for_status()
-            data = response.json()
-            return data.get("results", [])
-        except Exception as e:
-            print(f"⚠️ Tavily search error: {e}")
-            return []
-
-# Helper function to get page content
-async def get_page_content(url: str) -> str:
-    """Fetch page content using Tavily extract endpoint"""
-    extract_url = "https://api.tavily.com/extract"
-    payload = {
-        "api_key": TAVILY_API_KEY,
-        "urls": [url]
-    }
-    
-    async with httpx.AsyncClient(timeout=30.0) as client:
-        try:
-            response = await client.post(extract_url, json=payload)
-            response.raise_for_status()
-            data = response.json()
-            if data.get("results") and len(data["results"]) > 0:
-                return data["results"][0].get("raw_content", "")
-            return ""
-        except Exception as e:
-            print(f"⚠️ Content extraction error for {url}: {e}")
-            return ""
+# Initialize Tavily client
+tavily = TavilyClient(api_key=TAVILY_API_KEY, max_retries=3, timeout=30.0)
 
 # Pydantic schemas
 class DiscoveredLead(BaseModel):
@@ -195,8 +154,8 @@ async def main():
     print("\n🔎 Phase 1: Searching for Grants...")
     query = "community garden grants for urban youth in Chicago"
     
-    # Use Tavily API directly
-    search_results = await tavily_search(query, max_results=5)
+    # Use Tavily wrapper
+    search_results = await tavily.search(query, max_results=5)
     print(f"✅ Found {len(search_results)} search results")
     
     if not search_results:
@@ -257,8 +216,8 @@ async def main():
             url = lead.get('url')
             print(f"   -> ⏳ Extracting: {url}")
             
-            # Get page content using Tavily
-            content = await get_page_content(url)
+            # Get page content using Tavily wrapper
+            content = await tavily.get_page_content(url)
             
             if not content:
                 print(f"   -> ⚠️ Could not fetch content for: {url}")
