@@ -325,43 +325,6 @@ def main():
             </div>
         """, unsafe_allow_html=True)
     
-    with tab4:
-        st.markdown("### Required Documents")
-        st.markdown("*Upload and track your application documents*")
-        
-        for doc in SAMPLE_INSIGHTS['required_documents']:
-            doc_col1, doc_col2, doc_col3 = st.columns([3, 1, 1])
-            with doc_col1:
-                st.markdown(f"📄 {doc}")
-            with doc_col2:
-                st.caption("Not uploaded")
-            with doc_col3:
-                st.button("Upload", key=f"upload_{doc[:10]}", use_container_width=True)
-        
-        st.markdown("---")
-        st.file_uploader("Upload additional documents", accept_multiple_files=True)
-    
-    with tab5:
-        st.markdown("### Your Notes")
-        st.markdown("*Add personal notes about this grant opportunity*")
-        
-        notes = st.text_area(
-            "Notes",
-            placeholder="Add your notes here...",
-            height=200,
-            label_visibility="collapsed"
-        )
-        
-        if st.button("💾 Save Notes"):
-            st.success("Notes saved!")
-        
-        st.markdown("### AI Suggestions")
-        st.info("""
-            💡 **Based on this grant:**
-            - This grant aligns well with community development projects
-            - Consider highlighting measurable outcomes in your proposal
-            - Include letters of support from local partners
-        """)
     
     # Sidebar
     with st.sidebar:

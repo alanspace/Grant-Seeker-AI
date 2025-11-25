@@ -9,7 +9,7 @@ st.set_page_config(
     page_title="Grant Seeker's Co-Pilot",
     page_icon="🚀",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="collapsed"
 )
 
 # Custom CSS to hide Streamlit footer and main menu, and style the page
@@ -24,7 +24,6 @@ st.markdown("""
             text-align: center;
             font-size: 3rem;
             font-weight: 700;
-            margin-bottom: 0.5rem;
             color: #1a365d;
         }
         
@@ -32,7 +31,6 @@ st.markdown("""
             text-align: center;
             font-size: 1.3rem;
             color: #4a5568;
-            margin-bottom: 2rem;
         }
         
         /* Feature card styling */
@@ -88,7 +86,7 @@ def main():
     """Main function to render the landing page."""
     
     # Add some top padding
-    st.markdown("<br>", unsafe_allow_html=True)
+    # st.markdown("<br>", unsafe_allow_html=True)
     
     # Hero Section
     st.markdown('<h1 class="hero-title">🚀 Grant Seeker\'s Co-Pilot</h1>', unsafe_allow_html=True)
@@ -98,7 +96,7 @@ def main():
     )
     
     # Spacer
-    st.markdown("<br>", unsafe_allow_html=True)
+    # st.markdown("<br>", unsafe_allow_html=True)
     
     # Feature Summary Block
     col1, col2, col3 = st.columns([1, 2, 1])

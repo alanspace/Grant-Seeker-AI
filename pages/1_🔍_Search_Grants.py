@@ -99,8 +99,6 @@ if 'search_results' not in st.session_state:
     st.session_state.search_results = []
 if 'search_query' not in st.session_state:
     st.session_state.search_query = ""
-if 'saved_grants' not in st.session_state:
-    st.session_state.saved_grants = []
 
 # Sample grant data for demonstration
 SAMPLE_GRANTS = [
@@ -198,7 +196,7 @@ def render_grant_card(grant, col_key):
         """, unsafe_allow_html=True)
         
         # Action buttons
-        btn_col1, btn_col2, btn_col3, btn_col4 = st.columns(4)
+        btn_col1, btn_col2 = st.columns(2)
         
         with btn_col1:
             if st.button("📋 View Details", key=f"view_{grant['id']}_{col_key}", use_container_width=True):
@@ -206,20 +204,6 @@ def render_grant_card(grant, col_key):
                 st.switch_page("pages/2_📋_Grant_Details.py")
         
         with btn_col2:
-            is_saved = grant['id'] in [g['id'] for g in st.session_state.saved_grants]
-            save_label = "⭐ Saved" if is_saved else "☆ Save"
-            if st.button(save_label, key=f"save_{grant['id']}_{col_key}", use_container_width=True):
-                if not is_saved:
-                    st.session_state.saved_grants.append(grant)
-                    st.success(f"Saved: {grant['title']}")
-                    st.rerun()
-        
-        with btn_col3:
-            if st.button("🔍 Analyze", key=f"analyze_{grant['id']}_{col_key}", use_container_width=True):
-                st.session_state.selected_grant = grant
-                st.switch_page("pages/2_📋_Grant_Details.py")
-        
-        with btn_col4:
             if st.button("✍️ Start Proposal", key=f"proposal_{grant['id']}_{col_key}", use_container_width=True):
                 st.session_state.selected_grant = grant
                 st.switch_page("pages/3_✍️_Proposal_Builder.py")
@@ -248,46 +232,7 @@ def main():
     with search_col2:
         search_clicked = st.button("🔎 Search", type="primary", use_container_width=True)
     
-    # Filters Section
-    with st.expander("🎯 Advanced Filters", expanded=False):
-        filter_col1, filter_col2, filter_col3, filter_col4 = st.columns(4)
-        
-        with filter_col1:
-            funding_type = st.selectbox(
-                "Funding Type",
-                ["All", "Grant", "Fellowship", "Award", "Scholarship"]
-            )
-            
-            eligibility = st.multiselect(
-                "Eligibility",
-                ["Non-profit", "Academic", "Small Business", "Individual", "Government"]
-            )
-        
-        with filter_col2:
-            deadline_range = st.selectbox(
-                "Deadline",
-                ["Any time", "Next 30 days", "Next 60 days", "Next 90 days", "Next 6 months"]
-            )
-            
-            geography = st.selectbox(
-                "Geography",
-                ["All Regions", "United States", "International", "Local/State"]
-            )
-        
-        with filter_col3:
-            amount_min = st.number_input("Min Amount ($)", min_value=0, value=0, step=1000)
-            amount_max = st.number_input("Max Amount ($)", min_value=0, value=0, step=1000)
-        
-        with filter_col4:
-            categories = st.multiselect(
-                "Categories/Topics",
-                ["Environment", "Education", "Health", "Arts", "Technology", "Social Services", "Research"]
-            )
-            
-            funder_type = st.selectbox(
-                "Funder Type",
-                ["All", "Foundation", "Government", "Corporate", "Individual"]
-            )
+    
     
     # Sort controls
     sort_col1, sort_col2 = st.columns([3, 1])
@@ -331,21 +276,11 @@ def main():
     
     # Sidebar - Saved Grants
     with st.sidebar:
-        st.markdown("### ⭐ Saved Grants")
-        if st.session_state.saved_grants:
-            for saved_grant in st.session_state.saved_grants:
-                st.markdown(f"**{saved_grant['title']}**")
-                st.caption(f"📅 {saved_grant['deadline']}")
-                st.markdown("---")
-        else:
-            st.caption("No saved grants yet. Click ☆ Save on a grant to add it here.")
-        
         st.markdown("### 💡 Search Tips")
         st.markdown("""
         - Use specific keywords related to your project
         - Try different combinations of terms
         - Include your organization type
-        - Filter by deadline to find urgent opportunities
         """)
 
 
