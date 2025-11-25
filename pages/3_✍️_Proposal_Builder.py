@@ -2,6 +2,7 @@
 Proposal Builder Page - Simple AI-assisted grant proposal generation
 """
 import streamlit as st
+from st_copy import copy_button
 import sys
 import os
 
@@ -214,21 +215,31 @@ def main():
             st.session_state.user_draft = user_draft
         
         # Action buttons
-        btn_col1, btn_col2 = st.columns(2)
+        # btn_col1, btn_col2 = st.columns(2)
         
-        with btn_col1:
-            if st.button("💾 Save Draft", use_container_width=True):
-                if st.session_state.user_draft:
-                    st.success("Draft saved!")
-                else:
-                    st.warning("Nothing to save yet.")
+        # with btn_col1:
+        #     if st.button("💾 Copy Draft", use_container_width=True):
+        #         if st.session_state.user_draft:
+        #             st.success("Draft copied!")
+        #         else:
+        #             st.warning("Nothing to save yet.")
         
-        with btn_col2:
-            if st.button("📄 Export", use_container_width=True):
-                if st.session_state.user_draft:
-                    st.info("Export feature coming soon!")
-                else:
-                    st.warning("Nothing to export yet.")
+        # with btn_col1:
+        if st.session_state.user_draft:
+            if st.download_button(
+                label="Export",
+                data=user_draft,
+                file_name="draft.txt",
+                mime="text/plain",
+            ):
+                st.success("File Downloaded!")
+            copy_button(st.session_state.user_draft)
+        else:
+            st.warning("Nothing to export yet.")
+            st.warning("Nothing to copy yet.")
+        # with btn_col2:
+        
+        
     
     # Quick tips in sidebar
     with st.sidebar:
