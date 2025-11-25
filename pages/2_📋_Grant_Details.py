@@ -121,7 +121,8 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Sample extracted insights (simulating AI analysis)
-SAMPLE_INSIGHTS = {
+# These will be populated from API data when available
+DEFAULT_INSIGHTS = {
     "eligibility_checklist": [
         {"item": "501(c)(3) Non-profit status", "met": True, "confidence": "high"},
         {"item": "Operational for at least 2 years", "met": True, "confidence": "high"},
@@ -197,10 +198,46 @@ def main():
         "deadline": "2025-03-15",
         "amount": "$10,000 - $50,000",
         "description": "Supporting community-based urban agriculture projects that promote food security and environmental education.",
+        "detailed_overview": "The Community Garden Initiative Grant supports organizations working to establish and expand community gardens in urban areas.",
         "tags": ["Environment", "Community", "Agriculture"],
         "eligibility": "Non-profit organizations, community groups",
-        "url": "https://example.com/grant1"
+        "url": "https://example.com/grant1",
+        "application_requirements": [
+            "501(c)(3) determination letter",
+            "Project budget",
+            "Implementation timeline",
+            "Letters of support"
+        ],
+        "funding_type": "Grant",
+        "geography": "United States",
+        "key_dates": [
+            {"event": "Application opens", "date": "2025-01-15"},
+            {"event": "Letter of Intent due", "date": "2025-02-01"},
+            {"event": "Full application deadline", "date": "2025-03-15"},
+            {"event": "Award notification", "date": "2025-05-01"},
+            {"event": "Grant period begins", "date": "2025-06-01"}
+        ],
+        "risk_factors": [
+            "Competitive grant with ~15% acceptance rate",
+            "Requires detailed evaluation plan",
+            "Matching funds may be required"
+        ],
+        "fit_score": 85,
+        "eligibility_checklist": [
+            {"item": "501(c)(3) Non-profit status", "met": True, "confidence": "high"},
+            {"item": "Operational for at least 2 years", "met": True, "confidence": "high"},
+            {"item": "Annual budget under $1M", "met": None, "confidence": "medium"},
+            {"item": "Located in eligible geographic area", "met": True, "confidence": "high"},
+            {"item": "Previous grant recipient status", "met": None, "confidence": "low"}
+        ]
     })
+    
+    # Get insights from grant data (API format) or fall back to defaults
+    fit_score = grant.get('fit_score', DEFAULT_INSIGHTS['fit_score'])
+    key_dates = grant.get('key_dates', DEFAULT_INSIGHTS['key_dates'])
+    risk_factors = grant.get('risk_factors', DEFAULT_INSIGHTS['risk_factors'])
+    eligibility_checklist = grant.get('eligibility_checklist', DEFAULT_INSIGHTS['eligibility_checklist'])
+    application_requirements = grant.get('application_requirements', DEFAULT_INSIGHTS['required_documents'])
     
     # Header Section
     st.markdown(f"""
@@ -218,7 +255,7 @@ def main():
                 </div>
                 <div class="meta-item">
                     <div class="meta-label">Fit Score</div>
-                    <div class="meta-value">🎯 {SAMPLE_INSIGHTS['fit_score']}%</div>
+                    <div class="meta-value">🎯 {fit_score}%</div>
                 </div>
             </div>
         </div>
@@ -261,9 +298,11 @@ def main():
     
     with tab1:
         st.markdown("### Grant Overview")
+        # Use detailed_overview if available, otherwise use description
+        overview_text = grant.get('detailed_overview', grant['description'])
         st.markdown(f"""
             <div class="insight-card">
-                <p>{grant['description']}</p>
+                <p>{overview_text}</p>
             </div>
         """, unsafe_allow_html=True)
         
@@ -272,7 +311,7 @@ def main():
         st.markdown(tags_html, unsafe_allow_html=True)
         
         st.markdown("### Key Dates")
-        for date_item in SAMPLE_INSIGHTS['key_dates']:
+        for date_item in key_dates:
             col1, col2 = st.columns([2, 3])
             with col1:
                 st.markdown(f"**{date_item['date']}**")
@@ -280,7 +319,7 @@ def main():
                 st.markdown(date_item['event'])
         
         st.markdown("### Risk Factors")
-        for risk in SAMPLE_INSIGHTS['risk_factors']:
+        for risk in risk_factors:
             st.warning(risk)
     
     with tab2:
@@ -288,7 +327,8 @@ def main():
         st.markdown("*AI-extracted eligibility criteria with confidence scores*")
         st.markdown("<br>", unsafe_allow_html=True)
         
-        render_eligibility_checklist(SAMPLE_INSIGHTS['eligibility_checklist'])
+        # Use eligibility_checklist from grant data (API format)
+        render_eligibility_checklist(eligibility_checklist)
         
         st.markdown("<br>", unsafe_allow_html=True)
         st.markdown("### Source Text")
@@ -310,7 +350,8 @@ def main():
         st.markdown("### Application Requirements")
         st.markdown("*Documents and materials needed for your application*")
         
-        for i, doc in enumerate(SAMPLE_INSIGHTS['required_documents'], 1):
+        # Use application_requirements from grant data (API format)
+        for i, doc in enumerate(application_requirements, 1):
             st.checkbox(doc, key=f"req_{i}")
         
         st.markdown("### Extracted Requirements Summary")
@@ -331,15 +372,15 @@ def main():
         st.markdown("### 🎯 Fit Analysis")
         
         # Progress bar for fit score
-        st.markdown(f"**Overall Fit: {SAMPLE_INSIGHTS['fit_score']}%**")
-        st.progress(SAMPLE_INSIGHTS['fit_score'] / 100)
+        st.markdown(f"**Overall Fit: {fit_score}%**")
+        st.progress(fit_score / 100)
         
         st.markdown("---")
         
         st.markdown("### 📊 Quick Stats")
         st.metric("Deadline", grant['deadline'])
         st.metric("Amount", grant['amount'])
-        st.metric("Documents Required", len(SAMPLE_INSIGHTS['required_documents']))
+        st.metric("Documents Required", len(application_requirements))
         
         st.markdown("---")
         
