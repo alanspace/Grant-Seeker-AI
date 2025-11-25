@@ -69,23 +69,31 @@ backend/
 ### Running the refactored version:
 
 ```bash
+# Navigate to backend directory
+cd D:\adk-grant-seeker-copilot\backend
+
+# Activate virtual environment
+..\.venv\Scripts\Activate.ps1
+
+# Run the script
 python adk_agent_v2_refactored.py
 ```
 
 ### Running tests:
 
 ```bash
-# Navigate to project root
+# Navigate to project root and activate venv
 cd D:\adk-grant-seeker-copilot
-
-# Activate virtual environment
 .venv\Scripts\Activate.ps1
 
-# Install test dependencies
+# Install test dependencies (first time only)
 pip install -r backend/tests/requirements-test.txt
 
 # Run all tests
 python -m pytest backend/tests/
+
+# Run with verbose output
+python -m pytest backend/tests/ -v
 
 # Run with coverage
 python -m pytest backend/tests/ --cov=backend --cov-report=html

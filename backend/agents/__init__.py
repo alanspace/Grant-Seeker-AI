@@ -3,8 +3,8 @@ from google.adk.agents import LlmAgent
 from google.adk.models import Gemini
 from google.genai import types
 
-from config import Config
-from utils.helpers import get_current_date
+from .config import Config
+from .utils.helpers import get_current_date
 
 
 def create_retry_config() -> types.HttpRetryOptions:
