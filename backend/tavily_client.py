@@ -18,7 +18,8 @@ class TavilyClient:
         max_results: int = 5,
         search_depth: str = "basic",
         include_answer: bool = False,
-        include_raw_content: bool = False
+        include_raw_content: bool = False,
+        days: Optional[int] = None  # Filter by recency (e.g., last 90 days)
     ) -> List[Dict]:
         """Search using Tavily API with retry logic"""
         url = f"{self.base_url}/search"
@@ -31,13 +32,29 @@ class TavilyClient:
             "include_raw_content": include_raw_content
         }
         
+        # Add days filter if specified
+        if days is not None:
+            payload["days"] = days
+        
+        
         for attempt in range(self.max_retries):
             try:
-                async with httpx.AsyncClient(timeout=self.timeout) as client:
+                # Create client with more lenient settings
+                async with httpx.AsyncClient(
+                    timeout=httpx.Timeout(self.timeout, connect=10.0),
+                    follow_redirects=True,
+                    verify=True
+                ) as client:
                     response = await client.post(url, json=payload)
                     response.raise_for_status()
                     data = response.json()
                     return data.get("results", [])
+            except httpx.ConnectTimeout:
+                print(f"⚠️ Connection timeout (attempt {attempt + 1}/{self.max_retries})")
+                if attempt == self.max_retries - 1:
+                    print("❌ Could not connect to Tavily API. Check your internet connection or firewall.")
+                    return []
+                await asyncio.sleep(2)
             except httpx.HTTPStatusError as e:
                 if e.response.status_code == 429:  # Rate limited
                     wait_time = 2 ** attempt  # Exponential backoff

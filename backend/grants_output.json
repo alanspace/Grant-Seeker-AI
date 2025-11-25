@@ -1,0 +1,75 @@
+[
+  {
+    "id": 1,
+    "title": "Capacity Building Grant",
+    "funder": "Advocates for Urban Agriculture (AUA) in partnership with Food:Land:Opportunity (F.L.O.)",
+    "deadline": "Expired (2025-10-03)",
+    "amount": "Not specified",
+    "description": "Funding to support urban farms and community gardens in the Chicago area, aimed at enriching the local food economy, production, and distribution.",
+    "detailed_overview": "The Capacity Building Grant is a community-led resource distribution fund managed by Advocates for Urban Agriculture (AUA) in partnership with Food:Land:Opportunity (F.L.O.). It provides support to urban farms and community gardens throughout the Chicago area. Recipients are selected by an Advisory Committee composed of community residents, past grantees, growers, or supporters of earth stewardship. The 2025 grant cycle utilized a nomination process, allowing community members or the growing spaces themselves to nominate farms and gardens to reduce applicant administrative strain. Nominations are reviewed on a rolling basis, with funds typically awarded by mid-December.",
+    "tags": [
+      "Urban Agriculture",
+      "Community Gardens",
+      "Food Systems",
+      "Capacity Building",
+      "Chicago"
+    ],
+    "eligibility": "Urban farms and community gardens located throughout the Chicago area. Eligible entities include organizations and individuals who are growers or stewards of earth stewardship.",
+    "url": "https://www.auachicago.org/capacity-building-grants",
+    "application_requirements": [
+      "Completion of the Capacity Building Grant nomination form (via Google Form or document format via email)",
+      "Nomination must be submitted by the deadline (if a cycle is open)"
+    ],
+    "funding_type": "Grant",
+    "geography": "Chicago area"
+  },
+  {
+    "id": 2,
+    "title": "Community Development Grant - Small",
+    "funder": "City of Chicago",
+    "deadline": "Check website for current cycle",
+    "amount": "Up to $250,000 (covering up to 75% of project costs)",
+    "description": "This program provides funding of up to $250,000 to support eligible commercial, mixed-use, and light manufacturing projects within the city of Chicago.",
+    "detailed_overview": "The Community Development Grant - Small program is designed to stimulate economic activity by offering financial support for development projects. Grants are capped at $250,000 and can cover up to 75% of the total eligible project costs. The supported project types include commercial developments, mixed-use facilities, and light manufacturing operations, specifically covering costs associated with new construction.",
+    "tags": [
+      "Community Development",
+      "Commercial Real Estate",
+      "Manufacturing",
+      "New Construction",
+      "Chicago"
+    ],
+    "eligibility": "Intended to support eligible commercial, mixed-use, and light manufacturing projects. Specific organizational or applicant eligibility requirements are not detailed in the provided content.",
+    "url": "https://www.chicago.gov/city/en/sites/community-development-grant/home/small_grants.html",
+    "application_requirements": [
+      "Project involving new construction",
+      "Must be eligible commercial, mixed-use, or light manufacturing project",
+      "Check program resources and FAQs for detailed requirements"
+    ],
+    "funding_type": "Grant",
+    "geography": "City of Chicago, Illinois"
+  },
+  {
+    "id": 3,
+    "title": "2026 Community Garden Grant (Garden Improvement & Garden Forward)",
+    "funder": "Food Well Alliance",
+    "deadline": "Unknown (Application cycle started October 2025)",
+    "amount": "$1,500 or $10,000 (Plus separate Labor Support Funding)",
+    "description": "Provides funding in two tiers ($1,500 for improvements or $10,000 for major projects) for infrastructure, supply needs, and capacity building for community gardens in five Georgia counties.",
+    "detailed_overview": "The Community Garden Grants program supports the sustainability and growth of community gardens, recognizing their role in connecting people to food and strengthening communities. The 2026 cycle, which began applications in October 2025, offers two categories of support for gardens in Clayton, Cobb, DeKalb, Fulton, and Gwinnett counties. The Garden Improvement Grant is a $1,500 grant focused on infrastructure, supply, and material needs. The Garden Forward Grant is a larger $10,000 grant aimed at helping gardens move forward with a significant project. A garden is eligible to apply for both opportunities but will only be awarded one. Food Well Alliance also offers separate, year-round Labor Support Funding intended to cover specialized contractor labor costs (e.g., irrigation, shed installation) for garden projects, which can be combined with grant funds.",
+    "tags": [
+      "Community Gardens",
+      "Urban Agriculture",
+      "Food Security",
+      "Infrastructure",
+      "Georgia"
+    ],
+    "eligibility": "Community Garden Grants are designated specifically for community gardens in Clayton, Cobb, DeKalb, Fulton, and Gwinnett counties. K-12 school gardens are not eligible to apply.",
+    "url": "https://www.foodwellalliance.org/garden-grants",
+    "application_requirements": [
+      "Registration in the online grant system",
+      "Must meet specific grant criteria outlined by the funder"
+    ],
+    "funding_type": "Grant",
+    "geography": "Clayton, Cobb, DeKalb, Fulton, and Gwinnett counties (Georgia)"
+  }
+]
