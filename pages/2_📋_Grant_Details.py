@@ -262,7 +262,7 @@ def main():
     """, unsafe_allow_html=True)
     
     # Action buttons row
-    btn_col1, btn_col2, btn_col3, btn_col4 = st.columns(4)
+    btn_col1, btn_col2, btn_col3 = st.columns(3)
     
     with btn_col1:
         if st.button("✍️ Generate Proposal", type="primary", use_container_width=True):
@@ -270,30 +270,20 @@ def main():
             st.switch_page("pages/3_✍️_Proposal_Builder.py")
     
     with btn_col2:
-        if st.button("💾 Save to Project", use_container_width=True):
-            if 'saved_grants' not in st.session_state:
-                st.session_state.saved_grants = []
-            if grant['id'] not in [g['id'] for g in st.session_state.saved_grants]:
-                st.session_state.saved_grants.append(grant)
-            st.success("Saved to your projects!")
-    
-    with btn_col3:
         if st.button("📄 Export PDF", use_container_width=True):
             st.info("PDF export feature coming soon!")
     
-    with btn_col4:
+    with btn_col3:
         if st.button("🔗 Open Original", use_container_width=True):
             st.markdown(f"[Open grant page →]({grant['url']})")
     
     st.markdown("---")
     
     # Tabs for different sections
-    tab1, tab2, tab3, tab4, tab5 = st.tabs([
+    tab1, tab2, tab3 = st.tabs([
         "📄 Overview", 
         "✅ Eligibility", 
-        "📋 Requirements", 
-        "📎 Documents", 
-        "📝 Notes"
+        "📋 Requirements"
     ])
     
     with tab1:
@@ -386,8 +376,6 @@ def main():
         
         st.markdown("### 🔗 Quick Links")
         st.markdown(f"[🌐 Grant Website]({grant['url']})")
-        st.markdown("[📧 Contact Funder](mailto:grants@example.com)")
-        st.markdown("[📖 FAQ](https://example.com/faq)")
 
 
 if __name__ == "__main__":
