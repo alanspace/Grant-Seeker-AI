@@ -41,6 +41,7 @@ st.markdown("""
         .agent-response {
             background-color: #f0fff4;
             border-left: 4px solid #38a169;
+            color: #2d3748;
             padding: 1rem 1.5rem;
             margin: 1rem 0;
             border-radius: 0 8px 8px 0;

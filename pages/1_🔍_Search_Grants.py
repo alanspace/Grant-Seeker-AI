@@ -434,13 +434,13 @@ def main():
     
     
     
-    # Sort controls
-    sort_col1, sort_col2 = st.columns([3, 1])
-    with sort_col2:
-        sort_by = st.selectbox(
-            "Sort by",
-            ["Relevance", "Deadline (soonest)", "Amount (highest)", "Newest"]
-        )
+    # # Sort controls
+    # sort_col1, sort_col2 = st.columns([3, 1])
+    # with sort_col2:
+    #     sort_by = st.selectbox(
+    #         "Sort by",
+    #         ["Relevance", "Deadline (soonest)", "Amount (highest)", "Newest"]
+    #     )
     
     st.markdown("---")
     
