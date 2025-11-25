@@ -1,10 +1,9 @@
 """
-Proposal Builder Page - AI-assisted grant proposal generation
+Proposal Builder Page - Simple AI-assisted grant proposal generation
 """
 import streamlit as st
 import sys
 import os
-import time
 
 # Add backend to path for imports
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'backend'))
@@ -14,7 +13,7 @@ st.set_page_config(
     page_title="Proposal Builder | Grant Seeker's Co-Pilot",
     page_icon="✍️",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="collapsed"
 )
 
 # Custom CSS
@@ -31,219 +30,110 @@ st.markdown("""
             margin-bottom: 1.5rem;
         }
         
-        .section-card {
-            background-color: #ffffff;
+        .draft-section {
+            background-color: #f7fafc;
             border: 1px solid #e2e8f0;
             border-radius: 8px;
             padding: 1.5rem;
             margin: 1rem 0;
         }
         
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-            padding-bottom: 0.75rem;
-            border-bottom: 1px solid #e2e8f0;
+        .agent-response {
+            background-color: #f0fff4;
+            border-left: 4px solid #38a169;
+            padding: 1rem 1.5rem;
+            margin: 1rem 0;
+            border-radius: 0 8px 8px 0;
         }
         
-        .section-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: #2d3748;
-        }
-        
-        .ai-badge {
-            background-color: #805ad5;
-            color: white;
-            padding: 0.25rem 0.75rem;
-            border-radius: 9999px;
-            font-size: 0.75rem;
-        }
-        
-        .template-card {
-            background-color: #f7fafc;
-            border: 2px solid #e2e8f0;
-            border-radius: 8px;
-            padding: 1rem;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        
-        .template-card:hover {
-            border-color: #3182ce;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        
-        .template-selected {
-            border-color: #3182ce;
+        .user-draft {
             background-color: #ebf8ff;
-        }
-        
-        .progress-step {
-            display: flex;
-            align-items: center;
-            padding: 0.5rem 0;
-        }
-        
-        .progress-dot {
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 0.75rem;
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
-        
-        .progress-dot-complete {
-            background-color: #38a169;
-            color: white;
-        }
-        
-        .progress-dot-current {
-            background-color: #3182ce;
-            color: white;
-        }
-        
-        .progress-dot-pending {
-            background-color: #e2e8f0;
-            color: #718096;
+            border-left: 4px solid #3182ce;
+            padding: 1rem 1.5rem;
+            margin: 1rem 0;
+            border-radius: 0 8px 8px 0;
         }
     </style>
 """, unsafe_allow_html=True)
 
 # Initialize session state
-if 'proposal_sections' not in st.session_state:
-    st.session_state.proposal_sections = {
-        'executive_summary': '',
-        'statement_of_need': '',
-        'goals_objectives': '',
-        'methods': '',
-        'budget_narrative': '',
-        'evaluation': ''
-    }
+if 'agent_draft' not in st.session_state:
+    st.session_state.agent_draft = ''
 
-if 'org_profile' not in st.session_state:
-    st.session_state.org_profile = {
-        'org_name': '',
-        'mission': '',
-        'contact_name': '',
-        'contact_email': '',
-        'budget_summary': ''
-    }
+if 'user_draft' not in st.session_state:
+    st.session_state.user_draft = ''
 
-if 'proposal_drafts' not in st.session_state:
-    st.session_state.proposal_drafts = []
+# =============================================================================
+# API INTEGRATION (Commented - uncomment when API is available)
+# =============================================================================
+# import requests
+# 
+# API_BASE_URL = "https://your-api-endpoint.com/api/v1"
+# 
+# def get_agent_draft(grant_id: str, project_details: dict) -> str:
+#     """
+#     Fetch AI-generated proposal draft from the agent.
+#     
+#     Args:
+#         grant_id: ID of the selected grant
+#         project_details: Dictionary with project information
+#     
+#     Returns:
+#         Generated proposal draft text from the agent
+#     """
+#     try:
+#         payload = {
+#             "grant_id": grant_id,
+#             "project_details": project_details
+#         }
+#         response = requests.post(f"{API_BASE_URL}/proposals/generate", json=payload, timeout=60)
+#         response.raise_for_status()
+#         
+#         data = response.json()
+#         return data.get("draft", "")
+#     
+#     except requests.RequestException as e:
+#         st.error(f"Failed to generate draft: {str(e)}")
+#         return None
+# =============================================================================
 
-# Sample generated content templates
-SAMPLE_CONTENT = {
-    'executive_summary': """The [Organization Name] respectfully requests $[Amount] to support our [Project Name] initiative. This comprehensive program will serve [Number] community members over [Duration], addressing critical needs in [Focus Area].
+# Sample agent-generated draft (mock data for demonstration)
+SAMPLE_AGENT_DRAFT = """# Grant Proposal: Community Garden Initiative
 
-Our organization has a proven track record of [Achievement], having served over [Number] individuals since [Year]. This project aligns directly with [Funder Name]'s mission to [Funder Mission].
+## Executive Summary
 
-Key outcomes include:
-• [Outcome 1]
-• [Outcome 2]
-• [Outcome 3]
+The Urban Green Initiative respectfully requests $35,000 from the Green Earth Foundation to support the expansion of our Community Garden Network program. This comprehensive initiative will transform three vacant lots in Chicago's South Side into productive community gardens, serving over 500 residents and providing fresh produce to families experiencing food insecurity.
 
-With your support, we will create lasting impact in our community while advancing sustainable solutions for [Problem].""",
-    
-    'statement_of_need': """[Community/Region] faces significant challenges in [Problem Area]. According to recent data from [Source], [Statistic] of residents are affected by [Issue].
+## Statement of Need
 
-The need for intervention is urgent:
-• [Data Point 1]: [Supporting statistic]
-• [Data Point 2]: [Supporting statistic]
-• [Data Point 3]: [Supporting statistic]
+Chicago's South Side faces significant challenges in food access and nutrition. According to the USDA, this area qualifies as a food desert, with residents traveling an average of 4.2 miles to reach the nearest full-service grocery store. Nearly 28% of households experience food insecurity, compared to the national average of 10.5%.
 
-Current resources are insufficient to address this growing need. [Gap in Services] leaves many community members without access to [Essential Service/Resource].
+## Goals & Objectives
 
-Our target population of [Description] has been disproportionately impacted by [Factor]. Through direct engagement with community members, we have identified [Specific Need] as the most pressing priority.""",
-    
-    'goals_objectives': """Goal 1: [Broad Goal Statement]
-• Objective 1.1: By [Date], [Measurable Outcome]
-• Objective 1.2: By [Date], [Measurable Outcome]
+**Goal 1: Expand Community Garden Infrastructure**
+- Objective 1.1: By June 2025, secure land use agreements for three vacant lots
+- Objective 1.2: By August 2025, complete installation of raised beds, irrigation systems, and tool storage
+- Objective 1.3: By September 2025, have all 150 garden plots allocated to community members
 
-Goal 2: [Broad Goal Statement]
-• Objective 2.1: By [Date], [Measurable Outcome]
-• Objective 2.2: By [Date], [Measurable Outcome]
+**Goal 2: Build Community Capacity**
+- Objective 2.1: By July 2025, recruit and train 50 community garden leaders
+- Objective 2.2: By December 2025, conduct 24 educational workshops on sustainable gardening
 
-Goal 3: [Broad Goal Statement]
-• Objective 3.1: By [Date], [Measurable Outcome]
-• Objective 3.2: By [Date], [Measurable Outcome]
+## Methods & Approach
 
-Each objective includes specific, measurable indicators that will allow us to track progress and demonstrate impact to stakeholders.""",
-    
-    'methods': """Our implementation strategy follows a phased approach:
+Our implementation strategy follows a phased approach with clear milestones and community engagement at every stage. We will partner with local schools, community centers, and faith-based organizations to ensure broad participation and lasting impact.
 
-Phase 1: [Month 1-3] - Planning and Preparation
-• [Activity 1]
-• [Activity 2]
-• [Activity 3]
+## Budget Summary
 
-Phase 2: [Month 4-9] - Implementation
-• [Activity 1]
-• [Activity 2]
-• [Activity 3]
+- Personnel: $21,000 (60%)
+- Program Expenses: $8,750 (25%)
+- Administrative Costs: $5,250 (15%)
+- **Total: $35,000**
 
-Phase 3: [Month 10-12] - Evaluation and Sustainability
-• [Activity 1]
-• [Activity 2]
-• [Activity 3]
+## Evaluation Plan
 
-Key personnel include:
-• [Role 1]: [Responsibilities]
-• [Role 2]: [Responsibilities]
-• [Role 3]: [Responsibilities]
-
-We will partner with [Partner Organization] to leverage their expertise in [Area].""",
-    
-    'budget_narrative': """Total Project Budget: $[Amount]
-
-Personnel (60%): $[Amount]
-• Project Director (0.5 FTE): $[Amount]
-• Program Coordinator (1.0 FTE): $[Amount]
-• Support Staff (0.25 FTE): $[Amount]
-
-Program Expenses (25%): $[Amount]
-• Materials and supplies: $[Amount]
-• Equipment: $[Amount]
-• Participant support: $[Amount]
-
-Administrative Costs (15%): $[Amount]
-• Indirect costs (10%): $[Amount]
-• Evaluation: $[Amount]
-
-Cost-effectiveness: This budget represents a cost of $[Amount] per participant served, which compares favorably to similar programs in our region.""",
-    
-    'evaluation': """Our evaluation plan employs a mixed-methods approach to measure both process and outcomes.
-
-Process Evaluation:
-• Monthly tracking of participation rates and demographics
-• Quarterly satisfaction surveys
-• Staff observations and documentation
-
-Outcome Evaluation:
-• Pre/post assessments for all participants
-• Follow-up surveys at 6 and 12 months
-• Focus groups with program completers
-
-Key Performance Indicators:
-1. [KPI 1]: Target [X]%, measured by [Method]
-2. [KPI 2]: Target [X]%, measured by [Method]
-3. [KPI 3]: Target [X]%, measured by [Method]
-
-Data will be collected using [Tool/System] and analyzed by [Staff/Consultant]. Results will be shared with stakeholders through [Report Format]."""
-}
-
-
-def generate_section(section_name, project_details, grant_info, tone="formal"):
-    """Simulate AI generation of a proposal section."""
-    # In production, this would call the Writer Agent
-    return SAMPLE_CONTENT.get(section_name, "Content generation in progress...")
+We will employ a mixed-methods approach including participant surveys, produce yield tracking, and community health assessments to measure program success and inform future improvements.
+"""
 
 
 def main():
@@ -266,198 +156,88 @@ def main():
         </div>
     """, unsafe_allow_html=True)
     
-    # Main layout with sidebar controls
-    col_main, col_sidebar = st.columns([3, 1])
+    # Two-column layout: Agent Draft | Your Draft
+    col_agent, col_user = st.columns(2)
     
-    with col_sidebar:
-        st.markdown("### ⚙️ AI Settings")
+    with col_agent:
+        st.markdown("### 🤖 AI Agent Draft")
+        st.markdown("*Generated proposal from the AI agent*")
         
-        # Template selector
-        template = st.selectbox(
-            "Template Style",
-            ["Standard", "Brief", "Detailed"],
-            help="Choose the level of detail for generated content"
-        )
-        
-        # Tone selector
-        tone = st.selectbox(
-            "Tone",
-            ["Formal", "Persuasive", "Concise"],
-            help="Select the writing tone"
-        )
-        
-        # Style toggles
-        st.markdown("### 📝 Style Options")
-        use_data = st.checkbox("Include statistics", value=True)
-        use_quotes = st.checkbox("Include testimonials", value=False)
-        use_visuals = st.checkbox("Suggest visual elements", value=True)
-        
-        st.markdown("---")
-        
-        # Progress tracking
-        st.markdown("### 📊 Progress")
-        sections_complete = sum(1 for v in st.session_state.proposal_sections.values() if v)
-        total_sections = len(st.session_state.proposal_sections)
-        
-        st.progress(sections_complete / total_sections)
-        st.caption(f"{sections_complete}/{total_sections} sections complete")
-        
-        st.markdown("---")
-        
-        # Quick actions
-        st.markdown("### 🚀 Quick Actions")
-        
-        if st.button("🔄 Regenerate All", use_container_width=True):
-            with st.spinner("Regenerating all sections..."):
-                time.sleep(3)
-                for key in st.session_state.proposal_sections:
-                    st.session_state.proposal_sections[key] = generate_section(key, "", "", tone.lower())
-                st.success("All sections regenerated!")
+        # Button to generate/regenerate agent draft
+        if st.button("✨ Generate Draft", type="primary", use_container_width=True):
+            with st.spinner("AI Agent is generating your proposal draft..."):
+                # =============================================================================
+                # API call would go here:
+                # draft = get_agent_draft(grant.get('id'), project_details)
+                # if draft:
+                #     st.session_state.agent_draft = draft
+                # =============================================================================
+                
+                # Using mock data for now
+                import time
+                time.sleep(2)  # Simulate API delay
+                st.session_state.agent_draft = SAMPLE_AGENT_DRAFT
                 st.rerun()
         
-        if st.button("💾 Save Draft", use_container_width=True):
-            draft = {
-                'timestamp': time.strftime("%Y-%m-%d %H:%M"),
-                'grant': grant.get('title', 'Untitled'),
-                'sections': st.session_state.proposal_sections.copy()
-            }
-            st.session_state.proposal_drafts.append(draft)
-            st.success("Draft saved!")
-        
-        if st.button("📄 Export PDF", use_container_width=True):
-            st.info("PDF export feature coming soon!")
-        
-        if st.button("📝 Export DOCX", use_container_width=True):
-            st.info("DOCX export feature coming soon!")
+        # Display agent draft
+        if st.session_state.agent_draft:
+            st.markdown(f"""
+                <div class="agent-response">
+                    {st.session_state.agent_draft.replace(chr(10), '<br>')}
+                </div>
+            """, unsafe_allow_html=True)
+            
+            # Copy to user draft button
+            if st.button("📋 Copy to My Draft", use_container_width=True):
+                st.session_state.user_draft = st.session_state.agent_draft
+                st.success("Copied to your draft!")
+                st.rerun()
+        else:
+            st.info("Click 'Generate Draft' to get an AI-generated proposal based on the grant requirements.")
     
-    with col_main:
-        # Organization Profile Section
-        with st.expander("📋 Organization Profile", expanded=False):
-            st.markdown("*Fill in your organization details to personalize the proposal*")
-            
-            profile_col1, profile_col2 = st.columns(2)
-            
-            with profile_col1:
-                st.session_state.org_profile['org_name'] = st.text_input(
-                    "Organization Name",
-                    value=st.session_state.org_profile.get('org_name', ''),
-                    placeholder="Your Organization Name"
-                )
-                
-                st.session_state.org_profile['contact_name'] = st.text_input(
-                    "Contact Name",
-                    value=st.session_state.org_profile.get('contact_name', ''),
-                    placeholder="Primary Contact"
-                )
-            
-            with profile_col2:
-                st.session_state.org_profile['contact_email'] = st.text_input(
-                    "Contact Email",
-                    value=st.session_state.org_profile.get('contact_email', ''),
-                    placeholder="email@organization.org"
-                )
-                
-                st.session_state.org_profile['budget_summary'] = st.text_input(
-                    "Annual Budget",
-                    value=st.session_state.org_profile.get('budget_summary', ''),
-                    placeholder="e.g., $500,000"
-                )
-            
-            st.session_state.org_profile['mission'] = st.text_area(
-                "Mission Statement",
-                value=st.session_state.org_profile.get('mission', ''),
-                placeholder="Describe your organization's mission...",
-                height=100
-            )
+    with col_user:
+        st.markdown("### 📝 Your Draft")
+        st.markdown("*Edit and finalize your proposal*")
         
-        st.markdown("---")
+        # Editable text area for user's draft
+        user_draft = st.text_area(
+            "Your Proposal Draft",
+            value=st.session_state.user_draft,
+            height=500,
+            placeholder="Start writing your proposal here, or copy the AI-generated draft and customize it...",
+            label_visibility="collapsed"
+        )
         
-        # Proposal Sections
-        st.markdown("### 📑 Proposal Sections")
+        # Update session state
+        if user_draft != st.session_state.user_draft:
+            st.session_state.user_draft = user_draft
         
-        sections = [
-            ("executive_summary", "Executive Summary", "A concise overview of your proposal"),
-            ("statement_of_need", "Statement of Need", "Why this project is necessary"),
-            ("goals_objectives", "Goals & Objectives", "What you aim to achieve"),
-            ("methods", "Methods & Approach", "How you will implement the project"),
-            ("budget_narrative", "Budget Narrative", "Justification for your budget"),
-            ("evaluation", "Evaluation Plan", "How you will measure success")
-        ]
+        # Action buttons
+        btn_col1, btn_col2 = st.columns(2)
         
-        for section_key, section_title, section_desc in sections:
-            with st.container():
-                st.markdown(f"""
-                    <div class="section-header">
-                        <span class="section-title">{section_title}</span>
-                        <span class="ai-badge">AI Assisted</span>
-                    </div>
-                """, unsafe_allow_html=True)
-                
-                st.caption(section_desc)
-                
-                # Text area for the section
-                current_content = st.session_state.proposal_sections.get(section_key, '')
-                
-                new_content = st.text_area(
-                    f"{section_title} Content",
-                    value=current_content,
-                    height=200,
-                    key=f"textarea_{section_key}",
-                    label_visibility="collapsed",
-                    placeholder=f"Enter your {section_title.lower()} here or click 'Generate' to create AI content..."
-                )
-                
-                # Update session state if content changed
-                if new_content != current_content:
-                    st.session_state.proposal_sections[section_key] = new_content
-                
-                # Action buttons for each section
-                btn_col1, btn_col2, btn_col3, btn_col4 = st.columns(4)
-                
-                with btn_col1:
-                    if st.button("✨ Generate", key=f"gen_{section_key}", use_container_width=True):
-                        with st.spinner("Generating content..."):
-                            time.sleep(1.5)
-                            generated = generate_section(section_key, "", "", tone.lower())
-                            st.session_state.proposal_sections[section_key] = generated
-                            st.rerun()
-                
-                with btn_col2:
-                    if st.button("📝 Expand", key=f"expand_{section_key}", use_container_width=True):
-                        if st.session_state.proposal_sections[section_key]:
-                            st.info("Expansion feature: AI will add more detail to this section")
-                        else:
-                            st.warning("Please generate content first")
-                
-                with btn_col3:
-                    if st.button("✂️ Shorten", key=f"short_{section_key}", use_container_width=True):
-                        if st.session_state.proposal_sections[section_key]:
-                            st.info("Shortening feature: AI will condense this section")
-                        else:
-                            st.warning("Please generate content first")
-                
-                with btn_col4:
-                    if st.button("🔧 Improve", key=f"improve_{section_key}", use_container_width=True):
-                        if st.session_state.proposal_sections[section_key]:
-                            st.info("Improvement feature: AI will enhance grammar and clarity")
-                        else:
-                            st.warning("Please generate content first")
-                
-                st.markdown("---")
+        with btn_col1:
+            if st.button("💾 Save Draft", use_container_width=True):
+                if st.session_state.user_draft:
+                    st.success("Draft saved!")
+                else:
+                    st.warning("Nothing to save yet.")
         
-        # Revision History
-        with st.expander("📜 Revision History", expanded=False):
-            if st.session_state.proposal_drafts:
-                for i, draft in enumerate(reversed(st.session_state.proposal_drafts)):
-                    st.markdown(f"**Draft {len(st.session_state.proposal_drafts) - i}** - {draft['timestamp']}")
-                    st.caption(f"Grant: {draft['grant']}")
-                    if st.button("Restore", key=f"restore_{i}"):
-                        st.session_state.proposal_sections = draft['sections'].copy()
-                        st.success("Draft restored!")
-                        st.rerun()
-                    st.markdown("---")
-            else:
-                st.caption("No saved drafts yet. Click 'Save Draft' to save your progress.")
+        with btn_col2:
+            if st.button("📄 Export", use_container_width=True):
+                if st.session_state.user_draft:
+                    st.info("Export feature coming soon!")
+                else:
+                    st.warning("Nothing to export yet.")
+    
+    # Quick tips in sidebar
+    with st.sidebar:
+        st.markdown("### 💡 Tips")
+        st.markdown("""
+        1. **Generate** an AI draft first
+        2. **Copy** it to your draft
+        3. **Customize** with your details
+        4. **Save** your final version
+        """)
 
 
 if __name__ == "__main__":
