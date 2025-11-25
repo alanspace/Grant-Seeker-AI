@@ -1,0 +1,119 @@
+{
+  "grants": [
+    {
+      "id": 1,
+      "title": "Community Garden Initiative Grant",
+      "funder": "Green Earth Foundation",
+      "deadline": "2025-03-15",
+      "amount": "$10,000 - $50,000",
+      "description": "Supporting community-based urban agriculture projects that promote food security and environmental education.",
+      "tags": ["Environment", "Community", "Agriculture"],
+      "eligibility": "Non-profit organizations, community groups",
+      "url": "https://example.com/grant1",
+      "application_requirements": [
+        "501(c)(3) determination letter",
+        "Project budget",
+        "Implementation timeline",
+        "Letters of support"
+      ],
+      "funding_type": "Grant",
+      "geography": "United States"
+    },
+    {
+      "id": 2,
+      "title": "Youth Education & Development Fund",
+      "funder": "Future Leaders Foundation",
+      "deadline": "2025-04-01",
+      "amount": "$5,000 - $25,000",
+      "description": "Funding innovative programs that empower young people through education, mentorship, and skill development.",
+      "tags": ["Education", "Youth", "Development"],
+      "eligibility": "501(c)(3) organizations",
+      "url": "https://example.com/grant2",
+      "application_requirements": [
+        "Organizational budget",
+        "Program description",
+        "Evaluation plan",
+        "Staff qualifications"
+      ],
+      "funding_type": "Grant",
+      "geography": "United States"
+    },
+    {
+      "id": 3,
+      "title": "Environmental Sustainability Research Grant",
+      "funder": "National Science Council",
+      "deadline": "2025-05-30",
+      "amount": "$50,000 - $200,000",
+      "description": "Supporting research projects focused on environmental sustainability, climate action, and conservation.",
+      "tags": ["Research", "Environment", "Sustainability"],
+      "eligibility": "Universities, research institutions",
+      "url": "https://example.com/grant3",
+      "application_requirements": [
+        "Research proposal",
+        "Budget justification",
+        "CV of principal investigator",
+        "Institutional support letter"
+      ],
+      "funding_type": "Research Grant",
+      "geography": "International"
+    },
+    {
+      "id": 4,
+      "title": "Small Business Innovation Grant",
+      "funder": "Economic Development Agency",
+      "deadline": "2025-02-28",
+      "amount": "$25,000 - $100,000",
+      "description": "Supporting small businesses developing innovative solutions for social and environmental challenges.",
+      "tags": ["Innovation", "Business", "Social Impact"],
+      "eligibility": "Small businesses, startups",
+      "url": "https://example.com/grant4",
+      "application_requirements": [
+        "Business plan",
+        "Financial statements",
+        "Innovation description",
+        "Market analysis"
+      ],
+      "funding_type": "Grant",
+      "geography": "United States"
+    },
+    {
+      "id": 5,
+      "title": "Arts & Culture Community Grant",
+      "funder": "Creative Arts Foundation",
+      "deadline": "2025-06-15",
+      "amount": "$2,500 - $15,000",
+      "description": "Funding community arts projects that celebrate diversity, promote cultural exchange, and engage local communities.",
+      "tags": ["Arts", "Culture", "Community"],
+      "eligibility": "Non-profits, arts organizations",
+      "url": "https://example.com/grant5",
+      "application_requirements": [
+        "Project description",
+        "Artist portfolio",
+        "Community engagement plan",
+        "Budget"
+      ],
+      "funding_type": "Grant",
+      "geography": "Local/State"
+    }
+  ],
+  "sample_organization": {
+    "name": "Urban Green Initiative",
+    "mission": "To transform underutilized urban spaces into vibrant community gardens that promote food security, environmental education, and neighborhood connection.",
+    "contact_name": "Maria Johnson",
+    "contact_email": "maria@urbangreen.org",
+    "contact_phone": "(555) 123-4567",
+    "address": "456 Garden Way",
+    "city": "Chicago",
+    "state": "IL",
+    "zip": "60601",
+    "ein": "12-3456789",
+    "annual_budget": "$450,000",
+    "staff_size": "8 full-time, 12 part-time",
+    "year_founded": "2018"
+  },
+  "sample_proposal_sections": {
+    "executive_summary": "The Urban Green Initiative respectfully requests $35,000 from the Green Earth Foundation to support the expansion of our Community Garden Network program. This comprehensive initiative will transform three vacant lots in Chicago's South Side into productive community gardens, serving over 500 residents and providing fresh produce to families experiencing food insecurity.\n\nOur organization has successfully established and maintained 12 community gardens since 2018, engaging over 3,000 community members and distributing more than 25,000 pounds of fresh produce to local food pantries. This project directly aligns with the Foundation's mission to support community-led sustainable agriculture initiatives.\n\nKey outcomes include:\n• Creation of three new community garden sites\n• Engagement of 500+ community members\n• Distribution of 10,000+ pounds of fresh produce\n• Training of 50 community garden leaders\n\nWith your support, we will expand access to fresh, healthy food while building stronger, more connected neighborhoods.",
+    "statement_of_need": "Chicago's South Side faces significant challenges in food access and nutrition. According to the USDA, this area qualifies as a food desert, with residents traveling an average of 4.2 miles to reach the nearest full-service grocery store. Nearly 28% of households experience food insecurity, compared to the national average of 10.5%.\n\nThe need for intervention is urgent:\n• Food Desert Status: 76% of residents lack access to fresh produce within 1 mile\n• Health Disparities: Diet-related chronic disease rates are 40% higher than city average\n• Economic Barriers: Median household income is $24,000, limiting access to healthy food options\n\nCurrent community resources are insufficient to address this growing need. The few existing community gardens have waitlists averaging 18 months, leaving many residents without access to fresh produce.\n\nThrough direct engagement with community members via town halls and surveys, we have identified the expansion of community garden spaces as the most pressing priority for improving neighborhood food security and health outcomes.",
+    "goals_objectives": "Goal 1: Expand Community Garden Infrastructure\n• Objective 1.1: By June 2025, secure land use agreements for three vacant lots\n• Objective 1.2: By August 2025, complete installation of raised beds, irrigation systems, and tool storage at all three sites\n• Objective 1.3: By September 2025, have all 150 garden plots allocated to community members\n\nGoal 2: Build Community Capacity\n• Objective 2.1: By July 2025, recruit and train 50 community garden leaders through our Master Gardener program\n• Objective 2.2: By December 2025, conduct 24 educational workshops on sustainable gardening practices\n• Objective 2.3: By December 2025, establish three neighborhood garden committees with elected leadership\n\nGoal 3: Improve Food Security\n• Objective 3.1: By October 2025, distribute at least 10,000 pounds of fresh produce to local food pantries\n• Objective 3.2: By December 2025, engage 500+ residents in garden activities\n• Objective 3.3: By December 2025, reduce average distance to fresh produce access to under 0.5 miles for participating neighborhoods"
+  }
+}
