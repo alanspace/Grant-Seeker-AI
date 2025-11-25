@@ -291,7 +291,7 @@ def main():
         # Use detailed_overview if available, otherwise use description
         overview_text = grant.get('detailed_overview', grant['description'])
         st.markdown(f"""
-            <div class="insight-card">
+            <div class="insight-card" style="color: #2d3748;">
                 <p>{overview_text}</p>
             </div>
         """, unsafe_allow_html=True)
@@ -323,18 +323,13 @@ def main():
         st.markdown("<br>", unsafe_allow_html=True)
         st.markdown("### Source Text")
         st.markdown(f"""
-            <div class="insight-card">
+            <div class="insight-card" style="color: #2d3748;">
                 <strong>Extracted from grant page:</strong><br>
                 "{grant.get('eligibility', 'Eligibility information extracted from the grant webpage.')}"
             </div>
         """, unsafe_allow_html=True)
         
-        # Re-analyze button
-        if st.button("🔄 Re-analyze Eligibility"):
-            with st.spinner("Re-analyzing grant page..."):
-                import time
-                time.sleep(2)
-                st.success("Analysis complete! No changes detected.")
+        
     
     with tab3:
         st.markdown("### Application Requirements")
@@ -346,7 +341,7 @@ def main():
         
         st.markdown("### Extracted Requirements Summary")
         st.markdown("""
-            <div class="insight-card">
+            <div class="insight-card" style="color: #2d3748;">
                 <strong>Application Process:</strong><br>
                 1. Submit Letter of Intent by deadline<br>
                 2. Receive invitation to submit full proposal<br>

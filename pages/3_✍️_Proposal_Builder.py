@@ -149,7 +149,7 @@ def main():
     
     # Header
     st.markdown(f"""
-        <div class="builder-header">
+        <div class="builder-header" style="color: #2d3748;">
             <h2>✍️ Proposal Builder</h2>
             <p style="color: #4a5568;">Building proposal for: <strong>{grant.get('title', 'New Proposal')}</strong></p>
             <p style="color: #718096; font-size: 0.9rem;">🏛️ {grant.get('funder', 'Unknown Funder')} | 📅 Deadline: {grant.get('deadline', 'TBD')}</p>
