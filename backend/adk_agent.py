@@ -181,6 +181,63 @@ class GrantData(BaseModel):
     application_requirements: list[str] = []
     funding_type: str = "Grant"
     geography: str = "Not specified"
+    fit_score: int = 0
+
+def calculate_fit_score(grant_data: dict, query: str) -> int:
+    """Calculate a fit score (0-100) based on query match."""
+    if not query:
+        return 0
+        
+    query_terms = set(query.lower().split())
+    # Remove common stop words
+    stop_words = {'a', 'an', 'the', 'and', 'or', 'for', 'of', 'in', 'to', 'with', 'on', 'at', 'by'}
+    keywords = query_terms - stop_words
+    
+    if not keywords:
+        return 0
+        
+    score = 0
+    max_score = len(keywords) * 10  # Arbitrary max score basis
+    
+    # Weights
+    TITLE_WEIGHT = 3
+    TAGS_WEIGHT = 2
+    DESC_WEIGHT = 1
+    
+    text_title = grant_data.get('title', '').lower()
+    text_desc = (grant_data.get('description', '') + ' ' + grant_data.get('detailed_overview', '')).lower()
+    tags = [t.lower() for t in grant_data.get('tags', [])]
+    
+    matches = 0
+    for word in keywords:
+        word_matched = False
+        
+        # Check title
+        if word in text_title:
+            score += TITLE_WEIGHT
+            word_matched = True
+            
+        # Check tags
+        if any(word in t for t in tags):
+            score += TAGS_WEIGHT
+            word_matched = True
+            
+        # Check description
+        if word in text_desc:
+            score += DESC_WEIGHT
+            word_matched = True
+            
+        if word_matched:
+            matches += 1
+            
+    # Normalize to 0-100
+    # Base the percentage mainly on how many keywords were found at least once
+    coverage_score = (matches / len(keywords)) * 100
+    
+    # Add bonus for high relevance (multiple hits) but cap at 100
+    final_score = min(100, int(coverage_score + (score * 2)))
+    
+    return final_score
 
 # ============================================================================
 # AGENT CREATION
@@ -287,6 +344,27 @@ def create_extractor_agent() -> LlmAgent:
         """
     )
 
+def create_query_agent() -> LlmAgent:
+    """Create the query generation agent."""
+    return LlmAgent(
+        name="QueryGenerator",
+        model=Gemini(model=MODEL_NAME, retry_options=create_retry_config()),
+        instruction="""
+        You are a Search Query Expert. Your job is to convert a user's project description into a targeted search query for finding grants.
+        
+        Rules:
+        1. Extract the core topic (e.g., "community garden", "youth education", "renewable energy").
+        2. Identify the location if mentioned (e.g., "Chicago", "California").
+        3. Identify the target audience (e.g., "non-profit", "schools").
+        4. Combine these into a concise search query string.
+        5. Add keywords like "grants", "funding", "application", "deadline".
+        6. Return ONLY the query string, no other text.
+        
+        Example Input: "We are a non-profit in Chicago looking to build a community garden."
+        Example Output: community garden grants Chicago non-profit funding application
+        """
+    )
+
 # ============================================================================
 # MAIN WORKFLOW
 # ============================================================================
@@ -309,7 +387,40 @@ class GrantSeekerWorkflow:
         
         # Create agents
         self.finder_agent = create_finder_agent()
+        self.finder_agent = create_finder_agent()
         self.extractor_agent = create_extractor_agent()
+        self.query_agent = create_query_agent()
+    
+    async def generate_search_query(self, description: str) -> str:
+        """Generate a targeted search query from a project description."""
+        try:
+            logger.info("Generating search query from description")
+            
+            runner = Runner(
+                agent=self.query_agent,
+                app_name="grant-seeker",
+                session_service=self.session_service
+            )
+            
+            user_msg = types.Content(role="user", parts=[types.Part(text=description)])
+            
+            response_text = ""
+            async for event in runner.run_async(
+                user_id="user-1",
+                session_id="query-gen-session",
+                new_message=user_msg
+            ):
+                if event.is_final_response() and event.content and event.content.parts:
+                    response_text = event.content.parts[0].text
+            
+            query = response_text.strip()
+            logger.info(f"Generated query: {query}")
+            return query
+            
+        except Exception as e:
+            logger.error(f"Failed to generate query: {e}")
+            # Fallback: use the first 10 words of the description
+            return " ".join(description.split()[:10]) + " grants"
     
     async def search_grants(self, query: str) -> list[dict]:
         """Search for grants using Tavily API with caching."""
@@ -384,7 +495,7 @@ class GrantSeekerWorkflow:
             logger.error(f"Failed to analyze results: {e}")
             return []
     
-    async def extract_grant_data(self, lead: DiscoveredLead) -> dict:
+    async def extract_grant_data(self, lead: DiscoveredLead, query: str = "") -> dict:
         """Extract detailed grant data from a URL with caching."""
         # Check cache first
         cache_key = f"extract:{lead.url}"
@@ -392,6 +503,9 @@ class GrantSeekerWorkflow:
             cached_data = self.cache.get(cache_key)
             if cached_data is not None:
                 logger.info(f"Using cached extraction for: {lead.url}")
+                # Recalculate fit score if query is provided, as it might be different
+                if query:
+                    cached_data['fit_score'] = calculate_fit_score(cached_data, query)
                 return cached_data
         
         # Create session for this extraction
@@ -491,11 +605,15 @@ class GrantSeekerWorkflow:
                 if key not in grant_data:
                     grant_data[key] = value
             
+            # Calculate fit score
+            if query:
+                grant_data['fit_score'] = calculate_fit_score(grant_data, query)
+            
             # Cache the result
             if self.cache:
                 self.cache.set(cache_key, grant_data)
             
-            logger.info(f"Successfully extracted: {grant_data.get('title', 'Unknown')}")
+            logger.info(f"Successfully extracted: {grant_data.get('title', 'Unknown')} (Fit: {grant_data.get('fit_score', 0)}%)")
             return grant_data
             
         except Exception as e:
@@ -519,9 +637,13 @@ class GrantSeekerWorkflow:
             session_id="main-session"
         )
         
+        # Phase 0: Generate Query
+        logger.info("Phase 0: Generating Search Query")
+        search_query = await self.generate_search_query(query)
+        
         # Phase 1: Search and identify promising grants
-        logger.info("Phase 1: Searching for Grants")
-        search_results = await self.search_grants(query)
+        logger.info(f"Phase 1: Searching for Grants with query: {search_query}")
+        search_results = await self.search_grants(search_query)
         
         if not search_results:
             logger.warning("No search results found")
@@ -541,7 +663,7 @@ class GrantSeekerWorkflow:
         
         async def extract_with_semaphore(lead):
             async with sem:
-                return await self.extract_grant_data(lead)
+                return await self.extract_grant_data(lead, query)
         
         # Process all leads concurrently
         tasks = [extract_with_semaphore(lead) for lead in leads]
@@ -568,7 +690,7 @@ class GrantSeekerWorkflow:
         
         for grant in results:
             print(f"\n{'='*80}")
-            print(f"Grant #{grant['id']}: {grant.get('title', 'Untitled Grant')}")
+            print(f"Grant #{grant['id']}: {grant.get('title', 'Untitled Grant')} (Fit: {grant.get('fit_score', 0)}%)")
             print(f"{'='*80}")
             print(f"Funder: {grant.get('funder', 'Unknown')}")
             print(f"Amount: {grant.get('amount', 'Not specified')}")
