@@ -48,6 +48,30 @@
   },
   {
     "id": 3,
+    "title": "Illinois Department of Agriculture Community Garden Program (2025 Season)",
+    "funder": "Illinois Department of Agriculture (IDOA)",
+    "deadline": "Expired (2025-06-01)",
+    "amount": "Plots cost $20 (per season). Program provides free water and compost.",
+    "description": "This program provides individuals and families with access to subsidized community garden plots (100 organic, 100 non-organic) to grow food and flowers at the Illinois State Fairgrounds.",
+    "detailed_overview": "The Illinois Department of Agriculture (IDOA) offers 200 garden plots located on the Illinois State Fair Grandstand racetrack infield. This initiative aims to provide those with limited yard space an affordable opportunity to grow fruits, vegetables, herbs, and flowers in a shared gardening space. The cost for each plot is $20, with an additional charge for optional tilling service. The IDOA provides free water and compost to all participating gardeners. Returning gardeners had a deadline of June 1 to reserve their previous plot.",
+    "tags": [
+      "Community Garden",
+      "Agriculture",
+      "Food Access",
+      "Urban Farming",
+      "Illinois"
+    ],
+    "eligibility": "Individuals and families interested in reserving a plot to grow fruits, vegetables, herbs, and flowers.",
+    "url": "https://illinoisagconnection.com/news/illinois-community-garden-opens-applications-for-2025-growing-season",
+    "application_requirements": [
+      "Completed online application",
+      "Payment of $20 plot fee"
+    ],
+    "funding_type": "Grant (Resource Provision)",
+    "geography": "Springfield, Illinois (Illinois State Fairgrounds)"
+  },
+  {
+    "id": 4,
     "title": "Growing Spaces In-Kind Grant 2025",
     "funder": "Growing Spaces",
     "deadline": "Expired (2025-06-30)",
