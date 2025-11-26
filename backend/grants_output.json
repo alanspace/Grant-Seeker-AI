@@ -1,0 +1,115 @@
+[
+  {
+    "id": 1,
+    "title": "Community Garden Grants (2026 Cycle)",
+    "funder": "Food Well Alliance",
+    "deadline": "Deadline Unknown (Application cycle began October 2025)",
+    "amount": "$1,500 - $10,000",
+    "description": "A grant program offering two tiers of funding—$1,500 for infrastructure improvements and $10,000 for larger projects—to support the maintenance and sustainability of community gardens in the Atlanta metropolitan area.",
+    "detailed_overview": "The Community Garden Grants program aims to support community gardens in Clayton, Cobb, DeKalb, Fulton, and Gwinnett counties by providing resources for upkeep and larger projects. The program consists of two opportunities: the Garden Improvement Grant ($1,500 for infrastructure, supply, and material needs) and the Garden Forward Grant ($10,000 for larger projects intended to help the garden thrive). Gardens can apply for both, but will only be awarded one category of support. The 2026 application cycle began in October 2025, with grants distributed at the beginning of 2026.\n\nSeparately, Food Well Alliance also offers Labor Support Funding year-round, which is intended to cover the labor costs associated with specialized contractors for projects like irrigation installation, shed installation, or water line repairs. This resource is available year-round (rolling deadline) and can be combined with grant funds.",
+    "tags": [
+      "Community Gardens",
+      "Food Security",
+      "Urban Agriculture",
+      "Infrastructure",
+      "Community Development"
+    ],
+    "eligibility": "Community Garden Grants are designated specifically for community gardens in Clayton, Cobb, DeKalb, Fulton, and Gwinnett counties. K-12 school gardens are not eligible to apply. Applicants must read the grant criteria before applying.",
+    "url": "https://www.foodwellalliance.org/garden-grants",
+    "application_requirements": [
+      "Registration in the online grant system",
+      "Must meet specific grant criteria"
+    ],
+    "funding_type": "Grant",
+    "geography": "Clayton, Cobb, DeKalb, Fulton, and Gwinnett counties (Georgia)"
+  },
+  {
+    "id": 2,
+    "title": "Untitled Grant",
+    "funder": "Unknown",
+    "deadline": "Not specified",
+    "amount": "Not specified",
+    "description": "No description available",
+    "detailed_overview": "No detailed overview available",
+    "tags": [],
+    "eligibility": "Not specified",
+    "url": "https://openlands.org/wp-content/uploads/2025/01/ComEd-Green-Region-Grant-2025-Program-Guidelines.pdf",
+    "application_requirements": [],
+    "funding_type": "Grant",
+    "geography": "Not specified",
+    "error": "Could not fetch content"
+  },
+  {
+    "id": 3,
+    "title": "Community Development Grant - Small",
+    "funder": "City of Chicago",
+    "deadline": "Not specified",
+    "amount": "Up to $250,000",
+    "description": "This program offers grants for eligible commercial, mixed-use, and light manufacturing projects, funding up to 75% of total eligible costs including new construction.",
+    "detailed_overview": "Small grants up to $250,000 are intended to support eligible commercial, mixed-use and light manufacturing projects. Grants provide funding for up to 75% of total eligible project costs involving new construction.",
+    "tags": [
+      "Community Development",
+      "Commercial Real Estate",
+      "Manufacturing",
+      "Urban Planning",
+      "Construction"
+    ],
+    "eligibility": "Supports eligible commercial, mixed-use, and light manufacturing projects. Specific organizational eligibility (e.g., non-profit, business, developer) is not detailed in this excerpt.",
+    "url": "https://www.chicago.gov/city/en/sites/community-development-grant/home/small_grants.html",
+    "application_requirements": [
+      "Not specified"
+    ],
+    "funding_type": "Grant",
+    "geography": "City of Chicago"
+  },
+  {
+    "id": 4,
+    "title": "Capacity Building Grant",
+    "funder": "Advocates for Urban Agriculture (AUA) in partnership with Food:Land:Opportunity (F.L.O.)",
+    "deadline": "Expired (2025-10-03)",
+    "amount": "Not specified",
+    "description": "Funding supports urban farms and community gardens in the Chicago area to enrich the local food economy, production, and distribution through community-led resource distribution.",
+    "detailed_overview": "The Capacity Building Grant is a fund housed by Advocates for Urban Agriculture (AUA) in partnership with Food:Land:Opportunity (F.L.O.), designed as a model for community-led resource distribution. These funds are intended to support urban farms and community gardens to strengthen the local food economy, production, and distribution throughout the Chicago area. Recipients are selected by an Advisory Committee composed of community residents, past grantees, growers, or supporters of earth stewardship. The 2025 grant cycle utilized a nomination process, allowing community members to nominate farms and gardens, or allowing growing spaces to self-nominate, to reduce administrative strain.",
+    "tags": [
+      "Urban Agriculture",
+      "Community Gardens",
+      "Food Systems",
+      "Capacity Building",
+      "Chicago"
+    ],
+    "eligibility": "Urban farms and community gardens throughout the Chicago area are eligible for nomination or self-nomination.",
+    "url": "https://www.auachicago.org/capacity-building-grants",
+    "application_requirements": [
+      "Completion of the nomination form (via Google Form or document format)",
+      "Submission of draft grant documents is optional for grant writing support",
+      "Submission by the published deadline (3pm CST)"
+    ],
+    "funding_type": "Grant",
+    "geography": "Chicago area"
+  },
+  {
+    "id": 5,
+    "title": "Growing Spaces In-Kind Grant 2025",
+    "funder": "Growing Spaces",
+    "deadline": "Expired (2025-06-30)",
+    "amount": "$2,000 - $8,000 (in-kind)",
+    "description": "Provides in-kind grants (discounts) on Growing Dome greenhouses to registered nonprofits, schools, or veterans' organizations serving food-insecure communities.",
+    "detailed_overview": "Growing Spaces offers in-kind grants to organizations actively working to provide fresh organic produce to food-insecure communities in the United States. Food banks and other groups are seeking solutions to grow food year-round. This grant is applied as a discount taken off the price of a Growing Dome greenhouse, ranging from $2,000 to $8,000 depending on the program and the size of the desired Dome. Applications closed for 2024, and the application closing date for the 2025 cycle was June 30, 2025. Awards will be applied to Growing Domes shipped in the 2025 calendar year.",
+    "tags": [
+      "Greenhouses",
+      "Food Security",
+      "Nonprofit",
+      "Education",
+      "Veterans"
+    ],
+    "eligibility": "Registered nonprofits, schools, or veterans’ organizations that are actively providing fresh food to underserved and food-insecure communities. Applicants must have the space to build a greenhouse and funding to complete and sustain the greenhouse in the future.",
+    "url": "https://growingspaces.pages.dev/gardening-grants/",
+    "application_requirements": [
+      "Completion of application form",
+      "Establishment of project timing and funding",
+      "Proof of space availability for construction"
+    ],
+    "funding_type": "In-Kind Grant",
+    "geography": "United States"
+  }
+]
