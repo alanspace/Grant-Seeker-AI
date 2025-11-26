@@ -1,6 +1,10 @@
-"""Unit tests for models."""
+"""Tests for Pydantic models."""
 import pytest
-from backend.models import DiscoveredLead, DiscoveredLeadsReport, GrantData
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
+from adk_agent_v2 import DiscoveredLead, DiscoveredLeadsReport, GrantData
 
 
 def test_discovered_lead_creation():
@@ -8,69 +12,98 @@ def test_discovered_lead_creation():
     lead = DiscoveredLead(
         url="https://example.com/grant",
         source="Example Foundation",
-        title="Test Grant"
+        title="Community Grant"
     )
-    
     assert lead.url == "https://example.com/grant"
     assert lead.source == "Example Foundation"
-    assert lead.title == "Test Grant"
+    assert lead.title == "Community Grant"
 
 
 def test_discovered_lead_defaults():
     """Test DiscoveredLead default values."""
     lead = DiscoveredLead(
         url="https://example.com/grant",
-        source="Example Foundation"
+        source="Test Foundation"
     )
-    
     assert lead.title == ""
 
 
-def test_grant_data_defaults():
-    """Test GrantData default values."""
-    grant = GrantData()
+def test_discovered_leads_report():
+    """Test DiscoveredLeadsReport with multiple leads."""
+    leads = [
+        DiscoveredLead(url="https://example1.com", source="Foundation 1", title="Grant 1"),
+        DiscoveredLead(url="https://example2.com", source="Foundation 2", title="Grant 2")
+    ]
+    report = DiscoveredLeadsReport(discovered_leads=leads)
     
-    assert grant.id == 0
+    assert len(report.discovered_leads) == 2
+    assert report.discovered_leads[0].title == "Grant 1"
+    assert report.discovered_leads[1].title == "Grant 2"
+
+
+def test_grant_data_defaults():
+    """Test GrantData with default values."""
+    grant = GrantData(url="https://example.com/grant")
+    
     assert grant.title == "Untitled Grant"
     assert grant.funder == "Unknown"
     assert grant.deadline == "Not specified"
     assert grant.amount == "Not specified"
+    assert grant.description == "No description available"
+    assert grant.detailed_overview == "No detailed overview available"
     assert grant.tags == []
+    assert grant.eligibility == "Not specified"
+    assert grant.url == "https://example.com/grant"
     assert grant.application_requirements == []
+    assert grant.funding_type == "Grant"
+    assert grant.geography == "Not specified"
 
 
 def test_grant_data_full():
-    """Test GrantData with all fields."""
+    """Test GrantData with all fields populated."""
     grant = GrantData(
-        id=1,
-        title="Community Grant",
-        funder="Foundation X",
+        title="Community Garden Grant",
+        funder="Green Foundation",
         deadline="2025-12-31",
-        amount="$10,000",
-        description="Test description",
-        detailed_overview="Test overview",
-        tags=["Community", "Education"],
-        eligibility="Test eligibility",
+        amount="$10,000 - $25,000",
+        description="Funding for community gardens",
+        detailed_overview="This grant supports urban gardening initiatives...",
+        tags=["Community", "Gardens", "Urban"],
+        eligibility="501(c)(3) organizations",
         url="https://example.com/grant",
-        application_requirements=["501(c)(3)", "Budget"],
+        application_requirements=["Tax ID", "Budget", "Project Plan"],
         funding_type="Grant",
-        geography="Chicago"
+        geography="Chicago, IL"
     )
     
-    assert grant.id == 1
-    assert grant.title == "Community Grant"
-    assert len(grant.tags) == 2
-    assert len(grant.application_requirements) == 2
+    assert grant.title == "Community Garden Grant"
+    assert grant.funder == "Green Foundation"
+    assert grant.deadline == "2025-12-31"
+    assert grant.amount == "$10,000 - $25,000"
+    assert len(grant.tags) == 3
+    assert len(grant.application_requirements) == 3
+    assert grant.geography == "Chicago, IL"
 
 
-def test_discovered_leads_report():
-    """Test DiscoveredLeadsReport."""
-    leads = [
-        DiscoveredLead(url="https://example1.com", source="Org1", title="Grant1"),
-        DiscoveredLead(url="https://example2.com", source="Org2", title="Grant2")
-    ]
+def test_grant_data_to_dict():
+    """Test converting GrantData to dictionary."""
+    grant = GrantData(
+        title="Test Grant",
+        funder="Test Foundation",
+        url="https://example.com"
+    )
     
-    report = DiscoveredLeadsReport(discovered_leads=leads)
+    grant_dict = grant.model_dump()
     
-    assert len(report.discovered_leads) == 2
-    assert report.discovered_leads[0].title == "Grant1"
+    assert isinstance(grant_dict, dict)
+    assert grant_dict["title"] == "Test Grant"
+    assert grant_dict["funder"] == "Test Foundation"
+    assert grant_dict["url"] == "https://example.com"
+    assert "deadline" in grant_dict
+    assert "amount" in grant_dict
+
+
+def test_discovered_lead_validation():
+    """Test DiscoveredLead field validation."""
+    with pytest.raises(Exception):  # Pydantic will raise validation error
+        DiscoveredLead(source="Test")  # Missing required 'url' field
