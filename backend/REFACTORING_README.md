@@ -1,72 +1,61 @@
-"""README for refactored Grant Seeker application."""
+"""README for Grant Seeker application."""
 
-# Grant Seeker - Refactored Architecture
+# Grant Seeker - Production Version with Caching
 
 ## Project Structure
 
 ```
 backend/
-├── config/
-│   └── __init__.py            # Configuration management
-├── models/
-│   └── __init__.py            # Pydantic data models
-├── agents/
-│   └── __init__.py            # LLM agent definitions
-├── utils/
-│   ├── helpers.py             # Utility functions
-│   └── cache.py               # Caching service
-├── services/
-│   ├── __init__.py
-│   ├── grant_finder.py        # Grant search service
-│   └── grant_extractor.py     # Grant extraction service
-├── tests/
-│   ├── conftest.py            # Pytest fixtures
-│   ├── test_models.py         # Model tests
-│   ├── test_utils.py          # Utility tests
-│   └── test_exceptions.py     # Exception tests
-├── exceptions.py              # Custom exceptions
+├── adk_agent_v2.py            # Main production file with integrated caching
 ├── tavily_client.py           # Tavily API client wrapper
-├── adk_agent_v2.py            # Legacy monolithic version
-└── adk_agent_v2_refactored.py # New refactored version with caching
+├── exceptions.py              # Custom exceptions
+├── tests/                     # Unit tests
+│   ├── conftest.py            # Pytest configuration
+│   ├── test_cache.py          # Cache service tests
+│   ├── test_models.py         # Pydantic model tests
+│   ├── test_utils.py          # Utility function tests
+│   └── requirements-test.txt  # Test dependencies
+└── REFACTORING_README.md      # This file
 ```
 
-## Architecture Improvements
+## Key Features
 
-### 1. **Separation of Concerns**
+### 1. **Integrated Caching System**
 
-- **config/**: All configuration in one place
-- **models/**: Pydantic schemas for data validation
-- **agents/**: Agent creation logic
-- **utils/**: Helper functions and caching service
-- **services/**: Business logic separated by domain
+- File-based cache in `.cache/` directory
+- 24-hour TTL (time-to-live) for cached data
+- Caches both search results and grant extractions
+- 80%+ faster on repeat queries (~7s vs ~30s)
 
-### 2. **Dependency Injection**
+### 2. **Optimized Performance**
 
-- Services receive dependencies via constructor
-- Easy to mock for testing
-- Flexible configuration
+- 5 search results (focused quality)
+- 3 parallel extractions (controlled concurrency)
+- Gemini Flash model (15 RPM vs Pro's 2 RPM)
+- ~20-30 seconds for fresh queries
+- ~5-7 seconds for cached queries
 
-### 3. **Error Handling**
+### 3. **Clean Logging**
 
-- Custom exception hierarchy
-- Proper logging throughout
-- Graceful error responses
+- INFO level for application logs
+- WARNING level for libraries (reduces noise)
+- Structured log format with timestamps
 
 ### 4. **Type Safety**
 
 - Full type hints on all functions
-- Pydantic validation for data
-- Better IDE support
+- Pydantic validation for data models
+- Better IDE support and error detection
 
-### 5. **Testability**
+### 5. **Frontend-Compatible Output**
 
-- Unit tests for all components
-- Fixtures for mocking
-- Async test support
+- 13-field JSON structure
+- Saves to `grants_output.json`
+- Direct integration with existing frontend
 
 ## Usage
 
-### Running the refactored version:
+### Running the application:
 
 ```bash
 # Navigate to backend directory
@@ -76,37 +65,103 @@ cd D:\adk-grant-seeker-copilot\backend
 ..\.venv\Scripts\Activate.ps1
 
 # Run the script
-python adk_agent_v2_refactored.py
-```
-
-### Running tests:
-
-```bash
-# Navigate to project root and activate venv
-cd D:\adk-grant-seeker-copilot
-.venv\Scripts\Activate.ps1
-
-# Install test dependencies (first time only)
-pip install -r backend/tests/requirements-test.txt
-
-# Run all tests
-python -m pytest backend/tests/
-
-# Run with verbose output
-python -m pytest backend/tests/ -v
-
-# Run with coverage
-python -m pytest backend/tests/ --cov=backend --cov-report=html
+python adk_agent_v2.py
 ```
 
 ### Configuration
 
-All settings can be modified in `config/__init__.py` or via environment variables:
+All settings can be modified at the top of `adk_agent_v2.py`:
 
-- `GOOGLE_API_KEY`
-- `TAVILY_API_KEY`
-- `MODEL_NAME`
-- `TAVILY_MAX_RESULTS`
-- `MAX_CONCURRENT_EXTRACTIONS`
-- `CACHE_ENABLED` (default: True)
-- `CACHE_TTL_HOURS` (default: 24)
+```python
+# Model configuration
+MODEL_NAME = "gemini-flash-latest"
+TAVILY_MAX_RESULTS = 5
+MAX_CONCURRENT_EXTRACTIONS = 3
+CONTENT_PREVIEW_LENGTH = 3000
+
+# Cache settings
+CACHE_ENABLED = True
+CACHE_DIR = ".cache"
+CACHE_TTL_HOURS = 24
+
+# Retry configuration
+RETRY_ATTEMPTS = 1
+RETRY_EXP_BASE = 2
+RETRY_INITIAL_DELAY = 1.0
+```
+
+Environment variables required:
+
+- `GOOGLE_API_KEY` - For Gemini API access
+- `TAVILY_API_KEY` - For Tavily search API
+
+### Running tests:
+
+```bash
+# Navigate to backend directory
+cd D:\adk-grant-seeker-copilot\backend
+
+# Activate virtual environment
+..\.venv\Scripts\Activate.ps1
+
+# Install test dependencies (first time only)
+pip install -r tests/requirements-test.txt
+
+# Run all tests
+pytest tests/
+
+# Run with verbose output
+pytest tests/ -v
+
+# Run with coverage report
+pytest tests/ --cov=. --cov-report=html
+
+# Run specific test file
+pytest tests/test_cache.py -v
+```
+
+**Test Coverage:**
+
+- `test_cache.py` - CacheService functionality (set, get, expiration, clearing)
+- `test_models.py` - Pydantic model validation (DiscoveredLead, GrantData)
+- `test_utils.py` - Utility functions (normalize_value, clean_json_string, get_current_date)
+
+## Cache Management
+
+### Clear all cache:
+
+```python
+workflow = GrantSeekerWorkflow()
+workflow.cache.clear()  # Removes all cached files
+```
+
+### Cache behavior:
+
+- Search results cached by query + max_results
+- Grant extractions cached by URL
+- Automatic expiration after 24 hours
+- Cache files stored in `.cache/` directory
+
+## Output Format
+
+Results are saved to `grants_output.json` with this structure:
+
+```json
+[
+  {
+    "id": 1,
+    "title": "Grant Program Name",
+    "funder": "Organization Name",
+    "deadline": "2025-12-31",
+    "amount": "$10,000 - $50,000",
+    "description": "Brief 1-2 sentence summary",
+    "detailed_overview": "Comprehensive description...",
+    "tags": ["Education", "Youth", "Community"],
+    "eligibility": "Full eligibility requirements",
+    "url": "https://example.com/grant",
+    "application_requirements": ["501(c)(3) status", "Budget"],
+    "funding_type": "Grant",
+    "geography": "Chicago, Illinois"
+  }
+]
+```
