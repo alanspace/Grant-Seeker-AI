@@ -253,10 +253,6 @@ def main():
                     <div class="meta-label">Amount</div>
                     <div class="meta-value">💰 {grant['amount']}</div>
                 </div>
-                <div class="meta-item">
-                    <div class="meta-label">Fit Score</div>
-                    <div class="meta-value">🎯 {fit_score}%</div>
-                </div>
             </div>
         </div>
     """, unsafe_allow_html=True)
@@ -274,7 +270,7 @@ def main():
             st.info("PDF export feature coming soon!")
     
     with btn_col3:
-        if st.button("🔗 Open Original", use_container_width=True):
+        if st.button("🔗 Open Grant Website", use_container_width=True):
             st.markdown(f"[Open grant page →]({grant['url']})")
     
     st.markdown("---")
@@ -300,28 +296,17 @@ def main():
         tags_html = " ".join([f'<span style="background-color: #eef6ff; color: #3182ce; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.85rem; margin-right: 0.5rem;">{tag}</span>' for tag in grant['tags']])
         st.markdown(tags_html, unsafe_allow_html=True)
         
-        st.markdown("### Key Dates")
-        for date_item in key_dates:
-            col1, col2 = st.columns([2, 3])
-            with col1:
-                st.markdown(f"**{date_item['date']}**")
-            with col2:
-                st.markdown(date_item['event'])
-        
-        st.markdown("### Risk Factors")
-        for risk in risk_factors:
-            st.warning(risk)
     
     with tab2:
-        st.markdown("### Eligibility Checklist")
-        st.markdown("*AI-extracted eligibility criteria with confidence scores*")
-        st.markdown("<br>", unsafe_allow_html=True)
+        # st.markdown("### Eligibility Checklist")
+        # st.markdown("*AI-extracted eligibility criteria with confidence scores*")
+        # st.markdown("<br>", unsafe_allow_html=True)
         
         # Use eligibility_checklist from grant data (API format)
-        render_eligibility_checklist(eligibility_checklist)
-        
-        st.markdown("<br>", unsafe_allow_html=True)
-        st.markdown("### Source Text")
+        # render_eligibility_checklist(eligibility_checklist)
+        st.markdown("### Eligibility Criteria")
+        # st.markdown("<br>", unsafe_allow_html=True)
+        st.markdown("#### Source Text")
         st.markdown(f"""
             <div class="insight-card" style="color: #2d3748;">
                 <strong>Extracted from grant page:</strong><br>
@@ -354,13 +339,6 @@ def main():
     
     # Sidebar
     with st.sidebar:
-        st.markdown("### 🎯 Fit Analysis")
-        
-        # Progress bar for fit score
-        st.markdown(f"**Overall Fit: {fit_score}%**")
-        st.progress(fit_score / 100)
-        
-        st.markdown("---")
         
         st.markdown("### 📊 Quick Stats")
         st.metric("Deadline", grant['deadline'])

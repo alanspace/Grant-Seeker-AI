@@ -2,10 +2,14 @@
 Search Grants Page - First main workflow
 Allows users to search the grant database or paste grant URLs/description to find matches.
 """
+import asyncio
+import importlib
+import json
+from pathlib import Path
+
 import streamlit as st
 import sys
 import os
-import time
 
 # Add backend to path for imports
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'backend'))
@@ -157,192 +161,49 @@ if 'search_query' not in st.session_state:
 if 'has_searched' not in st.session_state:
     st.session_state.has_searched = False
 
-# Sample grant data for demonstration (used as fallback when API is unavailable)
-SAMPLE_GRANTS = [
-    {
-        "id": 1,
-        "title": "Community Garden Initiative Grant",
-        "funder": "Green Earth Foundation",
-        "deadline": "2025-03-15",
-        "amount": "$10,000 - $50,000",
-        "description": "Supporting community-based urban agriculture projects that promote food security and environmental education.",
-        "detailed_overview": "The Community Garden Initiative Grant supports organizations working to establish and expand community gardens in urban areas. This funding opportunity is designed to help communities create sustainable food sources, provide educational opportunities about agriculture and nutrition, and build stronger neighborhood connections through shared gardening spaces. Priority is given to projects serving food-insecure communities and those incorporating youth education programs.",
-        "tags": ["Environment", "Community", "Agriculture"],
-        "eligibility": "Non-profit organizations, community groups",
-        "url": "https://example.com/grant1",
-        "application_requirements": [
-            "501(c)(3) determination letter",
-            "Project budget",
-            "Implementation timeline",
-            "Letters of support"
-        ],
-        "funding_type": "Grant",
-        "geography": "United States",
-        "key_dates": [
-            {"event": "Application opens", "date": "2025-01-15"},
-            {"event": "Letter of Intent due", "date": "2025-02-01"},
-            {"event": "Full application deadline", "date": "2025-03-15"},
-            {"event": "Award notification", "date": "2025-05-01"},
-            {"event": "Grant period begins", "date": "2025-06-01"}
-        ],
-        "risk_factors": [
-            "Competitive grant with ~15% acceptance rate",
-            "Requires detailed evaluation plan",
-            "Matching funds may be required"
-        ],
-        "fit_score": 85,
-        "eligibility_checklist": [
-            {"item": "501(c)(3) Non-profit status", "met": True, "confidence": "high"},
-            {"item": "Operational for at least 2 years", "met": True, "confidence": "high"},
-            {"item": "Annual budget under $1M", "met": None, "confidence": "medium"},
-            {"item": "Located in eligible geographic area", "met": True, "confidence": "high"},
-            {"item": "Previous grant recipient status", "met": None, "confidence": "low"}
-        ]
-    },
-    {
-        "id": 2,
-        "title": "Youth Education & Development Fund",
-        "funder": "Future Leaders Foundation",
-        "deadline": "2025-04-01",
-        "amount": "$5,000 - $25,000",
-        "description": "Funding innovative programs that empower young people through education, mentorship, and skill development.",
-        "detailed_overview": "The Youth Education & Development Fund seeks to support innovative educational programs that prepare young people for success in the 21st century. We prioritize projects that focus on STEM education, leadership development, career readiness, and social-emotional learning. Successful applicants will demonstrate a clear theory of change and measurable outcomes for participating youth.",
-        "tags": ["Education", "Youth", "Development"],
-        "eligibility": "501(c)(3) organizations",
-        "url": "https://example.com/grant2",
-        "application_requirements": [
-            "Organizational budget",
-            "Program description",
-            "Evaluation plan",
-            "Staff qualifications"
-        ],
-        "funding_type": "Grant",
-        "geography": "United States",
-        "key_dates": [
-            {"event": "Application opens", "date": "2025-02-01"},
-            {"event": "Full application deadline", "date": "2025-04-01"},
-            {"event": "Award notification", "date": "2025-05-15"},
-            {"event": "Grant period begins", "date": "2025-07-01"}
-        ],
-        "risk_factors": [
-            "Requires detailed evaluation metrics",
-            "Strong preference for established programs"
-        ],
-        "fit_score": 78,
-        "eligibility_checklist": [
-            {"item": "501(c)(3) Non-profit status", "met": True, "confidence": "high"},
-            {"item": "Youth-serving organization", "met": True, "confidence": "high"},
-            {"item": "Demonstrated track record", "met": None, "confidence": "medium"}
-        ]
-    },
-    {
-        "id": 3,
-        "title": "Environmental Sustainability Research Grant",
-        "funder": "National Science Council",
-        "deadline": "2025-05-30",
-        "amount": "$50,000 - $200,000",
-        "description": "Supporting research projects focused on environmental sustainability, climate action, and conservation.",
-        "detailed_overview": "The Environmental Sustainability Research Grant funds cutting-edge research addressing critical environmental challenges including climate change mitigation, biodiversity conservation, sustainable resource management, and environmental justice. We seek proposals that bridge scientific research with practical applications and community engagement.",
-        "tags": ["Research", "Environment", "Sustainability"],
-        "eligibility": "Universities, research institutions",
-        "url": "https://example.com/grant3",
-        "application_requirements": [
-            "Research proposal",
-            "Budget justification",
-            "CV of principal investigator",
-            "Institutional support letter"
-        ],
-        "funding_type": "Research Grant",
-        "geography": "International",
-        "key_dates": [
-            {"event": "Application opens", "date": "2025-03-01"},
-            {"event": "Full application deadline", "date": "2025-05-30"},
-            {"event": "Peer review period", "date": "2025-06-15"},
-            {"event": "Award notification", "date": "2025-08-01"}
-        ],
-        "risk_factors": [
-            "Highly competitive - 10% acceptance rate",
-            "Requires preliminary data",
-            "Multi-year commitment expected"
-        ],
-        "fit_score": 65,
-        "eligibility_checklist": [
-            {"item": "Academic institution affiliation", "met": None, "confidence": "medium"},
-            {"item": "PhD-level principal investigator", "met": None, "confidence": "low"},
-            {"item": "IRB approval if applicable", "met": None, "confidence": "medium"}
-        ]
-    },
-    {
-        "id": 4,
-        "title": "Small Business Innovation Grant",
-        "funder": "Economic Development Agency",
-        "deadline": "2025-02-28",
-        "amount": "$25,000 - $100,000",
-        "description": "Supporting small businesses developing innovative solutions for social and environmental challenges.",
-        "detailed_overview": "The Small Business Innovation Grant supports entrepreneurs and small businesses creating innovative products, services, or technologies that address pressing social or environmental challenges. We seek ventures with scalable solutions that demonstrate both commercial viability and positive community impact.",
-        "tags": ["Innovation", "Business", "Social Impact"],
-        "eligibility": "Small businesses, startups",
-        "url": "https://example.com/grant4",
-        "application_requirements": [
-            "Business plan",
-            "Financial statements",
-            "Innovation description",
-            "Market analysis"
-        ],
-        "funding_type": "Grant",
-        "geography": "United States",
-        "key_dates": [
-            {"event": "Application opens", "date": "2025-01-01"},
-            {"event": "Full application deadline", "date": "2025-02-28"},
-            {"event": "Award notification", "date": "2025-04-15"}
-        ],
-        "risk_factors": [
-            "Requires proof of concept",
-            "Must demonstrate market potential"
-        ],
-        "fit_score": 72,
-        "eligibility_checklist": [
-            {"item": "Registered small business", "met": None, "confidence": "medium"},
-            {"item": "Less than 50 employees", "met": None, "confidence": "low"},
-            {"item": "Innovative product or service", "met": None, "confidence": "medium"}
-        ]
-    },
-    {
-        "id": 5,
-        "title": "Arts & Culture Community Grant",
-        "funder": "Creative Arts Foundation",
-        "deadline": "2025-06-15",
-        "amount": "$2,500 - $15,000",
-        "description": "Funding community arts projects that celebrate diversity, promote cultural exchange, and engage local communities.",
-        "detailed_overview": "The Arts & Culture Community Grant supports arts projects that strengthen community bonds, celebrate cultural diversity, and make the arts accessible to underserved populations. We fund a wide range of artistic disciplines including visual arts, performing arts, literary arts, and multimedia projects that engage communities in meaningful ways.",
-        "tags": ["Arts", "Culture", "Community"],
-        "eligibility": "Non-profits, arts organizations",
-        "url": "https://example.com/grant5",
-        "application_requirements": [
-            "Project description",
-            "Artist portfolio",
-            "Community engagement plan",
-            "Budget"
-        ],
-        "funding_type": "Grant",
-        "geography": "Local/State",
-        "key_dates": [
-            {"event": "Application opens", "date": "2025-04-01"},
-            {"event": "Full application deadline", "date": "2025-06-15"},
-            {"event": "Award notification", "date": "2025-07-30"}
-        ],
-        "risk_factors": [
-            "Geographic restrictions may apply",
-            "Requires community partnership letters"
-        ],
-        "fit_score": 80,
-        "eligibility_checklist": [
-            {"item": "Arts-focused organization", "met": None, "confidence": "medium"},
-            {"item": "Community engagement component", "met": True, "confidence": "high"},
-            {"item": "Located in eligible region", "met": None, "confidence": "low"}
-        ]
-    }
-]
+
+GRANTS_FILE_PATH = Path(__file__).resolve().parents[1] / "backend" / "grants_output.json"
+
+
+@st.cache_data(show_spinner=False)
+def load_grants_from_file() -> list[dict]:
+    """Load grants data from the shared JSON file."""
+    try:
+        with GRANTS_FILE_PATH.open("r", encoding="utf-8") as fp:
+            data = json.load(fp)
+            if isinstance(data, list):
+                return data
+            st.error("Grant data file is not in the expected format. Showing empty results.")
+    except FileNotFoundError:
+        st.error("Grant data file not found. Please generate `backend/grants_output.json`.")
+    except json.JSONDecodeError:
+        st.error("Grant data file is not valid JSON. Please fix the file contents.")
+    return []
+
+
+def execute_grant_workflow(query: str) -> list[dict]:
+    """Run the ADK workflow for the given query and persist results."""
+    # Force reimport to get fresh module state
+    if "adk_agent_v2" in sys.modules:
+        del sys.modules["adk_agent_v2"]
+    agent_module = importlib.import_module("adk_agent_v2")
+    
+    # Create a fresh workflow instance each time
+    workflow = agent_module.GrantSeekerWorkflow()
+
+    # Run in a fresh event loop
+    loop = asyncio.new_event_loop()
+    try:
+        asyncio.set_event_loop(loop)
+        results = loop.run_until_complete(workflow.run(query))
+    finally:
+        loop.close()
+        asyncio.set_event_loop(None)
+
+    if results:
+        workflow.save_results(results, output_file=str(GRANTS_FILE_PATH))
+        load_grants_from_file.clear()
+    return results
 
 
 def search_grants(query, filters=None):
@@ -362,35 +223,58 @@ def search_grants(query, filters=None):
     # =============================================================================
     
     # Mock data search (fallback)
+    if query:
+        try:
+            workflow_results = execute_grant_workflow(query)
+        except Exception as exc:
+            st.error(f"Grant workflow failed: {exc}")
+        else:
+            if workflow_results:
+                return workflow_results
+            st.warning("Grant workflow returned no results. Showing cached data instead.")
+
+    all_grants = load_grants_from_file()
     if not query:
-        return SAMPLE_GRANTS
-    
+        return all_grants
+
     query_lower = query.lower()
     results = []
-    
-    for grant in SAMPLE_GRANTS:
+
+    for grant in all_grants:
         # Search in title, description, tags, and funder
-        searchable = f"{grant['title']} {grant['description']} {' '.join(grant['tags'])} {grant['funder']}".lower()
+        title = grant.get("title", "")
+        description = grant.get("description", "")
+        tags = " ".join(grant.get("tags", []))
+        funder = grant.get("funder", "")
+        searchable = f"{title} {description} {tags} {funder}".lower()
         if query_lower in searchable:
             results.append(grant)
-    
+
     return results
 
 
 def render_grant_card(grant, col_key):
     """Render a single grant card."""
+    title = grant.get("title", "Untitled grant")
+    funder = grant.get("funder", "Unknown funder")
+    deadline = grant.get("deadline", "Deadline not specified")
+    amount = grant.get("amount", "Funding amount not provided")
+    description = grant.get("description", "No summary available for this opportunity.")
+    tags = grant.get("tags", []) or []
+    grant_id = grant.get("id", f"{col_key}_{abs(hash(title))}")
+
     with st.container():
         st.markdown(f"""
             <div class="grant-card">
-                <div class="grant-title">{grant['title']}</div>
-                <div class="grant-funder">🏛️ {grant['funder']}</div>
+                <div class="grant-title">{title}</div>
+                <div class="grant-funder">🏛️ {funder}</div>
                 <div style="display: flex; gap: 1.5rem; margin: 0.5rem 0;">
-                    <span class="grant-deadline">📅 Deadline: {grant['deadline']}</span>
-                    <span class="grant-amount">💰 {grant['amount']}</span>
+                    <span class="grant-deadline">📅 Deadline: {deadline}</span>
+                    <span class="grant-amount">💰 {amount}</span>
                 </div>
-                <p style="color: #4a5568; margin: 0.75rem 0;">{grant['description']}</p>
+                <p style="color: #4a5568; margin: 0.75rem 0;">{description}</p>
                 <div>
-                    {''.join([f'<span class="tag">{tag}</span>' for tag in grant['tags']])}
+                    {''.join([f'<span class="tag">{tag}</span>' for tag in tags])}
                 </div>
             </div>
         """, unsafe_allow_html=True)
@@ -399,14 +283,13 @@ def render_grant_card(grant, col_key):
         btn_col1, btn_col2 = st.columns(2)
         
         with btn_col1:
-            if st.button("📋 View Details", key=f"view_{grant['id']}_{col_key}", use_container_width=True):
+            if st.button("📋 View Details", key=f"view_{grant_id}_{col_key}", use_container_width=True):
                 st.session_state.selected_grant = grant
                 st.switch_page("pages/2_📋_Grant_Details.py")
         
         with btn_col2:
-            if st.button("✍️ Start Proposal", key=f"proposal_{grant['id']}_{col_key}", use_container_width=True):
-                st.session_state.selected_grant = grant
-                st.switch_page("pages/3_✍️_Proposal_Builder.py")
+            if st.button("💾 Export", key=f"export_{grant_id}_{col_key}", use_container_width=True):
+                st.info("Export feature coming soon!")
 
 
 def main():
@@ -448,8 +331,6 @@ def main():
     if search_clicked:
         st.session_state.has_searched = True
         with st.spinner("Searching for grants..."):
-            # Simulate API delay for demo purposes
-            time.sleep(1)
             results = search_grants(search_query)
             st.session_state.search_results = results
             st.session_state.search_query = search_query

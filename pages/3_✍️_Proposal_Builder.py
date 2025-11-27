@@ -1,6 +1,8 @@
 """
 Proposal Builder Page - Simple AI-assisted grant proposal generation
 """
+import asyncio
+import importlib
 import streamlit as st
 from st_copy import copy_button
 import sys
@@ -46,6 +48,8 @@ st.markdown("""
             padding: 1rem 1.5rem;
             margin: 1rem 0;
             border-radius: 0 8px 8px 0;
+            max-height: 580px;
+            overflow-y: auto;
         }
         
         .user-draft {
@@ -64,6 +68,9 @@ if 'agent_draft' not in st.session_state:
 
 if 'user_draft' not in st.session_state:
     st.session_state.user_draft = ''
+
+if 'project_description' not in st.session_state:
+    st.session_state.project_description = ''
 
 # =============================================================================
 # API INTEGRATION (Commented - uncomment when API is available)
@@ -99,43 +106,36 @@ if 'user_draft' not in st.session_state:
 #         return None
 # =============================================================================
 
-# Sample agent-generated draft (mock data for demonstration)
-SAMPLE_AGENT_DRAFT = """# Grant Proposal: Community Garden Initiative
-
-## Executive Summary
-
-The Urban Green Initiative respectfully requests $35,000 from the Green Earth Foundation to support the expansion of our Community Garden Network program. This comprehensive initiative will transform three vacant lots in Chicago's South Side into productive community gardens, serving over 500 residents and providing fresh produce to families experiencing food insecurity.
-
-## Statement of Need
-
-Chicago's South Side faces significant challenges in food access and nutrition. According to the USDA, this area qualifies as a food desert, with residents traveling an average of 4.2 miles to reach the nearest full-service grocery store. Nearly 28% of households experience food insecurity, compared to the national average of 10.5%.
-
-## Goals & Objectives
-
-**Goal 1: Expand Community Garden Infrastructure**
-- Objective 1.1: By June 2025, secure land use agreements for three vacant lots
-- Objective 1.2: By August 2025, complete installation of raised beds, irrigation systems, and tool storage
-- Objective 1.3: By September 2025, have all 150 garden plots allocated to community members
-
-**Goal 2: Build Community Capacity**
-- Objective 2.1: By July 2025, recruit and train 50 community garden leaders
-- Objective 2.2: By December 2025, conduct 24 educational workshops on sustainable gardening
-
-## Methods & Approach
-
-Our implementation strategy follows a phased approach with clear milestones and community engagement at every stage. We will partner with local schools, community centers, and faith-based organizations to ensure broad participation and lasting impact.
-
-## Budget Summary
-
-- Personnel: $21,000 (60%)
-- Program Expenses: $8,750 (25%)
-- Administrative Costs: $5,250 (15%)
-- **Total: $35,000**
-
-## Evaluation Plan
-
-We will employ a mixed-methods approach including participant surveys, produce yield tracking, and community health assessments to measure program success and inform future improvements.
-"""
+def generate_proposal_with_agent(project_description: str, grant: dict) -> str:
+    """
+    Call the writer_agent to generate a proposal draft.
+    
+    Args:
+        project_description: Description of the project
+        grant: Grant details dictionary
+    
+    Returns:
+        Generated proposal text from the AI agent
+    """
+    # Force reimport to get fresh module state
+    if "writer_agent" in sys.modules:
+        del sys.modules["writer_agent"]
+    
+    writer_module = importlib.import_module("writer_agent")
+    
+    # Map grant data to the format expected by writer_agent
+    grant_json = {
+        "source": grant.get("funder", "Unknown Funder"),
+        "url": grant.get("url", ""),
+        "eligibility": grant.get("eligibility", "Not specified"),
+        "budget": grant.get("amount", "Not specified"),
+        "deadline": grant.get("deadline", "Not specified"),
+    }
+    
+    # Call the writer agent directly - it handles its own async loop
+    result = writer_module.draft_proposal_section(project_description, grant_json)
+    
+    return result
 
 
 def main():
@@ -154,9 +154,27 @@ def main():
         <div class="builder-header" style="color: #2d3748;">
             <h2>✍️ Proposal Builder</h2>
             <p style="color: #4a5568;">Building proposal for: <strong>{grant.get('title', 'New Proposal')}</strong></p>
-            <p style="color: #718096; font-size: 0.9rem;">🏛️ {grant.get('funder', 'Unknown Funder')} | 📅 Deadline: {grant.get('deadline', 'TBD')}</p>
+            <p style="color: #718096; font-size: 0.9rem;">🏛️ {grant.get('funder', 'Unknown Funder')} | 📅 Deadline: {grant.get('deadline', 'TBD')} | 💰 {grant.get('amount', 'Amount TBD')}</p>
         </div>
     """, unsafe_allow_html=True)
+    
+    # Project Description Input Section
+    st.markdown("### 📝 Describe Your Project")
+    st.markdown("*Provide details about your project so the AI can generate a tailored proposal*")
+    
+    project_description = st.text_area(
+        "Project Description",
+        value=st.session_state.project_description,
+        height=50,
+        placeholder="Describe your project in detail. For example: A community garden project in downtown Chicago aiming to provide fresh produce to low-income families and educational workshops for youth. We plan to transform 3 vacant lots into productive gardens serving 500+ residents...",
+        label_visibility="collapsed"
+    )
+    
+    # Update session state
+    if project_description != st.session_state.project_description:
+        st.session_state.project_description = project_description
+    
+    st.markdown("---")
     
     # Two-column layout: Agent Draft | Your Draft
     col_agent, col_user = st.columns(2)
@@ -167,25 +185,29 @@ def main():
         
         # Button to generate/regenerate agent draft
         if st.button("✨ Generate Draft", type="primary", use_container_width=True):
-            with st.spinner("AI Agent is generating your proposal draft..."):
-                # =============================================================================
-                # API call would go here:
-                # draft = get_agent_draft(grant.get('id'), project_details)
-                # if draft:
-                #     st.session_state.agent_draft = draft
-                # =============================================================================
-                
-                # Using mock data for now
-                import time
-                time.sleep(2)  # Simulate API delay
-                st.session_state.agent_draft = SAMPLE_AGENT_DRAFT
-                st.rerun()
+            if not st.session_state.project_description.strip():
+                st.warning("Please describe your project above before generating a draft.")
+            else:
+                with st.spinner("AI Agent is generating your proposal draft... This may take a moment."):
+                    try:
+                        draft = generate_proposal_with_agent(
+                            st.session_state.project_description,
+                            grant
+                        )
+                        if draft:
+                            st.session_state.agent_draft = draft
+                            st.session_state.user_draft = draft  # Auto-copy to user draft
+                            st.rerun()
+                        else:
+                            st.error("Failed to generate draft. Please try again.")
+                    except Exception as e:
+                        st.error(f"Error generating draft: {str(e)}")
         
         # Display agent draft
         if st.session_state.agent_draft:
             st.markdown(f"""
                 <div class="agent-response">
-                    {st.session_state.agent_draft.replace(chr(10), '<br>')}
+                    {(st.session_state.agent_draft.replace(chr(10), '<br>'))}
                 </div>
             """, unsafe_allow_html=True)
             
@@ -205,7 +227,7 @@ def main():
         user_draft = st.text_area(
             "Your Proposal Draft",
             value=st.session_state.user_draft,
-            height=500,
+            height=610,
             placeholder="Start writing your proposal here, or copy the AI-generated draft and customize it...",
             label_visibility="collapsed"
         )

@@ -6,7 +6,7 @@ import streamlit as st
 
 # Page configuration
 st.set_page_config(
-    page_title="Grant Seeker's Co-Pilot",
+    page_title="Grant Seeker AI",
     page_icon="🚀",
     layout="wide",
     initial_sidebar_state="collapsed"
@@ -89,7 +89,7 @@ def main():
     # st.markdown("<br>", unsafe_allow_html=True)
     
     # Hero Section
-    st.markdown('<h1 class="hero-title">🚀 Grant Seeker\'s Co-Pilot</h1>', unsafe_allow_html=True)
+    st.markdown('<h1 class="hero-title">🚀 Grant Seeker AI</h1>', unsafe_allow_html=True)
     st.markdown(
         '<p class="hero-subtitle">Your AI assistant for finding, analyzing, and writing grant proposals</p>',
         unsafe_allow_html=True
@@ -150,11 +150,11 @@ def main():
                 """)
     
     # Footer
-    st.markdown("""
-        <div class="custom-footer">
-            Built for Google ADK Capstone • Team Project
-        </div>
-    """, unsafe_allow_html=True)
+    # st.markdown("""
+    #     <div class="custom-footer">
+    #         Built for Google ADK Capstone • Team Project
+    #     </div>
+    # """, unsafe_allow_html=True)
 
 
 if __name__ == "__main__":
