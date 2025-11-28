@@ -22,60 +22,6 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-
-# =============================================================================
-# API INTEGRATION (Commented - uncomment when API is available)
-# =============================================================================
-# import requests
-# 
-# API_BASE_URL = "https://your-api-endpoint.com/api/v1"
-# 
-# def fetch_grants_from_api(query: str, filters: dict = None) -> list:
-#     """
-#     Fetch grants from the API based on search query and filters.
-#     
-#     Args:
-#         query: Search query string
-#         filters: Optional dictionary of filters (funding_type, eligibility, geography, etc.)
-#     
-#     Returns:
-#         List of grant objects in the format:
-#         {
-#             "id": int,
-#             "title": str,
-#             "funder": str,
-#             "deadline": str (YYYY-MM-DD),
-#             "amount": str,
-#             "description": str,
-#             "detailed_overview": str,
-#             "tags": list[str],
-#             "eligibility": str,
-#             "url": str,
-#             "application_requirements": list[str],
-#             "funding_type": str,
-#             "geography": str,
-#             "key_dates": list[dict],  # [{"event": str, "date": str}, ...]
-#             "risk_factors": list[str],
-#             "fit_score": int (0-100),
-#             "eligibility_checklist": list[dict]  # [{"item": str, "met": bool|None, "confidence": str}, ...]
-#         }
-#     """
-#     try:
-#         params = {"q": query}
-#         if filters:
-#             params.update(filters)
-#         
-#         response = requests.get(f"{API_BASE_URL}/grants/search", params=params, timeout=30)
-#         response.raise_for_status()
-#         
-#         data = response.json()
-#         return data.get("grants", [])
-#     
-#     except requests.RequestException as e:
-#         st.error(f"Failed to fetch grants from API: {str(e)}")
-#         return None  # Return None to indicate API failure, triggering fallback to mock data
-# =============================================================================
-
 # Custom CSS
 st.markdown("""
     <style>
@@ -211,16 +157,6 @@ def search_grants(query, filters=None):
     Search grants based on query and filters.
     First attempts to fetch from API, falls back to mock data if API unavailable.
     """
-    # =============================================================================
-    # API Integration (Uncomment when API is available)
-    # =============================================================================
-    # api_results = fetch_grants_from_api(query, filters)
-    # if api_results is not None:
-    #     return api_results
-    # 
-    # # If API fails, fall back to mock data
-    # st.warning("Unable to connect to grant database. Showing sample data.")
-    # =============================================================================
     
     # Mock data search (fallback)
     if query:
@@ -263,6 +199,9 @@ def render_grant_card(grant, col_key):
     tags = grant.get("tags", []) or []
     grant_id = grant.get("id", f"{col_key}_{abs(hash(title))}")
 
+    if not tags:
+        tags = ["No tags available"]
+
     with st.container():
         st.markdown(f"""
             <div class="grant-card">
@@ -288,8 +227,8 @@ def render_grant_card(grant, col_key):
                 st.switch_page("pages/2_📋_Grant_Details.py")
         
         with btn_col2:
-            if st.button("💾 Export", key=f"export_{grant_id}_{col_key}", use_container_width=True):
-                st.info("Export feature coming soon!")
+            if st.button("💾 Download Grant Details PDF", key=f"export_{grant_id}_{col_key}", use_container_width=True):
+                st.info("Download feature coming soon!")
 
 
 def main():

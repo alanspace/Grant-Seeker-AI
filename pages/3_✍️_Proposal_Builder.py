@@ -7,6 +7,7 @@ import streamlit as st
 from st_copy import copy_button
 import sys
 import os
+import math
 
 # Add backend to path for imports
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'backend'))
@@ -142,12 +143,12 @@ def main():
     """Main function for the Proposal Builder page."""
     
     # Get selected grant from session state
-    grant = st.session_state.get('selected_grant', {
-        "title": "Community Garden Initiative Grant",
-        "funder": "Green Earth Foundation",
-        "deadline": "2025-03-15",
-        "amount": "$10,000 - $50,000"
-    })
+    grant = st.session_state.get('selected_grant', None)
+    if not grant:
+        st.warning("No grant selected. Please go back to the search page and select a grant.")
+        if st.button("🔙 Back to Search Grants"):
+            st.switch_page("pages/1_🔍_Search_Grants.py")
+        st.stop()
     
     # Header
     st.markdown(f"""
@@ -224,13 +225,34 @@ def main():
         st.markdown("*Edit and finalize your proposal*")
         
         # Editable text area for user's draft
+        _placeholder_text = "Start writing your proposal here, or copy the AI-generated draft and customize it..."
+        # Estimate height to fit placeholder: approximate chars per line, line height and padding
+        _chars_per_line = 70
+        _line_height = 22
+        _padding = 24
+
+        _lines = sum(math.ceil(len(line) / _chars_per_line) for line in _placeholder_text.split("\n"))
+        _min_height = max(40, int(_lines * _line_height + _padding))
+
+        _height = _min_height if not st.session_state.user_draft.strip() else 610
+
         user_draft = st.text_area(
             "Your Proposal Draft",
             value=st.session_state.user_draft,
-            height=610,
-            placeholder="Start writing your proposal here, or copy the AI-generated draft and customize it...",
+            height=_height,
+            placeholder=_placeholder_text,
             label_visibility="collapsed"
         )
+
+        if user_draft != st.session_state.user_draft:
+            st.session_state.user_draft = user_draft
+        # user_draft = st.text_area(
+        #     "Your Proposal Draft",
+        #     value=st.session_state.user_draft,
+        #     height=610,
+        #     placeholder="Start writing your proposal here, or copy the AI-generated draft and customize it...",
+        #     label_visibility="collapsed"
+        # )
         
         # Update session state
         if user_draft != st.session_state.user_draft:
@@ -249,7 +271,7 @@ def main():
         # with btn_col1:
         if st.session_state.user_draft:
             if st.download_button(
-                label="Export",
+                label="Download",
                 data=user_draft,
                 file_name="draft.txt",
                 mime="text/plain",
@@ -257,7 +279,7 @@ def main():
                 st.success("File Downloaded!")
             copy_button(st.session_state.user_draft)
         else:
-            st.warning("Nothing to export yet.")
+            st.warning("Nothing to download yet.")
             st.warning("Nothing to copy yet.")
         # with btn_col2:
         

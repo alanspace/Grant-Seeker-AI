@@ -190,47 +190,14 @@ def render_eligibility_checklist(items):
 def main():
     """Main function for the Grant Details page."""
     
-    # Get selected grant from session state or use default
-    grant = st.session_state.get('selected_grant', {
-        "id": 1,
-        "title": "Community Garden Initiative Grant",
-        "funder": "Green Earth Foundation",
-        "deadline": "2025-03-15",
-        "amount": "$10,000 - $50,000",
-        "description": "Supporting community-based urban agriculture projects that promote food security and environmental education.",
-        "detailed_overview": "The Community Garden Initiative Grant supports organizations working to establish and expand community gardens in urban areas.",
-        "tags": ["Environment", "Community", "Agriculture"],
-        "eligibility": "Non-profit organizations, community groups",
-        "url": "https://example.com/grant1",
-        "application_requirements": [
-            "501(c)(3) determination letter",
-            "Project budget",
-            "Implementation timeline",
-            "Letters of support"
-        ],
-        "funding_type": "Grant",
-        "geography": "United States",
-        "key_dates": [
-            {"event": "Application opens", "date": "2025-01-15"},
-            {"event": "Letter of Intent due", "date": "2025-02-01"},
-            {"event": "Full application deadline", "date": "2025-03-15"},
-            {"event": "Award notification", "date": "2025-05-01"},
-            {"event": "Grant period begins", "date": "2025-06-01"}
-        ],
-        "risk_factors": [
-            "Competitive grant with ~15% acceptance rate",
-            "Requires detailed evaluation plan",
-            "Matching funds may be required"
-        ],
-        "fit_score": 85,
-        "eligibility_checklist": [
-            {"item": "501(c)(3) Non-profit status", "met": True, "confidence": "high"},
-            {"item": "Operational for at least 2 years", "met": True, "confidence": "high"},
-            {"item": "Annual budget under $1M", "met": None, "confidence": "medium"},
-            {"item": "Located in eligible geographic area", "met": True, "confidence": "high"},
-            {"item": "Previous grant recipient status", "met": None, "confidence": "low"}
-        ]
-    })
+    # Get selected grant from session state
+    grant = st.session_state.get('selected_grant', {})
+    if not grant or grant == {}:
+        st.warning("No grant selected. Please go back to the search page and select a grant.")
+        if st.button("🔙 Back to Search Grants"):
+            st.session_state.selected_grant = {}
+            st.switch_page("pages/1_🔍_Search_Grants.py")
+        st.stop()
     
     # Get insights from grant data (API format) or fall back to defaults
     fit_score = grant.get('fit_score', DEFAULT_INSIGHTS['fit_score'])
@@ -266,12 +233,18 @@ def main():
             st.switch_page("pages/3_✍️_Proposal_Builder.py")
     
     with btn_col2:
-        if st.button("📄 Export PDF", use_container_width=True):
-            st.info("PDF export feature coming soon!")
+        if st.button("📄 Download Grant Details PDF", use_container_width=True):
+            st.info("PDF Download feature coming soon!")
     
     with btn_col3:
-        if st.button("🔗 Open Grant Website", use_container_width=True):
-            st.markdown(f"[Open grant page →]({grant['url']})")
+        # Render an HTML link styled as a full-width button that opens the grant URL in a new tab
+        grant_url = grant.get("url", "#")
+        st.markdown(
+            f'<a href="{grant_url}" target="_blank" rel="noopener noreferrer">'
+            f'<button style="color: #2d3748; width:100%; padding:0.5rem; border-radius:6px; border:none; background:#eef2ff; cursor:pointer;">🔗 Open Grant Website</button>'
+            f'</a>',
+            unsafe_allow_html=True
+        )
     
     st.markdown("---")
     

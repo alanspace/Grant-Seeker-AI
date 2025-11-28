@@ -1,9 +1,77 @@
 [
   {
-    "url": "https://www.google.com/nonprofits/offerings/google-ad-grants/",
+    "title": "California Small Agricultural Business Drought and Flood Relief Grant Program (CDFRG)",
+    "funder": "CalOSBA (California Governor's Office of Business and Economic Development)",
+    "deadline": "Expired (Closed Program)",
+    "amount": "Varies",
+    "description": "Provided relief to small agricultural businesses that experienced a decline in annual gross receipts or gross profits due to drought or storm flood conditions.",
+    "detailed_overview": "The California Small Agricultural Business Drought and Flood Relief Grant Program (CDFRG) provided financial relief to small agricultural businesses that experienced a decline in annual gross receipts or gross profits due to qualifying drought or storm flood conditions. This program is currently closed.",
+    "tags": [
+      "Agriculture",
+      "Drought Relief",
+      "Flood Relief",
+      "Small Business",
+      "Economic Relief"
+    ],
+    "eligibility": "Small agricultural businesses that experienced a decline in annual gross receipts or gross profits due to drought or storm flood conditions.",
+    "url": "https://calosba.ca.gov/for-small-businesses-and-non-profits/funding-opportunities-for-small-businesses-and-nonprofits/",
+    "application_requirements": [],
+    "funding_type": "Grant",
+    "geography": "California",
+    "id": 1
+  },
+  {
     "title": "Google Ad Grant",
-    "funder": "Google for Nonprofits",
-    "error": "No content retrieved",
+    "funder": "Google",
+    "deadline": "Rolling deadline",
+    "amount": "$10,000 per month",
+    "description": "Google offers eligible nonprofits $10,000 per month in Google search advertising.",
+    "detailed_overview": "The Google Ad Grant provides small organizations with expensive real estate on the world’s most popular website — for free! For smaller nonprofits, this is a golden ticket to increased visibility, outreach, and potential donor engagement, all without draining limited advertising budgets. The grant allows nonprofits to recruit volunteers, attract new donors, and spread their mission more effectively. Best of all, there’s no competition to get it—every eligible nonprofit can secure this funding.",
+    "tags": [
+      "Advertising",
+      "Marketing",
+      "Nonprofits",
+      "Outreach",
+      "Technology"
+    ],
+    "eligibility": "Any 501(c)(3) with a good website can qualify",
+    "url": "https://nonprofitmegaphone.com/blog/grant-opportunities-for-small-to-medium-sized-nonprofits",
+    "application_requirements": [],
+    "funding_type": "Grant",
+    "geography": "Unspecified",
+    "id": 2
+  },
+  {
+    "title": "Barney & Barney Foundation Grants",
+    "funder": "Barney & Barney Foundation (Marsh McLennan Agency)",
+    "deadline": "Rolling deadline",
+    "amount": "Up to US $25,000",
+    "description": "Funding for non-profit organizations supporting youth, the arts, the environment, societal justice, or assisting those in need.",
+    "detailed_overview": "The Barney & Barney Foundation is dedicated to giving back to the community by serving those in need, supporting youth, advancing the arts, standing against societal injustice, and protecting the environment. Qualified non-profit organizations are nominated by Barney & Barney / MMA colleagues. These nominations are reviewed by the Grant Committee, and potential recipients are then invited to formally apply. Selection criteria include alignment with the Foundation's mission, the organization's financial status, and demonstrated need. Grant amounts vary based on funds raised. The Foundation also offers a $25,000 annual 'Legacy Grant' where a retired Principal selects a nonprofit recipient.",
+    "tags": [
+      "Community Support",
+      "Youth Services",
+      "Arts and Culture",
+      "Environmental Conservation",
+      "Social Justice"
+    ],
+    "eligibility": "Non-profit organizations (501(c)(3) status implied) that support the Foundation's mission (assisting those in need, supporting youth, advancing the arts, or protecting the environment). Potential recipients must first be nominated by a Barney & Barney / MMA colleague and subsequently invited to apply by the Foundation Grant Committee.",
+    "url": "https://www.instrumentl.com/browse-grants/los-angeles-county-ca",
+    "application_requirements": [
+      "Nomination by a Barney & Barney / MMA colleague",
+      "Formal invitation to apply (after nomination review)",
+      "Financial status information",
+      "Demonstration of need"
+    ],
+    "funding_type": "Grant",
+    "geography": "Los Angeles County, California (Implicit, as listed under this county search)",
+    "id": 3
+  },
+  {
+    "url": "https://california.grantwatch.com/",
+    "title": "Grants for Mental Health Programs for Young Children (California)",
+    "funder": "California Grantwatch",
+    "error": "Failed to parse LLM response: Expecting value: line 1 column 1 (char 0)",
     "deadline": "Not specified",
     "amount": "Not specified",
     "description": "No description available",
@@ -13,6 +81,45 @@
     "application_requirements": [],
     "funding_type": "Grant",
     "geography": "Not specified",
-    "id": 1
+    "id": 4
+  },
+  {
+    "title": "Grants to California Early-Stage Investigators for Cancer Research",
+    "funder": "Not found in source material",
+    "deadline": "Undetermined (Date not provided in source)",
+    "amount": "Not specified, suggested no cap.",
+    "description": "Grants to California early-stage investigators for cancer research projects related to diagnostics or molecular therapies.",
+    "detailed_overview": "Funding is intended for oncological research studies related to diagnostics or molecular therapies. Eligible expenses include equipment, supplies, processing fees, and salary.",
+    "tags": [
+      "Research",
+      "Cancer",
+      "Medical",
+      "Diagnostics"
+    ],
+    "eligibility": "California early-stage investigators.",
+    "url": "https://california.grantwatch.com/",
+    "application_requirements": [
+      "Research proposal",
+      "Budget plan (covering equipment, supplies, processing fees, salary)"
+    ],
+    "funding_type": "Grant",
+    "geography": "California",
+    "id": 5
+  },
+  {
+    "url": "https://www.thegrantportal.com/grants-for-nonprofits",
+    "title": "Grants to Enhance Building Performance",
+    "funder": "The Grant Portal",
+    "error": "Failed to parse LLM response: Expecting value: line 1 column 1 (char 0)",
+    "deadline": "Not specified",
+    "amount": "Not specified",
+    "description": "No description available",
+    "detailed_overview": "No detailed overview available",
+    "tags": [],
+    "eligibility": "Not specified",
+    "application_requirements": [],
+    "funding_type": "Grant",
+    "geography": "Not specified",
+    "id": 6
   }
 ]

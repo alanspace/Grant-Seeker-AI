@@ -39,7 +39,7 @@ load_dotenv("../.env")
 
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 TAVILY_API_KEY = os.getenv("TAVILY_API_KEY")
-MODEL_NAME = "gemini-pro-latest"
+MODEL_NAME = "gemini-flash-latest"
 TAVILY_MAX_RESULTS = 5
 MAX_CONCURRENT_EXTRACTIONS = 3
 CONTENT_PREVIEW_LENGTH = 3000

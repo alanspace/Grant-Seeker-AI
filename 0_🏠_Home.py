@@ -133,20 +133,21 @@ def main():
         with sec_col1:
             if st.button("📖 How It Works", use_container_width=True):
                 st.info("""
-                    **Step 1:** Enter your project details and search for relevant grants
-                    
-                    **Step 2:** Review grant details and extracted requirements
-                    
-                    **Step 3:** Generate a tailored proposal with AI assistance
+                    **How it works**
+
+                    1. Describe your project and search for matching grants.
+                    2. AI extracts eligibility, deadlines, and key requirements from grant pages.
+                    3. Generate a tailored proposal draft and refine it interactively.
                 """)
         
         with sec_col2:
             if st.button("📄 See Sample", use_container_width=True):
                 st.info("""
-                    **Sample Project:** Community Garden for Urban Youth
-                    
-                    Our AI found 5 relevant grants, extracted eligibility criteria, 
-                    and generated a professional proposal in under 5 minutes!
+                    **Sample — Community Garden for Urban Youth**
+
+                    Mission: Empower youth with hands-on gardens teaching STEM, nutrition, and entrepreneurship.
+
+                    AI delivered: top matches, key requirements, and a ready proposal draft. Try it with your project.
                 """)
     
     # Footer
