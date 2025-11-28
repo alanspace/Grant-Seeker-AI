@@ -22,7 +22,7 @@ st.set_page_config(
 
 USER_DRAFT_KEY = 'user_draft_text'
 if USER_DRAFT_KEY not in st.session_state:
-    USER_DRAFT_KEY = ''
+    st.session_state[USER_DRAFT_KEY] = ''
 
 # Custom CSS
 st.markdown("""
