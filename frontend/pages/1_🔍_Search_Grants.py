@@ -1,6 +1,14 @@
 import streamlit as st
 import json
 import time
+import sys
+import os
+import asyncio
+# Add root directory to path to allow importing backend
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../backend')))
+
+from backend.adk_agent import GrantSeekerWorkflow
 from utils.ui_components import grant_card
 
 st.title("🔍 Search Grants")
@@ -18,23 +26,36 @@ project_text = st.text_area(
     help="Provide as much detail as possible to get the best matches."
 )
 
+
+# Fit Score Slider
+min_fit_score = st.slider(
+    "Minimum Fit Score",
+    min_value=0,
+    max_value=100,
+    value=50,
+    help="Filter grants by how well they match your description."
+)
 # Search button and logic
 if st.button("Search Grants", type="primary"):
     if not project_text.strip():
         st.warning("Please enter a project description first.")
     else:
         with st.spinner("🔎 AI Agents are scouting for the best matching grants..."):
-            # Simulate network delay
-            time.sleep(1.5)
-            
-            # Load sample data
             try:
-                with open("sample_data/grants.json", "r", encoding="utf-8") as f:
-                    st.session_state.grants = json.load(f)
-            except FileNotFoundError:
-                st.error("Sample data not found. Please ensure '/sample_data/grants.json' exists.")
+                # Initialize workflow
+                workflow = GrantSeekerWorkflow()
+                
+                # Run search (using asyncio.run since we are in a sync context)
+                # Note: In a production Streamlit app, we might want to handle the loop differently
+                results = asyncio.run(workflow.run(project_text))
+                
+                st.session_state.grants = results
+                
+                if not results:
+                    st.info("No grants found matching your criteria.")
+                    
             except Exception as e:
-                st.error(f"An error occurred: {e}")
+                st.error(f"An error occurred during search: {e}")
 
 # Display results from session state
 if st.session_state.grants:
@@ -42,7 +63,14 @@ if st.session_state.grants:
     st.subheader(f"🎯 Found {len(st.session_state.grants)} Matching Grants")
     st.write("")
 
-    for g in st.session_state.grants:
+    # Filter by fit score
+    filtered_grants = [g for g in st.session_state.grants if g.get('fit_score', 0) >= min_fit_score]
+    
+    st.write("---")
+    st.subheader(f"🎯 Found {len(filtered_grants)} Grants (Minimum Fit Score: {min_fit_score}%)")
+    st.write("")
+
+    for g in filtered_grants:
         # grant_card now returns True if clicked
         if grant_card(g):
             st.session_state.selected_grant = g

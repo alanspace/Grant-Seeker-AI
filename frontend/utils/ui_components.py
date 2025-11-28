@@ -16,27 +16,30 @@ def grant_card(grant):
         text-align: left;
         height: auto;
         padding: 20px;
-        background: #ffffff;
-        border: 1px solid #e0e0e0;
+        background: #1e293b;
+        color: #ffffff;
+        border: 1px solid #334155;
         border-radius: 12px;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-        transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s, background-color 0.2s;
         display: block;
     }
     div.stButton > button:hover {
         transform: translateY(-2px);
-        box-shadow: 0 8px 12px rgba(0,0,0,0.1);
+        box-shadow: 0 8px 12px rgba(0,0,0,0.3);
         border-color: #4a72ff;
-        color: inherit;
+        background-color: #263345;
+        color: #ffffff;
     }
     div.stButton > button:focus, div.stButton > button:active {
-        background-color: #ffffff !important;
-        color: inherit !important;
+        background-color: #1e293b !important;
+        color: #ffffff !important;
         border-color: #4a72ff !important;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.05) !important;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.2) !important;
     }
     div.stButton > button p {
         font-size: 16px;
+        color: #ffffff;
     }
     </style>
     """
@@ -45,7 +48,7 @@ def grant_card(grant):
     # Prepare button label with info
     # Note: Streamlit buttons treat newlines as breaks.
     # We can't use rich HTML inside the button label, so we use text formatting.
-    label = f"{grant['title']}\n💰 {grant['amount']}  |  📅 Deadline: {grant['deadline']}"
+    label = f"{grant['title']}\n💰 {grant['amount']}  |  📅 Deadline: {grant['deadline']}  |  🎯 Fit: {grant.get('fit_score', 0)}%"
     
     # Render the button
     # We return the button's clicked state
