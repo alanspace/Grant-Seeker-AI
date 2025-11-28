@@ -73,39 +73,7 @@ if 'user_draft' not in st.session_state:
 if 'project_description' not in st.session_state:
     st.session_state.project_description = ''
 
-# =============================================================================
-# API INTEGRATION (Commented - uncomment when API is available)
-# =============================================================================
-# import requests
-# 
-# API_BASE_URL = "https://your-api-endpoint.com/api/v1"
-# 
-# def get_agent_draft(grant_id: str, project_details: dict) -> str:
-#     """
-#     Fetch AI-generated proposal draft from the agent.
-#     
-#     Args:
-#         grant_id: ID of the selected grant
-#         project_details: Dictionary with project information
-#     
-#     Returns:
-#         Generated proposal draft text from the agent
-#     """
-#     try:
-#         payload = {
-#             "grant_id": grant_id,
-#             "project_details": project_details
-#         }
-#         response = requests.post(f"{API_BASE_URL}/proposals/generate", json=payload, timeout=60)
-#         response.raise_for_status()
-#         
-#         data = response.json()
-#         return data.get("draft", "")
-#     
-#     except requests.RequestException as e:
-#         st.error(f"Failed to generate draft: {str(e)}")
-#         return None
-# =============================================================================
+# Import the writer_agent module
 
 def generate_proposal_with_agent(project_description: str, grant: dict) -> str:
     """
@@ -246,13 +214,6 @@ def main():
 
         if user_draft != st.session_state.user_draft:
             st.session_state.user_draft = user_draft
-        # user_draft = st.text_area(
-        #     "Your Proposal Draft",
-        #     value=st.session_state.user_draft,
-        #     height=610,
-        #     placeholder="Start writing your proposal here, or copy the AI-generated draft and customize it...",
-        #     label_visibility="collapsed"
-        # )
         
         # Update session state
         if user_draft != st.session_state.user_draft:
