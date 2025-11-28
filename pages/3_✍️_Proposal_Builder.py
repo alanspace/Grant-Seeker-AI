@@ -20,9 +20,6 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-USER_DRAFT_KEY = 'user_draft_text'
-if USER_DRAFT_KEY not in st.session_state:
-    st.session_state[USER_DRAFT_KEY] = ''
 
 # Custom CSS
 st.markdown("""
@@ -76,6 +73,10 @@ if 'user_draft' not in st.session_state:
 
 if 'project_description' not in st.session_state:
     st.session_state.project_description = ''
+
+USER_DRAFT_KEY = 'user_draft_text'
+if USER_DRAFT_KEY not in st.session_state:
+    st.session_state[USER_DRAFT_KEY] = ''
 
 # Import the writer_agent module
 
