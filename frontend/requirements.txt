@@ -1,20 +1,20 @@
-# Core Google & AI Libraries
-google-adk
-google-cloud-aiplatform
-google-generativeai
+# # Core Google & AI Libraries
+# google-adk
+# google-cloud-aiplatform
+# google-generativeai
 
-# Agent Tools & Dependencies
-tavily-python
-pydantic
-python-dotenv
+# # Agent Tools & Dependencies
+# tavily-python
+# pydantic
+# python-dotenv
 
-# Frontend (UI)
-streamlit
+# # Frontend (UI)
+# streamlit
 
-# Web Scraping & HTTP Requests (Good to keep for future tools)
-requests
-beautifulsoup4
+# # Web Scraping & HTTP Requests (Good to keep for future tools)
+# requests
+# beautifulsoup4
 
-# Async & Networking (Dependencies for ADK/MCP)
-anyio
-httpx
+# # Async & Networking (Dependencies for ADK/MCP)
+# anyio
+# httpx
