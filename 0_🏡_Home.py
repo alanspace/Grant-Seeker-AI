@@ -1,5 +1,5 @@
 """
-Grant Seeker's Co-Pilot - Main Application Entry Point
+Grant Seeker AI - Main Application Entry Point
 A Streamlit multi-page app for finding, analyzing, and writing grant proposals.
 """
 import streamlit as st
