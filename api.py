@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 from google.adk.runners import Runner
 from google.adk.sessions import InMemorySessionService
 from google.genai import types
-
+import uuid
 # Import our two main agent engines
 from backend.adk_agent import root_agent as tavily_agent
 from backend.writer_agent import draft_proposal_section as run_writer_agent
@@ -28,7 +28,7 @@ def find_and_analyze_grants(project_description: str) -> list[dict]:
     # We need a helper to run our async ADK code from a sync function
     async def _run_tavily_workflow():
         session_service = InMemorySessionService()
-        session_id = "tavily_session"
+        session_id = f"tavily_session_{uuid.uuid4().hex[:8]}"
         await session_service.create_session(
             app_name="tavily_app",
             user_id="ui_user",
