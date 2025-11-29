@@ -1,103 +1,55 @@
 [
   {
-    "title": "Capacity Building Grant",
-    "funder": "Advocates for Urban Agriculture (in partnership with Food:Land:Opportunity)",
-    "deadline": "Expired (2025-10-03)",
-    "amount": "Not specified",
-    "description": "This grant supports urban farms and community gardens to enrich the local food economy, production, and distribution throughout the Chicago area.",
-    "detailed_overview": "The Capacity Building Grant is a fund model for community-led resource distribution, housed by Advocates for Urban Agriculture in partnership with Food:Land:Opportunity (F.L.O.). The program supports urban farms and community gardens to enhance the local food economy in the Chicago area. Recipients are chosen by an Advisory Committee composed of community residents who are past grantees or supporters. The 2025 grant cycle introduced a nomination process where community members can nominate farms and gardens, or growing spaces can self-nominate, to reduce the administrative burden on applicants.",
+    "title": "Community Development Grant - Small",
+    "funder": "City of Chicago",
+    "deadline": "Not specified in the provided text",
+    "amount": "Up to $250,000 (Covers up to 75% of total eligible project costs)",
+    "description": "This grant program provides up to $250,000 to support eligible commercial, mixed-use, and light manufacturing projects, covering up to 75% of costs specifically for new construction.",
+    "detailed_overview": "Small grants up to $250,000 are intended to support eligible commercial, mixed-use and light manufacturing projects. Grants provide funding for up to 75% of total eligible project costs involving new construction, [description continues, but text is cut off].",
     "tags": [
-      "Urban Agriculture",
-      "Food Systems",
-      "Community Gardens",
-      "Chicago",
-      "Capacity Building"
+      "Community Development",
+      "Commercial Real Estate",
+      "Manufacturing",
+      "Capital Projects",
+      "Chicago"
     ],
-    "eligibility": "Eligibility requirements are mentioned on the webpage but not detailed in the provided text.",
-    "url": "https://www.auachicago.org/capacity-building-grants",
-    "application_requirements": [
-      "Completed nomination form (can be submitted via Google Form or email)"
-    ],
+    "eligibility": "Intended to support eligible commercial, mixed-use and light manufacturing projects.",
+    "url": "https://www.chicago.gov/city/en/sites/community-development-grant/home/small_grants.html",
+    "application_requirements": [],
     "funding_type": "Grant",
-    "geography": "Chicago area",
+    "geography": "Chicago, Illinois",
     "id": 1
   },
   {
-    "title": "Innovative Agriculture Micro-grants for Chicago (IAM-Chi)",
-    "funder": "University of Illinois Extension (in cooperation with USDA Farm Service Agency)",
-    "deadline": "2026-11-30",
-    "amount": "$1,000 - $25,000",
-    "description": "This micro-grant program funds innovative, forward-thinking projects to advance urban agriculture in Chicago, supporting conservation practices, infrastructure, equipment, and supply chain improvements.",
-    "detailed_overview": "The Innovative Agriculture Micro-grants for Chicago (IAM-Chi) program aims to advance innovative, change-oriented projects that solve locally identified farm and food production problems within Chicago’s urban areas. It also seeks to broaden awareness of Illinois’ and USDA’s FSA programs and resources available to urban farmers and to leverage resources to elevate capacity for urban farming, farmers, and producers across Chicago’s urban food system, including beginning and historically underserved farmers and producers. Grants will support conservation practices which improve soil quality, support or provide cost-share for infrastructure and on-farm equipment, or improve supply chain issues. These are small, one-time allocations awarded to eligible producers for short-term projects. The program will expire on November 30, 2026.",
+    "title": "Capacity Building Grant (2025 Cycle)",
+    "funder": "Advocates for Urban Agriculture (AUA) in partnership with Food:Land:Opportunity (F.L.O.)",
+    "deadline": "Expired (2025-10-03)",
+    "amount": "Not specified in the provided text",
+    "description": "A grant fund supporting urban farms and community gardens in the Chicago area to enrich the local food economy, production, and distribution.",
+    "detailed_overview": "The Capacity Building Grant is housed by Advocates for Urban Agriculture (AUA) in partnership with Food:Land:Opportunity (F.L.O.) and operates as a model for community-led resource distribution. The funds support urban farms and community gardens throughout the Chicago area. Recipients are selected by an Advisory Committee composed of community residents, past grantees, growers, or supporters of earth stewardship. The 2025 cycle utilizes a nomination process (community members can nominate, or spaces can self-nominate) to reduce the administrative burden. Nominations were due by 3pm CST on October 3rd, 2025, and funds were scheduled to be awarded by December 10th, 2025.",
     "tags": [
       "Urban Agriculture",
-      "Food Production",
-      "Conservation",
-      "Chicago",
-      "Beginning Farmers"
+      "Community Gardens",
+      "Local Food Economy",
+      "Capacity Building",
+      "Chicago"
     ],
-    "eligibility": "Urban farmers and producers, beginning farmers, historically underserved producers, and food entrepreneurs in Chicago, Illinois.",
-    "url": "https://extension.illinois.edu/sites/default/files/2024-05/rfp_usda_iam-chi_grants_2024_to_2026.pdf",
+    "eligibility": "Urban farms and community gardens operating throughout the Chicago area.",
+    "url": "https://www.auachicago.org/capacity-building-grants",
     "application_requirements": [
-      "Must be an eligible producer",
-      "Check website for specific documentation requirements"
+      "Completion of the Capacity Building Grant nomination form (via Google Form or email)",
+      "Submission by the published deadline (3pm CST)",
+      "Optional: Submission of draft documents for grant writing support"
     ],
-    "funding_type": "Grant (Micro-grant)",
-    "geography": "Chicago, Illinois (urban areas)",
+    "funding_type": "Grant",
+    "geography": "Chicago area, Illinois",
     "id": 2
   },
   {
-    "title": "Community Urban Garden Grant",
-    "funder": "Cook County Farm Bureau (CCFB)",
-    "deadline": "No current cycle date provided",
-    "amount": "Not specified",
-    "description": "Supplemental funding for urban community gardens located in Cook County, intended for the purchase of plantings, seeds, and garden materials.",
-    "detailed_overview": "The Community Urban Garden Grant program is offered by the Cook County Farm Bureau to support urban community gardens within Cook County. The primary goal is to provide supplemental financial assistance for essential gardening supplies. A key condition of the funding is that all grant monies must be used for plantings, seeds, and garden materials purchased exclusively at CCFB member businesses. The program appears to run on an annual cycle, with recipients announced for 2025 and prior years.",
-    "tags": [
-      "Urban Gardening",
-      "Agriculture",
-      "Community Development",
-      "Cook County"
-    ],
-    "eligibility": "Must be an urban community garden located in Cook County. Funds must be used to purchase materials from CCFB member businesses.",
-    "url": "https://cookcfb.org/stay-updated-/events-and-programs/community-programs/profile/grants-1",
-    "application_requirements": [
-      "Applicant must be an urban community garden in Cook County",
-      "Funds must be spent on plantings, seeds, and materials purchased specifically at CCFB member businesses"
-    ],
-    "funding_type": "Grant",
-    "geography": "Cook County",
-    "id": 3
-  },
-  {
-    "title": "Local Food For Schools Program (Illinois State Board of Education)",
-    "funder": "Illinois State Board of Education (ISBE)",
-    "deadline": "Expired (2024-12-31)",
-    "amount": "$7.3 million (total program funding)",
-    "description": "Provides reimbursement funding for Illinois school districts to purchase fresh, local, unprocessed food from socially disadvantaged farmers, ranchers, and small businesses.",
-    "detailed_overview": "The Illinois State Board of Education’s Local Food For Schools program was designed to provide $7.3 million dollars in funding to support school districts in purchasing fresh food from local farms. Every school district in Illinois that participates in the National School Lunch Program is automatically eligible to receive reimbursement. The program focused on purchasing local, unprocessed food from socially disadvantaged farmers, ranchers, and small businesses. Funding was available between August 2023 and December 2024, with non-competitive applications open for the 2023-2024 school year.",
-    "tags": [
-      "Education",
-      "Local Food Systems",
-      "Agriculture",
-      "Illinois",
-      "School Lunch"
-    ],
-    "eligibility": "Every school district in Illinois that participates in the National School Lunch Program is automatically eligible to receive reimbursement. Purchases must be from local, unprocessed food sources from socially disadvantaged farmers, ranchers, and small businesses.",
-    "url": "https://www.auachicago.org/grants-and-funding-opportunities",
-    "application_requirements": [
-      "Participation in National School Lunch Program",
-      "Documentation of purchases from eligible local vendors"
-    ],
-    "funding_type": "Reimbursement/Grant",
-    "geography": "Illinois (Statewide)",
-    "id": 4
-  },
-  {
-    "url": "https://agr.illinois.gov/assistance/grant-programs.html",
-    "title": "FY 2025 USDA Competitive Grant Programs (Promoted by IDOA)",
-    "funder": "Illinois Department of Agriculture",
-    "error": "Failed to parse LLM response: Expecting value: line 1 column 1 (char 0)",
+    "url": "https://openlands.org/wp-content/uploads/2025/01/ComEd-Green-Region-Grant-2025-Program-Guidelines.pdf",
+    "title": "ComEd Green Region Grant 2025 Program",
+    "funder": "ComEd / Openlands",
+    "error": "No content retrieved",
     "deadline": "Not specified",
     "amount": "Not specified",
     "description": "No description available",
@@ -107,6 +59,6 @@
     "application_requirements": [],
     "funding_type": "Grant",
     "geography": "Not specified",
-    "id": 5
+    "id": 3
   }
 ]

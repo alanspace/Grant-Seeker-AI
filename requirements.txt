@@ -1,7 +1,22 @@
-python-dotenv
-google-api-python-client
+# Core Google & AI Libraries
+google-adk
+google-cloud-aiplatform
 google-generativeai
+
+# Agent Tools & Dependencies
+tavily-python
+pydantic
+python-dotenv
+
+# Frontend (UI)
+streamlit
+
+# Web Scraping & HTTP Requests (Good to keep for future tools)
 requests
 beautifulsoup4
 streamlit
 st-copy
+
+# Async & Networking (Dependencies for ADK/MCP)
+anyio
+httpx

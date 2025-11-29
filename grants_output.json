@@ -1,0 +1,102 @@
+[
+  {
+    "id": 1,
+    "title": "Community Development Grant - Small",
+    "funder": "City of Chicago",
+    "deadline": "Not Found",
+    "amount": "Up to $250,000",
+    "description": "This small grant program supports eligible commercial, mixed-use, and light manufacturing projects, providing funding for up to 75% of total eligible project costs, including new construction.",
+    "detailed_overview": "Small grants, with funding amounts up to $250,000, are specifically intended to support eligible commercial, mixed-use, and light manufacturing projects within the City of Chicago. The program provides significant financial assistance, covering up to 75% of the total eligible project costs, with a specific focus on projects involving new construction (the full program description is truncated).",
+    "tags": [
+      "Community Development",
+      "Commercial Real Estate",
+      "Manufacturing",
+      "Construction",
+      "Economic Development"
+    ],
+    "eligibility": "Supports eligible commercial, mixed-use and light manufacturing projects. (Specific entity type requirements are not detailed in the provided text.)",
+    "url": "https://www.chicago.gov/city/en/sites/community-development-grant/home/small_grants.html",
+    "application_requirements": [
+      "Project plan involving new construction or similar improvements"
+    ],
+    "funding_type": "Grant",
+    "geography": "Chicago",
+    "fit_score": 63
+  },
+  {
+    "id": 2,
+    "title": "Capacity Building Grant",
+    "funder": "Advocates for Urban Agriculture (AUA) in partnership with Food:Land:Opportunity (F.L.O.)",
+    "deadline": "Expired (2025-10-03)",
+    "amount": "Not specified",
+    "description": "This grant supports urban farms and community gardens to enrich the local food economy, production, and distribution through a community-led nomination process.",
+    "detailed_overview": "The Capacity Building Grant is a grant fund housed by Advocates for Urban Agriculture (AUA) in partnership with Food:Land:Opportunity (F.L.O.), designed as a model for community-led resource distribution. The funds support urban farms and community gardens to enhance the local food economy, production, and distribution within the Chicago area. Recipients are chosen by an Advisory Committee composed of community residents, including past grantees, growers, and supporters of earth stewardship. The grant cycle uses a nomination process, allowing community members to nominate spaces or allowing growing spaces to self-nominate, aimed at reducing the administrative strain on applicants.",
+    "tags": [
+      "Urban Agriculture",
+      "Community Gardens",
+      "Local Food Systems",
+      "Capacity Building",
+      "Chicago"
+    ],
+    "eligibility": "Supports urban farms and community gardens throughout the Chicago area. Spaces can be nominated by community members or self-nominate.",
+    "url": "https://www.auachicago.org/capacity-building-grants",
+    "application_requirements": [
+      "Completion of the Capacity Building Grant nomination form (Google Form or document format)",
+      "Nominated space must be an urban farm or community garden in the Chicago area"
+    ],
+    "funding_type": "Grant",
+    "geography": "Chicago area",
+    "fit_score": 45
+  },
+  {
+    "id": 3,
+    "title": "Growing Spaces In-Kind Grant 2025",
+    "funder": "Growing Spaces",
+    "deadline": "Expired (2025-06-30)",
+    "amount": "$2,000 - $8,000 (In-Kind)",
+    "description": "Provides in-kind funding (discount on purchase price) for Growing Dome greenhouses to nonprofits, schools, or veterans’ organizations that provide fresh food to food-insecure communities.",
+    "detailed_overview": "Growing Spaces offers in-kind grants, ranging from $2,000 to $8,000, which are taken off the price of a Growing Dome geodesic greenhouse. This program supports registered nonprofits, schools, or veterans’ organizations actively working to provide fresh organic produce to underserved and food-insecure communities, especially in response to increased demand since the pandemic and inflation. Awards are applied to domes shipped in the 2025 calendar year, aiming to increase year-round food production. The application deadline for the 2025 cycle was June 30, 2025, which has passed.",
+    "tags": [
+      "In-Kind",
+      "Greenhouse",
+      "Food Insecurity",
+      "Nonprofit",
+      "Community Gardening"
+    ],
+    "eligibility": "Registered nonprofits, schools, or veterans’ organizations that are actively providing fresh food to underserved and food-insecure communities. Applicants must have the space to build a greenhouse and funding to complete and sustain the greenhouse in the future.",
+    "url": "https://growingspaces.pages.dev/gardening-grants",
+    "application_requirements": [
+      "Fill out application form",
+      "Proof of eligibility (nonprofit/school status)",
+      "Evidence of site space and sustainable funding"
+    ],
+    "funding_type": "In-Kind Grant",
+    "geography": "United States",
+    "fit_score": 98
+  },
+  {
+    "id": 4,
+    "title": "Illinois Department of Agriculture Community Garden Program (2025 Season)",
+    "funder": "Illinois Department of Agriculture (IDOA)",
+    "deadline": "Expired (2025-06-01)",
+    "amount": "Plots cost $20 (per season). Program provides free water and compost.",
+    "description": "This program provides individuals and families with access to subsidized community garden plots (100 organic, 100 non-organic) to grow food and flowers at the Illinois State Fairgrounds.",
+    "detailed_overview": "The Illinois Department of Agriculture (IDOA) offers 200 garden plots located on the Illinois State Fair Grandstand racetrack infield. This initiative aims to provide those with limited yard space an affordable opportunity to grow fruits, vegetables, herbs, and flowers in a shared gardening space. The cost for each plot is $20, with an additional charge for optional tilling service. The IDOA provides free water and compost to all participating gardeners. Returning gardeners had a deadline of June 1 to reserve their previous plot.",
+    "tags": [
+      "Community Garden",
+      "Agriculture",
+      "Food Access",
+      "Urban Farming",
+      "Illinois"
+    ],
+    "eligibility": "Individuals and families interested in reserving a plot to grow fruits, vegetables, herbs, and flowers.",
+    "url": "https://illinoisagconnection.com/news/illinois-community-garden-opens-applications-for-2025-growing-season",
+    "application_requirements": [
+      "Completed online application",
+      "Payment of $20 plot fee"
+    ],
+    "funding_type": "Grant (Resource Provision)",
+    "geography": "Springfield, Illinois (Illinois State Fairgrounds)",
+    "fit_score": 68
+  }
+]
