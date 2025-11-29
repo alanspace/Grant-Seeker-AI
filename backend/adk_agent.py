@@ -642,10 +642,11 @@ class GrantSeekerWorkflow:
         logger.info(f"Starting Grant Seeker Workflow with {MODEL_NAME}")
         
         # Create main session
+        main_session_id = f"main-session-{uuid.uuid4()}"
         await self.session_service.create_session(
             app_name="grant-seeker",
             user_id="user-1",
-            session_id="main-session"
+            session_id=main_session_id
         )
         
         # Phase 0: Generate Query
