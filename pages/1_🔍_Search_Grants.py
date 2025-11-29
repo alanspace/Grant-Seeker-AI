@@ -130,9 +130,9 @@ def load_grants_from_file() -> list[dict]:
 def execute_grant_workflow(query: str) -> list[dict]:
     """Run the ADK workflow for the given query and persist results."""
     # Force reimport to get fresh module state
-    if "adk_agent_v2" in sys.modules:
-        del sys.modules["adk_agent_v2"]
-    agent_module = importlib.import_module("adk_agent_v2")
+    if "adk_agent" in sys.modules:
+        del sys.modules["adk_agent"]
+    agent_module = importlib.import_module("adk_agent")
     
     # Create a fresh workflow instance each time
     workflow = agent_module.GrantSeekerWorkflow()

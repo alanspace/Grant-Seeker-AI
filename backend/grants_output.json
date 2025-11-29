@@ -1,64 +1,78 @@
 [
   {
-    "title": "Community Development Grant - Small",
-    "funder": "City of Chicago",
-    "deadline": "Not specified in the provided text",
-    "amount": "Up to $250,000 (Covers up to 75% of total eligible project costs)",
-    "description": "This grant program provides up to $250,000 to support eligible commercial, mixed-use, and light manufacturing projects, covering up to 75% of costs specifically for new construction.",
-    "detailed_overview": "Small grants up to $250,000 are intended to support eligible commercial, mixed-use and light manufacturing projects. Grants provide funding for up to 75% of total eligible project costs involving new construction, [description continues, but text is cut off].",
-    "tags": [
-      "Community Development",
-      "Commercial Real Estate",
-      "Manufacturing",
-      "Capital Projects",
-      "Chicago"
-    ],
-    "eligibility": "Intended to support eligible commercial, mixed-use and light manufacturing projects.",
-    "url": "https://www.chicago.gov/city/en/sites/community-development-grant/home/small_grants.html",
-    "application_requirements": [],
-    "funding_type": "Grant",
-    "geography": "Chicago, Illinois",
-    "id": 1
-  },
-  {
-    "title": "Capacity Building Grant (2025 Cycle)",
+    "title": "Capacity Building Grant",
     "funder": "Advocates for Urban Agriculture (AUA) in partnership with Food:Land:Opportunity (F.L.O.)",
     "deadline": "Expired (2025-10-03)",
-    "amount": "Not specified in the provided text",
-    "description": "A grant fund supporting urban farms and community gardens in the Chicago area to enrich the local food economy, production, and distribution.",
-    "detailed_overview": "The Capacity Building Grant is housed by Advocates for Urban Agriculture (AUA) in partnership with Food:Land:Opportunity (F.L.O.) and operates as a model for community-led resource distribution. The funds support urban farms and community gardens throughout the Chicago area. Recipients are selected by an Advisory Committee composed of community residents, past grantees, growers, or supporters of earth stewardship. The 2025 cycle utilizes a nomination process (community members can nominate, or spaces can self-nominate) to reduce the administrative burden. Nominations were due by 3pm CST on October 3rd, 2025, and funds were scheduled to be awarded by December 10th, 2025.",
+    "amount": "Not specified",
+    "description": "Funds support urban farms and community gardens in the Chicago area to enrich the local food economy, production, and distribution.",
+    "detailed_overview": "The Capacity Building Grant is housed by Advocates for Urban Agriculture (AUA) in partnership with Food:Land:Opportunity (F.L.O.) and operates as a model for community-led resource distribution. The funds are intended to strengthen urban agriculture throughout the Chicago area. The program uses a nomination process (self-nomination is permitted) to reduce the administrative burden on applicants. Recipients are selected by an Advisory Committee composed of community residents who are past grantees, growers, or supporters of earth stewardship.",
     "tags": [
       "Urban Agriculture",
       "Community Gardens",
-      "Local Food Economy",
+      "Food Security",
       "Capacity Building",
       "Chicago"
     ],
-    "eligibility": "Urban farms and community gardens operating throughout the Chicago area.",
+    "eligibility": "Urban farms and community gardens in the Chicago area. Applications are submitted via a nomination process (community members can nominate, or growing spaces can self-nominate).",
     "url": "https://www.auachicago.org/capacity-building-grants",
     "application_requirements": [
-      "Completion of the Capacity Building Grant nomination form (via Google Form or email)",
-      "Submission by the published deadline (3pm CST)",
-      "Optional: Submission of draft documents for grant writing support"
+      "Completion of the Capacity Building Grant nomination form",
+      "Submission via Google Form or via email in a document format of your choice",
+      "Optional: Submit draft grant documents to the grant administrator for writing support prior to final submission"
     ],
     "funding_type": "Grant",
-    "geography": "Chicago area, Illinois",
+    "geography": "Chicago area",
+    "fit_score": 78,
+    "id": 1
+  },
+  {
+    "title": "Innovative Agriculture Micro-grants for Chicago (IAM-Chi)",
+    "funder": "University of Illinois Extension (in cooperation with USDA Farm Service Agency)",
+    "deadline": "2026-11-30",
+    "amount": "$1,000 - $25,000",
+    "description": "These micro-grants fund innovative, forward-thinking projects designed to advance urban agriculture in Chicago, supporting activities like conservation, infrastructure development, and supply chain improvements. The program aims to solve locally identified farm and food production problems and elevate capacity for beginning and historically underserved farmers.",
+    "detailed_overview": "The Innovative Agriculture Micro-grants for Chicago (IAM-Chi) program is a collaboration between the University of Illinois Extension and the USDA Farm Service Agency (FSA). The grants support short-term, one-time projects that advance urban agriculture in Chicago. The core purposes are to: 1) Advance innovative, change-oriented projects that solve locally identified farm and food production problems within Chicago’s urban areas; 2) Broaden awareness of Illinois’ and USDA’s FSA programs and resources available to urban farmers and producers in Chicago; and 3) Leverage resources to elevate capacity for urban farming, farmers, and producers across Chicago’s urban food system, including beginning and historically underserved farmers and producers. Funding specifically supports conservation practices which improve soil quality, provide cost-share for infrastructure and on-farm equipment, or improve supply chain issues.",
+    "tags": [
+      "Agriculture",
+      "Urban Farming",
+      "Chicago",
+      "Infrastructure",
+      "Underserved Communities"
+    ],
+    "eligibility": "Urban farmers and producers, beginning farmers, historically underserved producers, and food entrepreneurs in Chicago, Illinois.",
+    "url": "https://extension.illinois.edu/sites/default/files/2024-05/rfp_usda_iam-chi_grants_2024_to_2026.pdf",
+    "application_requirements": [
+      "Application as an eligible urban farmer, producer, or food entrepreneur",
+      "Project must be short-term and innovative"
+    ],
+    "funding_type": "Grant (Micro-grant)",
+    "geography": "Chicago, Illinois",
+    "fit_score": 100,
     "id": 2
   },
   {
-    "url": "https://openlands.org/wp-content/uploads/2025/01/ComEd-Green-Region-Grant-2025-Program-Guidelines.pdf",
-    "title": "ComEd Green Region Grant 2025 Program",
-    "funder": "ComEd / Openlands",
-    "error": "No content retrieved",
-    "deadline": "Not specified",
-    "amount": "Not specified",
-    "description": "No description available",
-    "detailed_overview": "No detailed overview available",
-    "tags": [],
-    "eligibility": "Not specified",
-    "application_requirements": [],
+    "title": "Community Urban Garden Grant Program",
+    "funder": "Cook County Farm Bureau (CCFB)",
+    "deadline": "Check website for 2026 cycle",
+    "amount": "Not specified (described as supplemental funding)",
+    "description": "Provides supplemental funding to urban community gardens in Cook County for the purchase of plantings, seeds, and garden materials.",
+    "detailed_overview": "The Cook County Farm Bureau (CCFB) offers the Community Urban Garden Grant to support the growth and maintenance of urban community gardens located within Cook County. The grant provides supplemental financial assistance intended specifically for necessary purchases like seeds, plantings, and various garden materials. A key requirement of the grant is that all purchased supplies must be sourced from businesses that are recognized members of the Cook County Farm Bureau.",
+    "tags": [
+      "Community Gardens",
+      "Urban Farming",
+      "Agriculture",
+      "Cook County",
+      "Local Business"
+    ],
+    "eligibility": "Organizations operating urban community gardens in Cook County. Funds must be used exclusively for purchasing plantings, seeds, and garden material from CCFB member businesses.",
+    "url": "https://cookcfb.org/stay-updated-/events-and-programs/community-programs/profile/grants-1",
+    "application_requirements": [
+      "Proof of operation as an urban community garden in Cook County",
+      "Commitment to purchasing materials from CCFB member businesses"
+    ],
     "funding_type": "Grant",
-    "geography": "Not specified",
+    "geography": "Cook County, Illinois",
+    "fit_score": 56,
     "id": 3
   }
 ]

@@ -17,7 +17,7 @@ st.set_page_config(
     page_title="Proposal Builder | Grant Seeker's Co-Pilot",
     page_icon="✍️",
     layout="wide",
-    initial_sidebar_state="collapsed"
+    initial_sidebar_state="expanded"
 )
 
 
@@ -243,7 +243,7 @@ def main():
                 mime="text/plain",
             ):
                 st.success("File Downloaded!")
-            copy_button(st.session_state.user_draft)
+            copy_button(st.session_state[USER_DRAFT_KEY],key="copy_draft_btn")
         else:
             st.warning("Nothing to download yet.")
             st.warning("Nothing to copy yet.")
