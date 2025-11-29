@@ -3,6 +3,7 @@ Grant Seeker Agent - Single file version with caching
 Consolidated from refactored architecture while maintaining caching functionality
 """
 import os
+import time
 import asyncio
 import json
 import hashlib
@@ -642,11 +643,10 @@ class GrantSeekerWorkflow:
         logger.info(f"Starting Grant Seeker Workflow with {MODEL_NAME}")
         
         # Create main session
-        main_session_id = f"main-session-{uuid.uuid4()}"
         await self.session_service.create_session(
             app_name="grant-seeker",
             user_id="user-1",
-            session_id=main_session_id
+            session_id="main-session"
         )
         
         # Phase 0: Generate Query

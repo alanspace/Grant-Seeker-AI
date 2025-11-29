@@ -1,29 +1,71 @@
 [
   {
-    "title": "Leakey Foundation Research Grants",
-    "funder": "The Leakey Foundation",
-    "deadline": "2026-01-10",
-    "amount": "Up to $30,000",
-    "description": "Funds PhD dissertation research and post-PhD exploratory studies across disciplines related to human origins, evolution, and behavior.",
-    "detailed_overview": "The Leakey Foundation is the leading nonprofit funder of research dedicated to understanding human origins, awarding approximately $1,000,000 annually in grants and scholarships. Research Grants support both PhD dissertation research and post-PhD studies, prioritizing the exploratory phases of promising new research projects and innovative, multidisciplinary approaches. Supported disciplines include archaeology, biological anthropology, paleoanthropology, primate behavioral ecology, genetics, geology, anatomy, morphology, paleobotany, and paleoclimatology. Current funding focus areas include Paleoanthropology of the Miocene, Pliocene, and Pleistocene; Primates: Evolution, behavior, morphology, ecology, endocrinology, genetics, isotope studies; and Modern hunter-gatherer groups.",
+    "url": "https://www.britishecologicalsociety.org/content/what-grants-can-i-apply-for/",
+    "title": "BES Grants | Ecological Funding Opportunities (Active Round)",
+    "funder": "British Ecological Society (BES)",
+    "error": "No content retrieved",
+    "deadline": "Not specified",
+    "amount": "Not specified",
+    "description": "No description available",
+    "detailed_overview": "No detailed overview available",
+    "tags": [],
+    "eligibility": "Not specified",
+    "application_requirements": [],
+    "funding_type": "Grant",
+    "geography": "Not specified",
+    "fit_score": 0,
+    "id": 1
+  },
+  {
+    "title": "Climate Smart Communities Grant Program",
+    "funder": "State of New York (Climate Smart Communities Program)",
+    "deadline": "Expired (Round 8 Closed)",
+    "amount": "Not specified in source",
+    "description": "Provides grants to New York State local governments for projects related to climate change mitigation, adaptation, and planning, supporting both implementation and CSC certification efforts.",
+    "detailed_overview": "The Climate Smart Communities (CSC) Grant program was established in 2016 to offer funding to cities, towns, villages, and counties across New York State. Funds are available for two main categories: implementation and certification. Implementation projects support activities like reducing greenhouse gas emissions (outside the power sector), climate change adaptation, and engineering feasibility studies for flood mitigation and Hydrofluorocarbons. Certification projects finance planning and assessment aligned with official Climate Smart Communities certification actions. Specific documentation and requirements are outlined for projects involving land acquisition, whether used as grant funding or as match.",
     "tags": [
-      "Research",
-      "Human Origins",
-      "Paleoanthropology",
-      "Biological Anthropology",
-      "Primate Behavior"
+      "Climate Change",
+      "Environmental Protection",
+      "Adaptation",
+      "Local Government",
+      "New York"
     ],
-    "eligibility": "Your research must be relevant to human origins and evolution. Applications are open to advanced doctoral students or post-PhD researchers. PhD students must be advanced to candidacy (all but dissertation). There are no citizenship requirements; applications are open to candidates from anywhere in the world. Applicants must be affiliated with an institution such as a university or museum. We do not give directly to individuals. Resubmittals are welcome and encouraged. If you have received a Leakey Foundation grant in the past, you must complete all reporting requirements before receiving a new one.",
-    "url": "https://leakeyfoundation.org/grant/research/",
+    "eligibility": "Cities, towns, villages, and counties of the State of New York.",
+    "url": "https://dec.ny.gov/environmental-protection/climate-change/resources-for-local-governments/grants-for-climate-action",
     "application_requirements": [
-      "Affiliation with an institution (university or museum)",
-      "Research proposal related to human origins",
-      "Advanced to candidacy status (for PhD students)",
-      "Completion of reporting requirements for prior grants (if applicable)"
+      "Review of the 2025 Request for Applications (RFA)",
+      "Compliance with Land Acquisition Toolkit documentation (if acquiring land with grant funds)",
+      "Deed recording with 'Notice of Grant' language against the subject property (if land acquisition is grant funded or used as match)"
     ],
     "funding_type": "Grant",
-    "geography": "Worldwide",
+    "geography": "State of New York",
+    "fit_score": 0,
+    "id": 2
+  },
+  {
+    "title": "Simons Collaborations in Ecology and Evolution",
+    "funder": "Simons Foundation",
+    "deadline": "Expired (2025-10-16)",
+    "amount": "Not specified",
+    "description": "Funding for groups of investigators, often from different disciplines, to work together on fundamental and high-impact scientific problems in ecology and evolution.",
+    "detailed_overview": "The Simons Collaborations program was launched in 2012 to create strong collaborations and foster the cross-pollination of ideas between investigators, aiming to generate unexpected breakthroughs. This model funds groups of outstanding scientists to address timely and important problems, focusing on fields in which significant new developments have created novel opportunities for exploration. The current call from the Life Sciences division seeks vision statements to identify new, emerging breakthrough areas of ecology and evolution, emphasizing research on basic principles of ecological and evolutionary dynamics, especially at their interface, that may be overlooked or considered too risky by other funding organizations.",
+    "tags": [
+      "Ecology",
+      "Evolution",
+      "Life Sciences",
+      "Scientific Research",
+      "Collaboration"
+    ],
+    "eligibility": "Groups of outstanding scientists, often from different disciplines, focusing on basic principles of ecological and evolutionary dynamics.",
+    "url": "https://www.simonsfoundation.org/grant/simons-collaborations-in-ecology-and-evolution/",
+    "application_requirements": [
+      "Vision Statement (LOI)",
+      "Full Proposal (by invitation only)",
+      "Presentation (for finalists only)"
+    ],
+    "funding_type": "Grant",
+    "geography": "Not specified (Likely International/Global scientific research)",
     "fit_score": 100,
-    "id": 1
+    "id": 3
   }
 ]
