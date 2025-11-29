@@ -32,15 +32,51 @@ A sophisticated AI assistant that automates the grant-seeking lifecycle, empower
 
 ### The Problem
 
-_(Nakazzi to fill in: Define the target user (e.g., a grant writer at a small non-profit). Describe the pain points: countless hours spent searching, the complexity of decoding unique requirements for each grant, and the challenge of writing tailored proposals.)_
+The Grant Seeker AI is a sophisticated, collaborative multi-agent AI system designed to serve as an intelligent partner for non-profit organizations, transforming the grant-seeking process from a fragmented, weeks-long ordeal into a streamlined, automated workflow.
+
+For small to medium, high-impact non-profits, the mission is vital, but the administrative burden of grant seeking is crippling. Dedicated grant writers and staff face immense pain points that divert critical resources away from doing good, hindering organizations from accessing the capital they need to survive and thrive. Current workflows are manual, fragmented, and inefficient.
+The key challenges addressed by this project include:
+Endless Discovery: Countless hours are lost manually scanning databases and the web for relevant opportunities, lacking a tireless researcher constantly monitoring the landscape.
+Compliance Complexity: Decoding complex guidelines from various websites and PDFs to extract essential information—such as key requirements, deadlines, and eligibility criteria—is highly error-prone and tedious.
+The Drafting Challenge: Writing high-quality, tailored proposals that strictly adhere to specific funder requirements is difficult to achieve at scale, especially when managing tight deadlines.
 
 ### Our Solution
 
-_(Nakazzi to fill in: Describe our AI agent system as a collaborative team of specialist agents that automate the most burdensome tasks: discovery, analysis, and drafting. Frame it as an intelligent partner that empowers organizations to focus on their mission, not paperwork.)_
+The Grant Seeker AI is built as a true Agent for Good, automating the most burdensome tasks: discovery, analysis, and drafting. This approach provides an intelligent partner that empowers organizations to focus on their mission, not paperwork.
+#### Core Concept and Architecture
+The project’s innovation lies in a specialized team of AI agents coordinated by an intelligent Orchestrator. Instead of a simple chatbot, we have built a pipeline of distinct agents that collaborate to automate the workflow from start to finish, delivering a streamlined one-button flow.
+Furthermore, our application is intrinsically related to the Environmental, Social and Corporate Governance (ESG) framework, specifically the Governance pillar, and the crucial issue of Business Resilience and Corporate Governance. Utilizing the Grant Seeker AI to embrace transparency plays an important role in sustainability reporting, allowing non-profit organizations to monitor impact, automate reporting, and engage donors more effectively.
+#### The Specialized Agents
+* The Finder Agent - Discovery 
+This agent acts as a tireless researcher, scanning the web to find grant opportunities that match the user’s specific project mission and funding needs.
+* The Create Extractor Agent and Create Query Agent - Compliance
+These  agents function as  compliance officers, reading through dense guidelines and PDFs to extract and analytically structure actionable intelligence, creating a proposal requirements blueprint.
+* The Writer Agent - Drafting
+This agent acts as a professional grant writer, combining the user's narrative with the Analyst’s strict blueprint to generate a compliant, persuasive, and well-formatted proposal.
+#### ESG Context
+Our project’s central idea of an Agent for Good is pertinent as it is intrinsically related to the Environmental, Social and Corporate Governance (ESG) framework, specifically the Governance pillar, and the crucial issue of Business Resilience and Corporate Governance. Utilizing the Grant Seeker AI to embrace transparency plays an important role in sustainability reporting, allowing non-profit organizations to monitor impact, automate reporting, and engage donors more effectively.
+
+#### Project Journey
+Bringing this vision to life required agility and collaboration. This application was created by The Orchestrators, a team of three developers and a project manager. Despite being geographically dispersed, the team leveraged diverse perspectives and worked across time zones to integrate these agents into a seamless Streamlit interface. This collaboration was crucial in designing a tool that is not just technically sound, but empathetic to the needs of the global non-profit community.
+
 
 ### The Value
 
-_(Nakazzi to fill in: Quantify the benefits. Our solution saves hours per grant cycle, increases the quality of proposals, and democratizes access to funding for under-resourced organizations.)_
+The Grant Seeker AI serves as a force multiplier, giving smaller organizations the professional capacity of a large fundraising department.
+The quantifiable benefits include:
+* Time Savings: We automate the entire workflow, potentially saving hundreds of hours per grant cycle.
+* Quality and Consistency: By strictly adhering to the "Proposal Requirements" blueprint provided by the Analyst Agent, our system maximizes success rates through compliance.
+* Democratization: Ultimately, this project achieves the Agents for Good mission by removing resource hurdles, thereby democratizing access to funding for under-resourced organizations. This allows non-profits to focus on their core mission rather than paperwork.
+
+#### Citations
+
+Anastasiia Skok. ESG for NGOs: How Sustainable Development Unlocks New Funding and Partnership Opportunities. https://www.bdo.ua/en-gb/insights-1/information-materials/2025/esg-for-ngos-how-sustainable-development-unlocks-new-funding-and-partnership-opportunities, 2025. BDO.
+
+AnhNguyen. EU’s CSRD Set to Reshape Corporate-Nonprofit Partnerships by 2025.  https://senecaesg.com/insights/eus-csrd-set-to-reshape-corporate-nonprofit-partnerships-by-2025/#:~:text=The%20CSRD's%20emphasis%20on%20sustainability,Sources:. 2025. Seneca Technologies Pte. Ltd
+
+Barbara Bijelic, Benjamin Michel, and Konstantin Mann. Behind ESG Ratings.  https://www.oecd.org/content/dam/oecd/en/publications/reports/2025/02/behind-esg-ratings_4591b8bb/3f055f0c-en.pdf, 2025. © OECD 2025.  This is an adaptation of an original work by the OECD. The opinions expressed and arguments employed in this adaptation should not be reported as representing the official views of the OECD or of its Member countries. 
+
+Directorate-General for Internal Market, Industry, Entrepreneurship and SMEs.  Corporate sustainability and responsibility. https://single-market-economy.ec.europa.eu/industry/sustainability/corporate-sustainability-and-responsibility_en#esg-environmental-social-and-corporate-governance, 2025.  European Commission.
 
 ---
 
