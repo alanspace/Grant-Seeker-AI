@@ -28,7 +28,7 @@ def find_and_analyze_grants(project_description: str) -> list[dict]:
     # We need a helper to run our async ADK code from a sync function
     async def _run_tavily_workflow():
         session_service = InMemorySessionService()
-        session_id = f"tavily_session_{uuid.uuid4().hex[:8]}"
+        session_id = f"tavily_session_{int(time.time() * 1000)}"
         await session_service.create_session(
             app_name="tavily_app",
             user_id="ui_user",
