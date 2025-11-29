@@ -10,7 +10,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'backend'))
 
 # Page configuration
 st.set_page_config(
-    page_title="Grant Details | Grant Seeker's Co-Pilot",
+    page_title="Grant Details | Grant Seeker AI",
     page_icon="📋",
     layout="wide",
     initial_sidebar_state="expanded"
