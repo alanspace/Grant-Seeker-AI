@@ -1,78 +1,29 @@
 [
   {
-    "title": "Capacity Building Grant",
-    "funder": "Advocates for Urban Agriculture (AUA) in partnership with Food:Land:Opportunity (F.L.O.)",
-    "deadline": "Expired (2025-10-03)",
-    "amount": "Not specified",
-    "description": "Funds support urban farms and community gardens in the Chicago area to enrich the local food economy, production, and distribution.",
-    "detailed_overview": "The Capacity Building Grant is housed by Advocates for Urban Agriculture (AUA) in partnership with Food:Land:Opportunity (F.L.O.) and operates as a model for community-led resource distribution. The funds are intended to strengthen urban agriculture throughout the Chicago area. The program uses a nomination process (self-nomination is permitted) to reduce the administrative burden on applicants. Recipients are selected by an Advisory Committee composed of community residents who are past grantees, growers, or supporters of earth stewardship.",
+    "title": "Leakey Foundation Research Grants",
+    "funder": "The Leakey Foundation",
+    "deadline": "2026-01-10",
+    "amount": "Up to $30,000",
+    "description": "Funds PhD dissertation research and post-PhD exploratory studies across disciplines related to human origins, evolution, and behavior.",
+    "detailed_overview": "The Leakey Foundation is the leading nonprofit funder of research dedicated to understanding human origins, awarding approximately $1,000,000 annually in grants and scholarships. Research Grants support both PhD dissertation research and post-PhD studies, prioritizing the exploratory phases of promising new research projects and innovative, multidisciplinary approaches. Supported disciplines include archaeology, biological anthropology, paleoanthropology, primate behavioral ecology, genetics, geology, anatomy, morphology, paleobotany, and paleoclimatology. Current funding focus areas include Paleoanthropology of the Miocene, Pliocene, and Pleistocene; Primates: Evolution, behavior, morphology, ecology, endocrinology, genetics, isotope studies; and Modern hunter-gatherer groups.",
     "tags": [
-      "Urban Agriculture",
-      "Community Gardens",
-      "Food Security",
-      "Capacity Building",
-      "Chicago"
+      "Research",
+      "Human Origins",
+      "Paleoanthropology",
+      "Biological Anthropology",
+      "Primate Behavior"
     ],
-    "eligibility": "Urban farms and community gardens in the Chicago area. Applications are submitted via a nomination process (community members can nominate, or growing spaces can self-nominate).",
-    "url": "https://www.auachicago.org/capacity-building-grants",
+    "eligibility": "Your research must be relevant to human origins and evolution. Applications are open to advanced doctoral students or post-PhD researchers. PhD students must be advanced to candidacy (all but dissertation). There are no citizenship requirements; applications are open to candidates from anywhere in the world. Applicants must be affiliated with an institution such as a university or museum. We do not give directly to individuals. Resubmittals are welcome and encouraged. If you have received a Leakey Foundation grant in the past, you must complete all reporting requirements before receiving a new one.",
+    "url": "https://leakeyfoundation.org/grant/research/",
     "application_requirements": [
-      "Completion of the Capacity Building Grant nomination form",
-      "Submission via Google Form or via email in a document format of your choice",
-      "Optional: Submit draft grant documents to the grant administrator for writing support prior to final submission"
+      "Affiliation with an institution (university or museum)",
+      "Research proposal related to human origins",
+      "Advanced to candidacy status (for PhD students)",
+      "Completion of reporting requirements for prior grants (if applicable)"
     ],
     "funding_type": "Grant",
-    "geography": "Chicago area",
-    "fit_score": 78,
-    "id": 1
-  },
-  {
-    "title": "Innovative Agriculture Micro-grants for Chicago (IAM-Chi)",
-    "funder": "University of Illinois Extension (in cooperation with USDA Farm Service Agency)",
-    "deadline": "2026-11-30",
-    "amount": "$1,000 - $25,000",
-    "description": "These micro-grants fund innovative, forward-thinking projects designed to advance urban agriculture in Chicago, supporting activities like conservation, infrastructure development, and supply chain improvements. The program aims to solve locally identified farm and food production problems and elevate capacity for beginning and historically underserved farmers.",
-    "detailed_overview": "The Innovative Agriculture Micro-grants for Chicago (IAM-Chi) program is a collaboration between the University of Illinois Extension and the USDA Farm Service Agency (FSA). The grants support short-term, one-time projects that advance urban agriculture in Chicago. The core purposes are to: 1) Advance innovative, change-oriented projects that solve locally identified farm and food production problems within Chicago’s urban areas; 2) Broaden awareness of Illinois’ and USDA’s FSA programs and resources available to urban farmers and producers in Chicago; and 3) Leverage resources to elevate capacity for urban farming, farmers, and producers across Chicago’s urban food system, including beginning and historically underserved farmers and producers. Funding specifically supports conservation practices which improve soil quality, provide cost-share for infrastructure and on-farm equipment, or improve supply chain issues.",
-    "tags": [
-      "Agriculture",
-      "Urban Farming",
-      "Chicago",
-      "Infrastructure",
-      "Underserved Communities"
-    ],
-    "eligibility": "Urban farmers and producers, beginning farmers, historically underserved producers, and food entrepreneurs in Chicago, Illinois.",
-    "url": "https://extension.illinois.edu/sites/default/files/2024-05/rfp_usda_iam-chi_grants_2024_to_2026.pdf",
-    "application_requirements": [
-      "Application as an eligible urban farmer, producer, or food entrepreneur",
-      "Project must be short-term and innovative"
-    ],
-    "funding_type": "Grant (Micro-grant)",
-    "geography": "Chicago, Illinois",
+    "geography": "Worldwide",
     "fit_score": 100,
-    "id": 2
-  },
-  {
-    "title": "Community Urban Garden Grant Program",
-    "funder": "Cook County Farm Bureau (CCFB)",
-    "deadline": "Check website for 2026 cycle",
-    "amount": "Not specified (described as supplemental funding)",
-    "description": "Provides supplemental funding to urban community gardens in Cook County for the purchase of plantings, seeds, and garden materials.",
-    "detailed_overview": "The Cook County Farm Bureau (CCFB) offers the Community Urban Garden Grant to support the growth and maintenance of urban community gardens located within Cook County. The grant provides supplemental financial assistance intended specifically for necessary purchases like seeds, plantings, and various garden materials. A key requirement of the grant is that all purchased supplies must be sourced from businesses that are recognized members of the Cook County Farm Bureau.",
-    "tags": [
-      "Community Gardens",
-      "Urban Farming",
-      "Agriculture",
-      "Cook County",
-      "Local Business"
-    ],
-    "eligibility": "Organizations operating urban community gardens in Cook County. Funds must be used exclusively for purchasing plantings, seeds, and garden material from CCFB member businesses.",
-    "url": "https://cookcfb.org/stay-updated-/events-and-programs/community-programs/profile/grants-1",
-    "application_requirements": [
-      "Proof of operation as an urban community garden in Cook County",
-      "Commitment to purchasing materials from CCFB member businesses"
-    ],
-    "funding_type": "Grant",
-    "geography": "Cook County, Illinois",
-    "fit_score": 56,
-    "id": 3
+    "id": 1
   }
 ]

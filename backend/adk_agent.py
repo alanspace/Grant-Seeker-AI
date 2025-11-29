@@ -7,6 +7,7 @@ import asyncio
 import json
 import hashlib
 import logging
+import uuid
 from pathlib import Path
 from datetime import datetime, timedelta
 from typing import Optional
@@ -389,24 +390,35 @@ class GrantSeekerWorkflow:
         self.finder_agent = create_finder_agent()
         self.extractor_agent = create_extractor_agent()
         self.query_agent = create_query_agent()
-    
+
+
+
     async def generate_search_query(self, description: str) -> str:
-        """Generate a targeted search query from a project description."""
         try:
             logger.info("Generating search query from description")
             
+            # --- THE FIX: Create a UNIQUE session every time ---
+            session_id = f"query-gen-{uuid.uuid4()}"
+            
+            # Create the session explicitly
+            await self.session_service.create_session(
+                app_name="grant-seeker",
+                user_id="user-1",
+                session_id=session_id
+            )
+
             runner = Runner(
                 agent=self.query_agent,
                 app_name="grant-seeker",
                 session_service=self.session_service
             )
-            
+                
             user_msg = types.Content(role="user", parts=[types.Part(text=description)])
             
             response_text = ""
             async for event in runner.run_async(
                 user_id="user-1",
-                session_id="query-gen-session",
+                session_id=session_id,
                 new_message=user_msg
             ):
                 if event.is_final_response() and event.content and event.content.parts:
@@ -415,7 +427,7 @@ class GrantSeekerWorkflow:
             query = response_text.strip()
             logger.info(f"Generated query: {query}")
             return query
-            
+                
         except Exception as e:
             logger.error(f"Failed to generate query: {e}")
             # Fallback: use the first 10 words of the description
