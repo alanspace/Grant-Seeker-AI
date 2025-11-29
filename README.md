@@ -45,7 +45,7 @@ The Drafting Challenge: Writing high-quality, tailored proposals that strictly a
 The Grant Seeker AI is built as a true Agent for Good, automating the most burdensome tasks: discovery, analysis, and drafting. This approach provides an intelligent partner that empowers organizations to focus on their mission, not paperwork.
 #### Core Concept and Architecture
 The project’s innovation lies in a specialized team of AI agents coordinated by an intelligent Orchestrator. Instead of a simple chatbot, we have built a pipeline of distinct agents that collaborate to automate the workflow from start to finish, delivering a streamlined one-button flow.
-Furthermore, our application is intrinsically related to the Environmental, Social and Corporate Governance (ESG) framework, specifically the Governance pillar, and the crucial issue of Business Resilience and Corporate Governance. Utilizing the Grant Seeker AI to embrace transparency plays an important role in sustainability reporting, allowing non-profit organizations to monitor impact, automate reporting, and engage donors more effectively.
+
 #### The Specialized Agents
 * The Finder Agent - Discovery 
 This agent acts as a tireless researcher, scanning the web to find grant opportunities that match the user’s specific project mission and funding needs.
