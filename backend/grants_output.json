@@ -17,55 +17,70 @@
     "id": 1
   },
   {
-    "title": "Climate Smart Communities Grant Program",
-    "funder": "State of New York (Climate Smart Communities Program)",
-    "deadline": "Expired (Round 8 Closed)",
-    "amount": "Not specified in source",
-    "description": "Provides grants to New York State local governments for projects related to climate change mitigation, adaptation, and planning, supporting both implementation and CSC certification efforts.",
-    "detailed_overview": "The Climate Smart Communities (CSC) Grant program was established in 2016 to offer funding to cities, towns, villages, and counties across New York State. Funds are available for two main categories: implementation and certification. Implementation projects support activities like reducing greenhouse gas emissions (outside the power sector), climate change adaptation, and engineering feasibility studies for flood mitigation and Hydrofluorocarbons. Certification projects finance planning and assessment aligned with official Climate Smart Communities certification actions. Specific documentation and requirements are outlined for projects involving land acquisition, whether used as grant funding or as match.",
+    "title": "Climate Change and Human Health Seed Grants",
+    "funder": "Burroughs Wellcome Fund (BWF)",
+    "deadline": "2026-01-22",
+    "amount": "Not specified in snippet (Seed Grant)",
+    "description": "Provides seed funding for research projects that explore the complex and crucial intersection between climate change and human health.",
+    "detailed_overview": "This program offers seed grants to support research at the intersection of climate change and human health. Applications are currently being accepted. Although listed as a rolling deadline, the next specific application due date is January 22, 2026, at 3:00 pm ET.",
     "tags": [
       "Climate Change",
-      "Environmental Protection",
-      "Adaptation",
-      "Local Government",
-      "New York"
+      "Human Health",
+      "Research",
+      "Science",
+      "Seed Grants"
     ],
-    "eligibility": "Cities, towns, villages, and counties of the State of New York.",
-    "url": "https://dec.ny.gov/environmental-protection/climate-change/resources-for-local-governments/grants-for-climate-action",
+    "eligibility": "Not specified in snippet (Implied for researchers/institutions capable of submitting a formal proposal).",
+    "url": "https://www.bwfund.org/funding-opportunities/climate-change-and-human-health/climate-change-and-human-health-seed-grants/",
     "application_requirements": [
-      "Review of the 2025 Request for Applications (RFA)",
-      "Compliance with Land Acquisition Toolkit documentation (if acquiring land with grant funds)",
-      "Deed recording with 'Notice of Grant' language against the subject property (if land acquisition is grant funded or used as match)"
+      "Formal Proposal submission (via Proposal Central)",
+      "Refer to Application Instructions and FAQ for specific required documents"
     ],
-    "funding_type": "Grant",
-    "geography": "State of New York",
+    "funding_type": "Seed Grant",
+    "geography": "Not specified in snippet",
     "fit_score": 0,
     "id": 2
   },
   {
-    "title": "Simons Collaborations in Ecology and Evolution",
-    "funder": "Simons Foundation",
-    "deadline": "Expired (2025-10-16)",
-    "amount": "Not specified",
-    "description": "Funding for groups of investigators, often from different disciplines, to work together on fundamental and high-impact scientific problems in ecology and evolution.",
-    "detailed_overview": "The Simons Collaborations program was launched in 2012 to create strong collaborations and foster the cross-pollination of ideas between investigators, aiming to generate unexpected breakthroughs. This model funds groups of outstanding scientists to address timely and important problems, focusing on fields in which significant new developments have created novel opportunities for exploration. The current call from the Life Sciences division seeks vision statements to identify new, emerging breakthrough areas of ecology and evolution, emphasizing research on basic principles of ecological and evolutionary dynamics, especially at their interface, that may be overlooked or considered too risky by other funding organizations.",
+    "title": "Research for Understanding PFAS Uptake and Bioaccumulation in Plant and Animals in Agricultural, Rural, and Tribal Communities",
+    "funder": "EPA (Environmental Protection Agency)",
+    "deadline": "Not specified on this page. Status as 'Open Grant' suggests current availability, but no application deadline is provided.",
+    "amount": "Not specified on this page.",
+    "description": "Funding for research to understand the uptake and bioaccumulation of PFAS (per- and polyfluoroalkyl substances) in plants and animals within agricultural, rural, and Tribal communities.",
+    "detailed_overview": "This specific opportunity falls under the EPA's broader Ecosystems Research Grants program. The overall program funds research aimed at protecting ecosystems and the air and water resources that provide benefits for humans and other living things. Research areas include evaluating how air pollution affects ecosystems, protecting natural water resources and their supporting watersheds, developing new strategies for watershed management, reducing water-related energy demands, and establishing innovative solutions for nutrient pollution. This grant specifically targets understanding chemical contaminant pathways in vulnerable environments.",
     "tags": [
-      "Ecology",
-      "Evolution",
-      "Life Sciences",
-      "Scientific Research",
-      "Collaboration"
+      "Ecosystems Research",
+      "PFAS",
+      "Environmental Health",
+      "Agriculture",
+      "Tribal Communities"
     ],
-    "eligibility": "Groups of outstanding scientists, often from different disciplines, focusing on basic principles of ecological and evolutionary dynamics.",
-    "url": "https://www.simonsfoundation.org/grant/simons-collaborations-in-ecology-and-evolution/",
+    "eligibility": "Not specified on this page. Eligibility requirements will be detailed in the official funding opportunity.",
+    "url": "https://www.epa.gov/research-grants/ecosystems-research-grants",
     "application_requirements": [
-      "Vision Statement (LOI)",
-      "Full Proposal (by invitation only)",
-      "Presentation (for finalists only)"
+      "All forms referenced in the official funding opportunity",
+      "Forms available to download from the 'Funding Opportunities: How to Apply and Required Forms' page"
     ],
     "funding_type": "Grant",
-    "geography": "Not specified (Likely International/Global scientific research)",
-    "fit_score": 100,
+    "geography": "United States (focused on Agricultural, Rural, and Tribal Communities)",
+    "fit_score": 0,
     "id": 3
+  },
+  {
+    "url": "https://esa.org/baltimore2025/registration/funding-support/",
+    "title": "Funding Support for 2025 Annual Meeting (Includes Joan Ehrenfeld Award)",
+    "funder": "Ecological Society of America (ESA)",
+    "error": "No content retrieved",
+    "deadline": "Not specified",
+    "amount": "Not specified",
+    "description": "No description available",
+    "detailed_overview": "No detailed overview available",
+    "tags": [],
+    "eligibility": "Not specified",
+    "application_requirements": [],
+    "funding_type": "Grant",
+    "geography": "Not specified",
+    "fit_score": 0,
+    "id": 4
   }
 ]

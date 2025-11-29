@@ -158,5 +158,16 @@ def main():
     # """, unsafe_allow_html=True)
 
 
-if __name__ == "__main__":
-    main()
+# Define pages for navigation
+pages = {
+    "Grant Seeker AI": [
+        st.Page(main, title="Home", icon="🏠", default=True),
+        st.Page("pages/1_🔍_Search_Grants.py", title="Search Grants", icon="🔍"),
+        st.Page("pages/2_📋_Grant_Details.py", title="Grant Details", icon="📋"),
+        st.Page("pages/3_✍️_Proposal_Builder.py", title="Proposal Builder", icon="✍️"),
+    ]
+}
+
+# Run navigation
+pg = st.navigation(pages)
+pg.run()
