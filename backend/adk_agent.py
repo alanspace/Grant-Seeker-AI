@@ -387,7 +387,6 @@ class GrantSeekerWorkflow:
         
         # Create agents
         self.finder_agent = create_finder_agent()
-        self.finder_agent = create_finder_agent()
         self.extractor_agent = create_extractor_agent()
         self.query_agent = create_query_agent()
     

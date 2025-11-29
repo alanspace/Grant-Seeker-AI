@@ -215,6 +215,78 @@
 # print("Diagram generated: grant_seeker_horizontal_pipeline.png")
 
 
+# from diagrams import Diagram, Cluster, Edge
+# from diagrams.onprem.client import User
+# from diagrams.programming.language import Python
+# from diagrams.onprem.database import Cassandra
+# from diagrams.gcp.ml import VertexAI
+# from diagrams.onprem.network import Internet
+# from diagrams.programming.flowchart import Document
+
+# # Graph attributes for a wide, landscape view
+# graph_attr = {
+#     "fontsize": "20",
+#     "bgcolor": "white",
+#     "pad": "0.5",
+#     "splines": "ortho",  # Orthogonal (straight) lines
+#     "nodesep": "0.5",    # Horizontal separation
+#     "ranksep": "1.0",    # Vertical separation between groups
+#     "labelloc": "t"      # Label at the top
+# }
+
+# with Diagram("Grant Seeker Horizontal Pipeline", show=False, direction="LR", graph_attr=graph_attr):
+    
+#     # --- Far Left: Input ---
+#     user = User("User Query")
+
+#     # --- Control Center ---
+#     with Cluster("Orchestration Layer"):
+#         orchestrator = Python("Workflow\nManager")
+#         cache = Cassandra("Local\nCache")
+        
+#     # --- Middle Left: Phase 1 ---
+#     with Cluster("Phase 1: Discovery"):
+#         search_api = Internet("Tavily\nSearch")
+#         finder_agent = Python("GrantFinder\nAgent")
+#         gemini_1 = VertexAI("Gemini\nReasoning")
+
+#     # --- Middle Right: Phase 2 ---
+#     with Cluster("Phase 2: Extraction"):
+#         scrape_api = Internet("Tavily\nExtract")
+#         extractor_agent = Python("GrantExtractor\nAgent")
+#         gemini_2 = VertexAI("Gemini\nParsing")
+
+#     # --- Far Right: Output ---
+#     results = Document("Output\nJSON")
+
+#     # ==========================================
+#     # DEFINING THE FLOW (Left -> Right)
+#     # ==========================================
+
+#     # 1. Input processing
+#     user >> Edge(label="Start") >> orchestrator
+#     orchestrator - Edge(style="dashed") - cache # Bi-directional check
+
+#     # 2. Phase 1 Flow
+#     orchestrator >> Edge(label="Query") >> search_api
+#     search_api >> Edge(label="Results") >> finder_agent
+#     finder_agent >> Edge(label="Analyze") >> gemini_1
+    
+#     # 3. Transition (The "Handoff")
+#     # Connecting Phase 1 Agent to Phase 2 Tools visually implies the pipeline flow
+#     gemini_1 >> Edge(label="Promising Leads", style="bold", color="blue") >> scrape_api
+
+#     # 4. Phase 2 Flow
+#     scrape_api >> Edge(label="Content") >> extractor_agent
+#     extractor_agent >> Edge(label="Extract") >> gemini_2
+
+#     # 5. Final Output
+#     gemini_2 >> Edge(label="Structured Data", style="bold", color="green") >> results
+
+# print("Diagram generated: grant_seeker_horizontal_pipeline.png")
+
+
+
 from diagrams import Diagram, Cluster, Edge
 from diagrams.onprem.client import User
 from diagrams.programming.language import Python
@@ -238,6 +310,10 @@ with Diagram("Grant Seeker Horizontal Pipeline", show=False, direction="LR", gra
     
     # --- Far Left: Input ---
     user = User("User Query")
+
+    # --- Frontend Layer ---
+    with Cluster("Frontend Layer"):
+        ui = Python("Streamlit\nApp")
 
     # --- Control Center ---
     with Cluster("Orchestration Layer"):
@@ -264,7 +340,8 @@ with Diagram("Grant Seeker Horizontal Pipeline", show=False, direction="LR", gra
     # ==========================================
 
     # 1. Input processing
-    user >> Edge(label="Start") >> orchestrator
+    user >> Edge(label="Interacts") >> ui
+    ui >> Edge(label="Triggers") >> orchestrator
     orchestrator - Edge(style="dashed") - cache # Bi-directional check
 
     # 2. Phase 1 Flow
