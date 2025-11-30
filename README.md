@@ -2,7 +2,7 @@
 
 **An "Agents for Good" Multi-Agent System for the Google ADK Capstone Project**
 
-![Project Status: In Progress](https://img.shields.io/badge/status-completed-green)
+![Project Status: Completed](https://img.shields.io/badge/status-completed-green)
 ![Python](https://img.shields.io/badge/python-3.10%2B-blue)
 ![ADK](https://img.shields.io/badge/Google-ADK-red)
 
@@ -216,6 +216,8 @@ graph TD
 - An API key for Google Gemini (get from [Google AI Studio](https://aistudio.google.com/app/apikey))
 - An API key for Tavily (get from [Tavily](https://tavily.com/))
 
+Users needs to paste keys in `.env` or set as environment variables directly.
+
 ### Installation Steps
 
 1.  **Clone the repository:**
@@ -240,7 +242,6 @@ graph TD
 3.  **Install the required dependencies:**
     ```bash
     pip install -r requirements.txt
-    pip install -r frontend/requirements-ui.txt
     ```
 4.  **Set up your API keys:**
     - Create a file named `.env` in the root directory.
@@ -251,7 +252,7 @@ graph TD
     ```
 5.  **Run the application:**
     ```bash
-    streamlit run frontend/app.py
+    streamlit run frontend/0_Home.py
     ```
     The app will open in your browser at `http://localhost:8501`
 
