@@ -144,7 +144,7 @@ Our system is built using the **Google Agent Development Kit (ADK)** and impleme
 - Parallel processing with Semaphore(3) concurrency control
 
 ```mermaid
-graph TD
+graph LR
     %% Styles
     classDef frontend fill:#e1f5fe,stroke:#01579b,stroke-width:2px,color:black;
     classDef orchestrator fill:#fff9c4,stroke:#fbc02d,stroke-width:2px,color:black;
