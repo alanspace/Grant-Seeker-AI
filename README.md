@@ -205,7 +205,7 @@ graph TD
 - **Concurrency:** asyncio with Semaphore for parallel processing
 - **Caching:** File-based cache system with MD5 hashing (24h TTL)
 - **Testing:** pytest with 26 comprehensive unit tests
-- **Deployment:** Ready for Streamlit Cloud or Google Cloud Run
+- **Deployment:** Ready for Streamlit Cloud
 
 ---
 
