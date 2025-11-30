@@ -195,6 +195,10 @@ def main():
             st.switch_page("pages/1_🔍_Search_Grants.py")
         st.stop()
     
+    # If no tags are found for the selected grant, we display "No tags available"
+    if not grant['tags']:
+        grant['tags'] = ["No tags available"]
+
     # Get insights from grant data (API format) or fall back to defaults
     fit_score = grant.get('fit_score', DEFAULT_INSIGHTS['fit_score'])
     key_dates = grant.get('key_dates', DEFAULT_INSIGHTS['key_dates'])
