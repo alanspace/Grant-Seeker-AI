@@ -143,43 +143,46 @@ Our system is built using the **Google Agent Development Kit (ADK)** and impleme
 - Date-aware extraction with context injection
 - Parallel processing with Semaphore(3) concurrency control
 
-```mermaid
-graph LR
-    %% Styles
-    classDef frontend fill:#e1f5fe,stroke:#01579b,stroke-width:2px,color:black;
-    classDef orchestrator fill:#fff9c4,stroke:#fbc02d,stroke-width:2px,color:black;
-    classDef agent fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,rx:10,ry:10,color:black;
-    classDef tool fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px,stroke-dasharray: 5 5,color:black;
-    classDef storage fill:#eceff1,stroke:#607d8b,stroke-width:2px,color:black;
+```
+graph TD
+    %% Styles - Added padding to make boxes bigger
+    classDef frontend fill:#e1f5fe,stroke:#01579b,stroke-width:2px,color:black,padding:10px;
+    classDef orchestrator fill:#fff9c4,stroke:#fbc02d,stroke-width:2px,color:black,padding:10px;
+    classDef agent fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,rx:10,ry:10,color:black,padding:10px;
+    classDef tool fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px,stroke-dasharray: 5 5,color:black,padding:10px;
+    classDef storage fill:#eceff1,stroke:#607d8b,stroke-width:2px,color:black,padding:10px;
 
-    subgraph Frontend ["🖥️ Frontend Layer"]
-        User([👤 User]) -->|1. Input| UI[Streamlit UI]
-        UI -->|2. Request| API[API Layer]
+    %% Subgraph Frontend
+    subgraph Frontend ["&nbsp;&nbsp;&nbsp;🖥️ Frontend Layer&nbsp;&nbsp;&nbsp;"]
+        %% Added spaces to force width
+        User([&nbsp;&nbsp;&nbsp;👤 User&nbsp;&nbsp;&nbsp;]) -->|1. Input Info| UI[&nbsp;&nbsp;Streamlit App&nbsp;&nbsp;]
+        UI -->|2. Request| API[&nbsp;&nbsp;API Bridge&nbsp;&nbsp;]
     end
 
-    subgraph Backend ["⚙️ Backend Orchestration"]
-        API -->|3. Start| Workflow[Orchestrator]
+    %% Subgraph Backend
+    subgraph Backend ["&nbsp;&nbsp;&nbsp;⚙️ Backend Orchestration&nbsp;&nbsp;&nbsp;"]
+        API -->|3. Start| Workflow[&nbsp;&nbsp;Orchestrator&nbsp;&nbsp;]
         
         %% Phase 0
-        Workflow -->|Phase 0| QueryAgent(🤖 Query Gen)
-        QueryAgent -->|Optimize| Gemini1[Gemini]
+        Workflow -->|Phase 0| QueryAgent(🤖 Query<br/>Gen Agent)
+        QueryAgent -->|Optimize| Gemini1[&nbsp;&nbsp;Gemini&nbsp;&nbsp;]
         
         %% Phase 1
-        Workflow -->|Phase 1| FinderAgent(🤖 Finder)
-        FinderAgent <-->|Search| Tavily[🛠️ Tavily API]
-        FinderAgent -->|Analyze| Gemini2[Gemini]
+        Workflow -->|Phase 1| FinderAgent(🤖 Finder<br/>Agent)
+        FinderAgent <-->|Search| Tavily[&nbsp;&nbsp;🛠️ Tavily API&nbsp;&nbsp;]
+        FinderAgent -->|Analyze| Gemini2[&nbsp;&nbsp;Gemini&nbsp;&nbsp;]
         
         %% Phase 2
-        Workflow -->|Phase 2| ExtractorAgent(🤖 Extractor)
+        Workflow -->|Phase 2| ExtractorAgent(🤖 Extractor<br/>Agent)
         ExtractorAgent <-->|Scrape| Tavily
-        ExtractorAgent -->|Extract| Gemini3[Gemini]
+        ExtractorAgent -->|Extract| Gemini3[&nbsp;&nbsp;Gemini&nbsp;&nbsp;]
         
         %% Caching
-        ExtractorAgent -.->|Read/Write| Cache[(📂 Cache)]
+        ExtractorAgent -.->|Read/Write| Cache[(&nbsp;&nbsp;📂 File Cache&nbsp;&nbsp;)]
         
         %% Phase 3
-        UI -->|4. Select| WriterAgent(🤖 Writer)
-        WriterAgent -->|Draft| Gemini4[Gemini]
+        UI -->|4. Select| WriterAgent(🤖 Writer<br/>Agent)
+        WriterAgent -->|Draft| Gemini4[&nbsp;&nbsp;Gemini&nbsp;&nbsp;]
     end
 
     %% Output
