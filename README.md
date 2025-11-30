@@ -35,7 +35,11 @@ A sophisticated AI assistant that automates the grant-seeking lifecycle, empower
 
 ### The Problem
 
-The Grant Seeker AI is a sophisticated, collaborative multi-agent AI system designed to serve as an intelligent partner for non-profit organizations, transforming the grant-seeking process from a fragmented, weeks-long ordeal into a streamlined, automated workflow.
+<!-- The Grant Seeker AI is a sophisticated, collaborative multi-agent AI system designed to serve as an intelligent partner for non-profit organizations, transforming the grant-seeking process from a fragmented, weeks-long ordeal into a streamlined, automated workflow.
+
+*   **Endless Discovery:** Countless hours are lost manually scanning databases.
+*   **Compliance Complexity:** Decoding complex PDF guidelines to extract eligibility criteria is error-prone.
+*   **The Drafting Challenge:** Writing tailored proposals that adhere to strict funder requirements is difficult to scale. -->
 
 For small to medium, high-impact non-profits, the mission is vital, but the administrative burden of grant seeking is crippling. Dedicated grant writers and staff face immense pain points that divert critical resources away from doing good, hindering organizations from accessing the capital they need to survive and thrive. Current workflows are manual, fragmented, and inefficient.
 The key challenges addressed by this project include:
@@ -46,6 +50,9 @@ The Drafting Challenge: Writing high-quality, tailored proposals that strictly a
 ### Our Solution
 
 The Grant Seeker AI is built as a true Agent for Good, automating the most burdensome tasks: discovery, analysis, and drafting. This approach provides an intelligent partner that empowers organizations to focus on their mission, not paperwork.
+
+<!-- **Grant Seeker AI** is a specialized team of AI agents coordinated by an intelligent Orchestrator. Instead of a simple chatbot, we have built a pipeline of distinct agents that collaborate to automate the workflow from start to finish. -->
+
 #### Core Concept and Architecture
 The project’s innovation lies in a specialized team of AI agents coordinated by an intelligent Orchestrator. Instead of a simple chatbot, we have built a pipeline of distinct agents that collaborate to automate the workflow from start to finish, delivering a streamlined one-button flow.
 
@@ -59,6 +66,12 @@ This agent acts as a professional grant writer, combining the user's narrative w
 #### ESG Context
 Our project’s central idea of an Agent for Good is pertinent as it is intrinsically related to the Environmental, Social and Corporate Governance (ESG) framework, specifically the Governance pillar, and the crucial issue of Business Resilience and Corporate Governance. Utilizing the Grant Seeker AI to embrace transparency plays an important role in sustainability reporting, allowing non-profit organizations to monitor impact, automate reporting, and engage donors more effectively.
 
+<!-- #### The Specialized Agents
+*   **The QueryGenerator Agent:** Acts as a search strategist, converting natural language project descriptions into optimized search queries.
+*   **The GrantFinder Agent:** Acts as a researcher, analyzing Tavily search results to filter out noise and identify the top 5-7 leads.
+*   **The GrantExtractor Agent:** A parallel-processing specialist that scrapes webpages to extract structured data (deadlines, eligibility, budget), using date-aware context to filter expired grants.
+*   **The Writer Agent:** A professional grant writer that takes the structured data and drafts a persuasive, compliant proposal. -->
+
 #### Project Journey
 Bringing this vision to life required agility and collaboration. This application was created by The Orchestrators, a team of three developers and a project manager. Despite being geographically dispersed, the team leveraged diverse perspectives and worked across time zones to integrate these agents into a seamless Streamlit interface. This collaboration was crucial in designing a tool that is not just technically sound, but empathetic to the needs of the global non-profit community.
 
@@ -71,19 +84,24 @@ The quantifiable benefits include:
 * Quality and Consistency: By strictly adhering to the "Proposal Requirements" blueprint provided by the Analyst Agent, our system maximizes success rates through compliance.
 * Democratization: Ultimately, this project achieves the Agents for Good mission by removing resource hurdles, thereby democratizing access to funding for under-resourced organizations. This allows non-profits to focus on their core mission rather than paperwork.
 
-#### Citations
+<!-- ### The Value
+*   **Time Savings:** Automates 90% of the research workflow.
+*   **Quality:** Ensures strict adherence to "Proposal Requirements" via AI blueprints.
+*   **Democratization:** Removes resource hurdles for under-resourced organizations. -->
 
-Anastasiia Skok. ESG for NGOs: How Sustainable Development Unlocks New Funding and Partnership Opportunities. https://www.bdo.ua/en-gb/insights-1/information-materials/2025/esg-for-ngos-how-sustainable-development-unlocks-new-funding-and-partnership-opportunities, 2025. BDO.
-
-AnhNguyen. EU’s CSRD Set to Reshape Corporate-Nonprofit Partnerships by 2025.  https://senecaesg.com/insights/eus-csrd-set-to-reshape-corporate-nonprofit-partnerships-by-2025/#:~:text=The%20CSRD's%20emphasis%20on%20sustainability,Sources:. 2025. Seneca Technologies Pte. Ltd
-
-Barbara Bijelic, Benjamin Michel, and Konstantin Mann. Behind ESG Ratings.  https://www.oecd.org/content/dam/oecd/en/publications/reports/2025/02/behind-esg-ratings_4591b8bb/3f055f0c-en.pdf, 2025. © OECD 2025.  This is an adaptation of an original work by the OECD. The opinions expressed and arguments employed in this adaptation should not be reported as representing the official views of the OECD or of its Member countries. 
-
-Directorate-General for Internal Market, Industry, Entrepreneurship and SMEs.  Corporate sustainability and responsibility. https://single-market-economy.ec.europa.eu/industry/sustainability/corporate-sustainability-and-responsibility_en#esg-environmental-social-and-corporate-governance, 2025.  European Commission.
-
----
 
 ## 2. How It Works
+
+<!-- Our application provides a four-step workflow powered by specialized AI agents:
+
+1.  **Input Project Details:** The user enters their organization details, mission, and focus area.
+2.  **Find & Extract (Backend Processing):**
+    *   The **Query Agent** optimizes the search terms (Phase 0).
+    *   The **GrantFinder Agent** scans the web via Tavily API (Phase 1).
+    *   **GrantExtractor Agents** process promising grants in parallel to extract 13 key data fields (Phase 2).
+    *   **Smart Caching** reduces response time by 80% on repeated queries.
+3.  **Review Results:** Users see a structured list of discovered grants in interactive cards.
+4.  **Draft Proposal:** Users select a grant, and the **Writer Agent** generates a tailored first draft (Phase 3). -->
 
 Our application provides a four-step workflow powered by specialized AI agents:
 
@@ -209,6 +227,52 @@ pytest tests/ -v
 ```
 
 ---
+## 5. Data Schema & Output
+
+The `GrantExtractor` agent produces structured JSON data strictly adhering to a Pydantic schema. This ensures downstream compatibility with the `WriterAgent` and allows for consistent UI rendering.
+
+**Key Features of the Output:**
+*   **Fit Score (0-100):** A calculated metric indicating how well the grant matches the user's project description.
+*   **Status Detection:** The agent identifies if a deadline is "Expired" or "Not Found".
+*   **Smart Tagging:** Auto-generated categories for easy filtering.
+
+**Example API Response:**
+```json
+[
+  {
+    "id": 3,
+    "title": "Growing Spaces In-Kind Grant 2025",
+    "funder": "Growing Spaces",
+    "deadline": "Expired (2025-06-30)",
+    "amount": "$2,000 - $8,000 (In-Kind)",
+    "description": "Provides in-kind funding for Growing Dome greenhouses to nonprofits, schools, or veterans’ organizations...",
+    "detailed_overview": "Growing Spaces offers in-kind grants... This program supports registered nonprofits, schools, or veterans’ organizations actively working to provide fresh organic produce to underserved and food-insecure communities...",
+    "tags": [
+      "In-Kind",
+      "Greenhouse",
+      "Food Insecurity",
+      "Nonprofit",
+      "Community Gardening"
+    ],
+    "eligibility": "Registered nonprofits, schools, or veterans’ organizations that are actively providing fresh food...",
+    "url": "https://growingspaces.pages.dev/gardening-grants",
+    "application_requirements": [
+      "Fill out application form",
+      "Proof of eligibility (nonprofit/school status)",
+      "Evidence of site space"
+    ],
+    "funding_type": "In-Kind Grant",
+    "geography": "United States",
+    "fit_score": 98
+  },
+  {
+    "id": 1,
+    "title": "Community Development Grant - Small",
+    "funder": "City of Chicago",
+    "fit_score": 63,
+    "..." : "..."
+  }
+]
 
 ## 6. Our Team
 
@@ -234,3 +298,21 @@ While this prototype demonstrates our core vision, we have a clear roadmap for f
 ## 8. Acknowledgements
 
 We would like to extend a special thank you to **Ujjwal Ruhal** for his valuable contributions during the initial UI conceptualization phase of this project.
+
+## 9 Citations
+
+
+*   Anastasiia Skok. **[ESG for NGOs: How Sustainable Development Unlocks New Funding and Partnership Opportunities](https://www.bdo.ua/en-gb/insights-1/information-materials/2025/esg-for-ngos-how-sustainable-development-unlocks-new-funding-and-partnership-opportunities)**. BDO, 2025.
+*   AnhNguyen. **[EU’s CSRD Set to Reshape Corporate-Nonprofit Partnerships by 2025](https://senecaesg.com/insights/eus-csrd-set-to-reshape-corporate-nonprofit-partnerships-by-2025/#:~:text=The%20CSRD's%20emphasis%20on%20sustainability,Sources:)**. Seneca Technologies Pte. Ltd, 2025.
+*   Barbara Bijelic, Benjamin Michel, and Konstantin Mann. **[Behind ESG Ratings](https://www.oecd.org/content/dam/oecd/en/publications/reports/2025/02/behind-esg-ratings_4591b8bb/3f055f0c-en.pdf)**. © OECD 2025. *This is an adaptation of an original work by the OECD. The opinions expressed and arguments employed in this adaptation should not be reported as representing the official views of the OECD or of its Member countries.*
+*   Directorate-General for Internal Market, Industry, Entrepreneurship and SMEs. **[Corporate sustainability and responsibility](https://single-market-economy.ec.europa.eu/industry/sustainability/corporate-sustainability-and-responsibility_en#esg-environmental-social-and-corporate-governance)**. European Commission, 2025.
+
+// Anastasiia Skok. ESG for NGOs: How Sustainable Development Unlocks New Funding and Partnership Opportunities. https://www.bdo.ua/en-gb/insights-1/information-materials/2025/esg-for-ngos-how-sustainable-development-unlocks-new-funding-and-partnership-opportunities, 2025. BDO.
+
+// AnhNguyen. EU’s CSRD Set to Reshape Corporate-Nonprofit Partnerships by 2025.  https://senecaesg.com/insights/eus-csrd-set-to-reshape-corporate-nonprofit-partnerships-by-2025/#:~:text=The%20CSRD's%20emphasis%20on%20sustainability,Sources:. 2025. Seneca Technologies Pte. Ltd
+
+// Barbara Bijelic, Benjamin Michel, and Konstantin Mann. Behind ESG Ratings.  https://www.oecd.org/content/dam/oecd/en/publications/reports/2025/02/behind-esg-ratings_4591b8bb/3f055f0c-en.pdf, 2025. © OECD 2025.  This is an adaptation of an original work by the OECD. The opinions expressed and arguments employed in this adaptation should not be reported as representing the official views of the OECD or of its Member countries. 
+
+// Directorate-General for Internal Market, Industry, Entrepreneurship and SMEs.  Corporate sustainability and responsibility. https://single-market-economy.ec.europa.eu/industry/sustainability/corporate-sustainability-and-responsibility_en#esg-environmental-social-and-corporate-governance, 2025.  European Commission.
+
+---
