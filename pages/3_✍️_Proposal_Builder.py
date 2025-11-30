@@ -12,13 +12,7 @@ import math
 # Add backend to path for imports
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'backend'))
 
-# Page configuration
-st.set_page_config(
-    page_title="Proposal Builder | Grant Seeker AI",
-    page_icon="✍️",
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
+# Page configuration handled in home_page.py
 
 
 # Custom CSS

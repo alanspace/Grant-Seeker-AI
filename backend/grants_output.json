@@ -1,9 +1,34 @@
 [
   {
-    "url": "https://www.britishecologicalsociety.org/content/what-grants-can-i-apply-for/",
-    "title": "BES Grants | Ecological Funding Opportunities (Active Round)",
-    "funder": "British Ecological Society (BES)",
-    "error": "No content retrieved",
+    "title": "Quantum Science Seed Grant (QSSG) Program",
+    "funder": "Q-FARM (Quantum Science and Engineering at Stanford)",
+    "deadline": "Contact Funder for Deadline",
+    "amount": "Up to $200,000",
+    "description": "This program supports innovative, groundbreaking research in quantum science and engineering, designed to stimulate high-risk, high-reward research with a focus on interdisciplinary collaboration.",
+    "detailed_overview": "The Q-FARM initiative invites applications for the Quantum Science Seed Grant Program (QSSG) to support innovative and groundbreaking research in the field of quantum science and engineering. The program encourages collaborations that explore new ideas and approaches in quantum science, particularly focusing on quantum entanglement and its potential applications. The QSSG program is designed to stimulate high-risk, high-reward research and aims to support projects that explore novel ideas that could potentially lead to significant advancements. The program will award up to 5, 2-year seed grants, with funds supporting personnel, computing resources, visits from external collaborator(s), and equipment for a proof-of-concept demonstration. Decisions are made by a committee of faculty with expertise in the field.",
+    "tags": [
+      "Quantum Science",
+      "Engineering",
+      "Research",
+      "Seed Grant",
+      "Interdisciplinary"
+    ],
+    "eligibility": "Teams can come from traditional QS disciplines (i.e., physics, applied physics, electrical engineering, materials science, chemistry), as well as biology and biomedical sciences (or medicine).",
+    "url": "https://qfarm.stanford.edu/opportunities/qssg-program",
+    "application_requirements": [
+      "A brief description of the topic to be pursued (2 pages max)",
+      "Submission via email to qfarm-contact@stanford.edu"
+    ],
+    "funding_type": "Seed Grant",
+    "geography": "Stanford, CA (Implied internal funding for Stanford affiliates, based on address and funder)",
+    "fit_score": 100,
+    "id": 1
+  },
+  {
+    "url": "https://arpa-e-foa.energy.gov/",
+    "title": "eXCHANGE Funding Opportunities Portal (Referencing QC 3 Program)",
+    "funder": "ARPA-E (DOE)",
+    "error": "Failed to parse LLM response: Expecting value: line 1 column 1 (char 0)",
     "deadline": "Not specified",
     "amount": "Not specified",
     "description": "No description available",
@@ -14,58 +39,6 @@
     "funding_type": "Grant",
     "geography": "Not specified",
     "fit_score": 0,
-    "id": 1
-  },
-  {
-    "title": "Climate Smart Communities Grant Program",
-    "funder": "State of New York (Climate Smart Communities Program)",
-    "deadline": "Expired (Round 8 Closed)",
-    "amount": "Not specified in source",
-    "description": "Provides grants to New York State local governments for projects related to climate change mitigation, adaptation, and planning, supporting both implementation and CSC certification efforts.",
-    "detailed_overview": "The Climate Smart Communities (CSC) Grant program was established in 2016 to offer funding to cities, towns, villages, and counties across New York State. Funds are available for two main categories: implementation and certification. Implementation projects support activities like reducing greenhouse gas emissions (outside the power sector), climate change adaptation, and engineering feasibility studies for flood mitigation and Hydrofluorocarbons. Certification projects finance planning and assessment aligned with official Climate Smart Communities certification actions. Specific documentation and requirements are outlined for projects involving land acquisition, whether used as grant funding or as match.",
-    "tags": [
-      "Climate Change",
-      "Environmental Protection",
-      "Adaptation",
-      "Local Government",
-      "New York"
-    ],
-    "eligibility": "Cities, towns, villages, and counties of the State of New York.",
-    "url": "https://dec.ny.gov/environmental-protection/climate-change/resources-for-local-governments/grants-for-climate-action",
-    "application_requirements": [
-      "Review of the 2025 Request for Applications (RFA)",
-      "Compliance with Land Acquisition Toolkit documentation (if acquiring land with grant funds)",
-      "Deed recording with 'Notice of Grant' language against the subject property (if land acquisition is grant funded or used as match)"
-    ],
-    "funding_type": "Grant",
-    "geography": "State of New York",
-    "fit_score": 0,
     "id": 2
-  },
-  {
-    "title": "Simons Collaborations in Ecology and Evolution",
-    "funder": "Simons Foundation",
-    "deadline": "Expired (2025-10-16)",
-    "amount": "Not specified",
-    "description": "Funding for groups of investigators, often from different disciplines, to work together on fundamental and high-impact scientific problems in ecology and evolution.",
-    "detailed_overview": "The Simons Collaborations program was launched in 2012 to create strong collaborations and foster the cross-pollination of ideas between investigators, aiming to generate unexpected breakthroughs. This model funds groups of outstanding scientists to address timely and important problems, focusing on fields in which significant new developments have created novel opportunities for exploration. The current call from the Life Sciences division seeks vision statements to identify new, emerging breakthrough areas of ecology and evolution, emphasizing research on basic principles of ecological and evolutionary dynamics, especially at their interface, that may be overlooked or considered too risky by other funding organizations.",
-    "tags": [
-      "Ecology",
-      "Evolution",
-      "Life Sciences",
-      "Scientific Research",
-      "Collaboration"
-    ],
-    "eligibility": "Groups of outstanding scientists, often from different disciplines, focusing on basic principles of ecological and evolutionary dynamics.",
-    "url": "https://www.simonsfoundation.org/grant/simons-collaborations-in-ecology-and-evolution/",
-    "application_requirements": [
-      "Vision Statement (LOI)",
-      "Full Proposal (by invitation only)",
-      "Presentation (for finalists only)"
-    ],
-    "funding_type": "Grant",
-    "geography": "Not specified (Likely International/Global scientific research)",
-    "fit_score": 100,
-    "id": 3
   }
 ]
