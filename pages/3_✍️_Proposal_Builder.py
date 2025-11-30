@@ -101,6 +101,7 @@ def generate_proposal_with_agent(project_description: str, grant: dict) -> str:
     }
     
     # Call the writer agent directly - it handles its own async loop
+    # This is where the frontend hands off control to the backend AI agent.
     result = writer_module.draft_proposal_section(project_description, grant_json)
     
     return result
@@ -145,6 +146,7 @@ def main():
     st.markdown("---")
     
     # Two-column layout: Agent Draft | Your Draft
+    # The left column shows the AI's work, the right column is for the user to refine it.
     col_agent, col_user = st.columns(2)
     
     with col_agent:

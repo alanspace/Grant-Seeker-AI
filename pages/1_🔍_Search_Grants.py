@@ -94,6 +94,8 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Initialize session state
+# We use session_state to persist data between page re-runs.
+# This ensures that search results don't disappear when you interact with other widgets.
 if 'search_results' not in st.session_state:
     st.session_state.search_results = []
 if 'search_query' not in st.session_state:
@@ -141,6 +143,7 @@ def execute_grant_workflow(query: str) -> list[dict]:
         asyncio.set_event_loop(None)
 
     if results:
+        # Save results to a shared JSON file so other pages can access them if needed
         workflow.save_results(results, output_file=str(GRANTS_FILE_PATH))
         load_grants_from_file.clear()
     return results
@@ -184,7 +187,12 @@ def search_grants(query, filters=None):
 
 
 def render_grant_card(grant, col_key):
-    """Render a single grant card."""
+    """
+    Render a single grant card.
+    
+    This function creates the visual representation of a grant using HTML/CSS.
+    It also handles the 'View Details' button logic.
+    """
     title = grant.get("title", "Untitled grant")
     funder = grant.get("funder", "Unknown funder")
     deadline = grant.get("deadline", "Deadline not specified")

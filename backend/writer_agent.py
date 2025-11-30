@@ -29,6 +29,9 @@ retry_config = types.HttpRetryOptions(
 # It doesn't need tools; its power is in the Prompt Engineering.
 
 # --- Agent Definition ---
+# The Writer Agent is a specialized persona designed to draft grant proposals.
+# It takes the project description and the specific grant details as input
+# and produces a tailored "Statement of Need" and "Alignment" section.
 writer_agent = LlmAgent(
     name="GrantWriter",
     model=Gemini(model=MODEL_NAME, retry_options=retry_config),
@@ -52,6 +55,10 @@ writer_agent = LlmAgent(
 def draft_proposal_section(project_details: str, grant_json: dict) -> str:
     """
     Formats inputs and runs the Writer Agent.
+    
+    This function acts as a bridge between the synchronous Streamlit frontend
+    and the asynchronous ADK backend. It prepares the prompt with all necessary context
+    and executes the agent run.
     """
     
     # 1. Prepare the Prompt

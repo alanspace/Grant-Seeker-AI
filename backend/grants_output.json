@@ -1,30 +1,5 @@
 [
   {
-    "title": "Quantum Science Seed Grant (QSSG) Program",
-    "funder": "Q-FARM (Quantum Science and Engineering at Stanford)",
-    "deadline": "Contact Funder for Deadline",
-    "amount": "Up to $200,000",
-    "description": "This program supports innovative, groundbreaking research in quantum science and engineering, designed to stimulate high-risk, high-reward research with a focus on interdisciplinary collaboration.",
-    "detailed_overview": "The Q-FARM initiative invites applications for the Quantum Science Seed Grant Program (QSSG) to support innovative and groundbreaking research in the field of quantum science and engineering. The program encourages collaborations that explore new ideas and approaches in quantum science, particularly focusing on quantum entanglement and its potential applications. The QSSG program is designed to stimulate high-risk, high-reward research and aims to support projects that explore novel ideas that could potentially lead to significant advancements. The program will award up to 5, 2-year seed grants, with funds supporting personnel, computing resources, visits from external collaborator(s), and equipment for a proof-of-concept demonstration. Decisions are made by a committee of faculty with expertise in the field.",
-    "tags": [
-      "Quantum Science",
-      "Engineering",
-      "Research",
-      "Seed Grant",
-      "Interdisciplinary"
-    ],
-    "eligibility": "Teams can come from traditional QS disciplines (i.e., physics, applied physics, electrical engineering, materials science, chemistry), as well as biology and biomedical sciences (or medicine).",
-    "url": "https://qfarm.stanford.edu/opportunities/qssg-program",
-    "application_requirements": [
-      "A brief description of the topic to be pursued (2 pages max)",
-      "Submission via email to qfarm-contact@stanford.edu"
-    ],
-    "funding_type": "Seed Grant",
-    "geography": "Stanford, CA (Implied internal funding for Stanford affiliates, based on address and funder)",
-    "fit_score": 100,
-    "id": 1
-  },
-  {
     "url": "https://arpa-e-foa.energy.gov/",
     "title": "eXCHANGE Funding Opportunities Portal (Referencing QC 3 Program)",
     "funder": "ARPA-E (DOE)",
@@ -39,6 +14,107 @@
     "funding_type": "Grant",
     "geography": "Not specified",
     "fit_score": 0,
+    "id": 1
+  },
+  {
+    "title": "Funding Opportunities for Engineering Research in Artificial Intelligence",
+    "funder": "U.S. National Science Foundation (NSF) Directorate for Engineering (ENG)",
+    "deadline": "Expired (Document archived)",
+    "amount": "Not specified",
+    "description": "This Dear Colleague Letter (DCL) encourages research and education proposals related to artificial intelligence as an emerging industry, focusing on the rapid advancement and potential of AI.",
+    "detailed_overview": "With this Dear Colleague Letter, the U.S. National Science Foundation (NSF) Directorate for Engineering (ENG) encouraged the submission of research and education proposals related to Artificial Intelligence as an Emerging Industry. The goal was to support research and development into rapidly advancing AI technologies. Note: This document has been officially archived by the NSF.",
+    "tags": [
+      "Artificial Intelligence",
+      "Engineering Research",
+      "Education",
+      "Technology",
+      "NSF"
+    ],
+    "eligibility": "Not specified. Eligibility typically includes universities, non-profit organizations, and other institutions capable of conducting research, as defined by general NSF requirements.",
+    "url": "https://www.nsf.gov/funding/opportunities/dcl-funding-opportunities-engineering-research-artificial/nsf24-039",
+    "application_requirements": [
+      "Must be submitted in accordance with the requirements specified in this funding opportunity (when active) and in the NSF Proposal & Award Policies & Procedures Guide (PAPPG)."
+    ],
+    "funding_type": "Grant",
+    "geography": "United States (Implied)",
+    "fit_score": 0,
     "id": 2
+  },
+  {
+    "title": "SandboxAQ Scholarship Program for Quantum Computing and AI Researchers",
+    "funder": "SandboxAQ",
+    "deadline": "2026-04-01",
+    "amount": "$5,000 - $10,000",
+    "description": "SandboxAQ offers two scholarships—the Research Excellence Scholarship ($10,000) for groundbreaking AI/Quantum research projects and the Global Travel Scholarship ($5,000) for presenting research at scientific conferences.",
+    "detailed_overview": "The SandboxAQ Scholarship Program offers two distinct opportunities for PhD students focusing on cutting-edge research in AQ (AI and Quantum) technology. The Research Excellence Scholarship is a $10,000 award designed to support PhD students in their research pursuits, based on the innovation, relevance, potential impact, and academic merit of their proposals. The Global Travel Scholarship is a $5,000 award that supports PhD students in attending and presenting their research at scientific conferences, aiming to foster global collaboration and networking. Both scholarships are open to all topics in AI, Quantum, and associated research, including Agentic AI Systems, AI Alignment, AI Ethics, Cybersecurity, LLMs, LQMs, and Post-Quantum Cryptography.",
+    "tags": [
+      "Scholarship",
+      "Quantum Computing",
+      "Artificial Intelligence",
+      "Research",
+      "Academic Travel"
+    ],
+    "eligibility": "Open to PhD students enrolled in accredited institutions worldwide. Open to international applicants. Research focus must span AI and/or quantum technology and related disciplines.",
+    "url": "https://grad.uchicago.edu/fellowship/sandboxaq-scholarship-program-for-quantum-computing-and-ai-researchers/",
+    "application_requirements": [
+      "Research proposal/Work submission (for assessment of innovation, relevance, potential impact, and academic merit)"
+    ],
+    "funding_type": "Scholarship",
+    "geography": "Worldwide",
+    "fit_score": 45,
+    "id": 3
+  },
+  {
+    "title": "Grand Challenges Program (Quantum Research Collaboration)",
+    "funder": "P33 and the National Quantum Algorithm Center (NQAC) (Funded by Illinois)",
+    "deadline": "2025-12-10",
+    "amount": "$125,000",
+    "description": "This program awards grants to postdoctoral researchers to accelerate the development of real-world quantum applications through mandatory three-way partnerships between academia, quantum companies, and non-quantum industry partners.",
+    "detailed_overview": "The Grand Challenges program is a collaborative initiative spearheaded by P33 and the National Quantum Algorithm Center (NQAC) to bolster Chicago and Illinois's position as a quantum innovation hub. The program totals $250,000 and will award two $125,000 grants to postdoctoral researchers. The core objective is to translate theoretical quantum advancements into practical industry solutions by focusing on industry-relevant applications. Successful applicants are required to establish a three-way partnership involving an Illinois-based academic institution, a quantum company already connected to the Illinois Quantum and Microelectronics Park (IQMP), and a non-quantum industry partner from sectors like finance, pharmaceuticals, or energy.",
+    "tags": [
+      "Quantum Computing",
+      "Research",
+      "Technology Development",
+      "Postdoctoral Fellows",
+      "Industry Collaboration"
+    ],
+    "eligibility": "Postdoctoral researchers are eligible. Funding requires a mandated three-way partnership: 1) An Illinois-based academic institution, 2) A quantum hardware or software company *already* connected to the Illinois Quantum and Microelectronics Park (IQMP), and 3) A non-quantum industry partner (e.g., finance, pharmaceuticals, or energy).",
+    "url": "https://quantumzeitgeist.com/quantum-illinois-funding/",
+    "application_requirements": [
+      "Postdoctoral researcher leadership",
+      "Establishment of a three-way partnership",
+      "Collaboration with an Illinois Quantum and Microelectronics Park (IQMP) connected quantum company"
+    ],
+    "funding_type": "Grant",
+    "geography": "Illinois",
+    "fit_score": 45,
+    "id": 4
+  },
+  {
+    "title": "Quantum SuperSEED Grant Call",
+    "funder": "Penn State Quantum Hub (ICDS)",
+    "deadline": "Expired (2025-10-20)",
+    "amount": "$200,000 (per proposal)",
+    "description": "Funding for bold, high-impact interdisciplinary quantum research led by Penn State faculty to invoke transformative research at the intersection of quantum sciences, engineering, and computation.",
+    "detailed_overview": "The newly formed Penn State Quantum Hub, housed under the Penn State Institute for Computational and Data Sciences (ICDS), aims to build a community and invest in bold, high-impact interdisciplinary quantum research through the Quantum SuperSEED Grant program. The funding opportunity is specifically designed to invoke transformative, interdisciplinary research at the intersection of quantum sciences, engineering and computation. Proposals are welcome in areas such as Quantum Computing and Algorithms, Quantum Machine Learning and AI, Quantum Sensing and Metrology, and Systems Engineering. Up to two research proposals will be selected, each receiving $200,000 for one year. Awarded funding can be used for supporting graduate students or postdoctoral scholars, minor research equipment and materials, computational resources, and travel for collaborations and dissemination.",
+    "tags": [
+      "Quantum Science",
+      "Interdisciplinary Research",
+      "Computational Science",
+      "Faculty Research",
+      "Higher Education"
+    ],
+    "eligibility": "Penn State faculty in any discipline with an interest in applying quantum sciences methodologies to research are encouraged to submit a proposal. Proposals MUST be led by Penn State faculty members and include at least two faculty members from different departments or research units in order to be considered. Each individual may be listed on at most two proposal submissions. Of these, an individual may serve as Principal Investigator (PI) on only one proposal.",
+    "url": "https://icds.psu.edu/funding/quanton-superseed-grant-call/",
+    "application_requirements": [
+      "Proposal submission via InfoReady",
+      "Led by Penn State faculty",
+      "Include at least two faculty members from different departments/research units",
+      "PI listed on only one proposal"
+    ],
+    "funding_type": "Grant",
+    "geography": "Penn State (Internal Funding)",
+    "fit_score": 100,
+    "id": 5
   }
 ]

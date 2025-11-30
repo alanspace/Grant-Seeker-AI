@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from adk_agent_v2 import DiscoveredLead, DiscoveredLeadsReport, GrantData
+from adk_agent import DiscoveredLead, DiscoveredLeadsReport, GrantData
 
 
 def test_discovered_lead_creation():

@@ -1,6 +1,13 @@
 """
 Grant Seeker Agent - Single file version with caching
 Consolidated from refactored architecture while maintaining caching functionality
+
+This module serves as the main backend orchestrator for the Grant Seeker application.
+It handles:
+1.  **Workflow Orchestration**: Managing the multi-step process of finding and extracting grants.
+2.  **Agent Definitions**: Defining the specific AI agents (Finder, Extractor, QueryGenerator).
+3.  **Caching**: Storing search results and extracted data to improve performance and reduce API costs.
+4.  **Data Models**: Defining the structure of the data using Pydantic models.
 """
 import os
 import time
@@ -58,6 +65,7 @@ RETRY_STATUS_CODES = [429, 500, 503, 504]
 
 # ============================================================================
 # UTILITY FUNCTIONS
+# Helper functions for date handling, string normalization, and cleaning.
 # ============================================================================
 
 def get_current_date() -> tuple[str, str]:
@@ -80,6 +88,8 @@ def clean_json_string(json_str: str) -> str:
 
 # ============================================================================
 # CACHE SERVICE
+# A simple file-based caching system to store API responses.
+# This prevents redundant API calls for the same queries or URLs, saving time and money.
 # ============================================================================
 
 class CacheService:
@@ -157,6 +167,8 @@ class CacheService:
 
 # ============================================================================
 # PYDANTIC MODELS
+# These models define the strict schema for data validation.
+# They ensure that the AI agents return structured data that the UI can reliably display.
 # ============================================================================
 
 class DiscoveredLead(BaseModel):
@@ -243,6 +255,8 @@ def calculate_fit_score(grant_data: dict, query: str) -> int:
 
 # ============================================================================
 # AGENT CREATION
+# This section defines the specific AI agents using the Google ADK.
+# Each agent has a specific "persona" and set of instructions (prompt engineering).
 # ============================================================================
 
 def create_retry_config() -> types.HttpRetryOptions:
@@ -259,6 +273,8 @@ def create_finder_agent() -> LlmAgent:
     return LlmAgent(
         name="GrantFinder",
         model=Gemini(model=MODEL_NAME, retry_options=create_retry_config()),
+        # The GrantFinder agent is responsible for filtering search results.
+        # It looks at the raw list of URLs from Tavily and decides which ones are worth investigating further.
         instruction="""
         You are a Grant Scout. You will receive search results from Tavily.
         Your job is to analyze these results and identify the top 5-7 most promising grant opportunities.
@@ -287,6 +303,9 @@ def create_extractor_agent() -> LlmAgent:
     return LlmAgent(
         name="GrantExtractor",
         model=Gemini(model=MODEL_NAME, retry_options=create_retry_config()),
+        # The GrantExtractor agent is the heavy lifter.
+        # It reads the full text of a webpage and extracts structured data (deadlines, amounts, eligibility).
+        # We inject the current date so it can intelligently determine if a grant is expired.
         instruction=f"""
         You are a Data Extractor. You will receive the content of a grant webpage.
 
@@ -351,6 +370,8 @@ def create_query_agent() -> LlmAgent:
     return LlmAgent(
         name="QueryGenerator",
         model=Gemini(model=MODEL_NAME, retry_options=create_retry_config()),
+        # The QueryGenerator agent translates a user's natural language project description
+        # into a keyword-optimized search query for the search engine.
         instruction="""
         You are a Search Query Expert. Your job is to convert a user's project description into a targeted search query for finding grants.
         
@@ -369,6 +390,8 @@ def create_query_agent() -> LlmAgent:
 
 # ============================================================================
 # MAIN WORKFLOW
+# The GrantSeekerWorkflow class ties everything together.
+# It manages the state, initializes agents, and executes the 4-phase process.
 # ============================================================================
 
 class GrantSeekerWorkflow:
@@ -639,7 +662,15 @@ class GrantSeekerWorkflow:
             }
     
     async def run(self, query: str) -> list[dict]:
-        """Run the complete grant seeking workflow."""
+        """
+        Run the complete grant seeking workflow.
+        
+        This is the main entry point called by the frontend.
+        It executes the following phases:
+        1. Phase 0: Generate a search query from the user's input.
+        2. Phase 1: Search the web and identify promising leads.
+        3. Phase 2: Extract detailed data from those leads in parallel.
+        """
         logger.info(f"Starting Grant Seeker Workflow with {MODEL_NAME}")
         
         # Create main session

@@ -11,7 +11,7 @@ A sophisticated AI assistant that automates the grant-seeking lifecycle, empower
 <!-- **ADD A GIF OF THE FINAL APP IN ACTION HERE. This is the most important visual element.** -->
 <!-- To create a GIF, use a free tool like Giphy Capture or ScreenToGif to record your screen during the demo. -->
 
-![Grant Seeker Demo](demo_38.gif)
+![Grant Seeker Demo](demo.gif)
 
 ## Table of Contents
 

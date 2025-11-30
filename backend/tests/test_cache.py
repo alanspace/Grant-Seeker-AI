@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 import sys
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from adk_agent_v2 import CacheService
+from adk_agent import CacheService
 
 
 @pytest.fixture

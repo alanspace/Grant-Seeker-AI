@@ -185,6 +185,8 @@ def main():
     """Main function for the Grant Details page."""
     
     # Get selected grant from session state
+    # This page relies on the user having selected a grant from the Search page.
+    # If no grant is selected (e.g., direct URL access), we redirect them back.
     grant = st.session_state.get('selected_grant', {})
     if not grant or grant == {}:
         st.warning("No grant selected. Please go back to the search page and select a grant.")
@@ -243,6 +245,7 @@ def main():
     st.markdown("---")
     
     # Tabs for different sections
+    # We organize the dense information into tabs to keep the UI clean.
     tab1, tab2, tab3 = st.tabs([
         "📄 Overview", 
         "✅ Eligibility", 

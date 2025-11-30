@@ -5,6 +5,8 @@ A Streamlit multi-page app for finding, analyzing, and writing grant proposals.
 import streamlit as st
 
 # Page configuration
+# This must be the FIRST Streamlit command used in the entire app.
+# It sets the browser tab title, icon, and layout mode.
 st.set_page_config(
     page_title="Grant Seeker AI",
     page_icon="🚀",
@@ -159,6 +161,8 @@ def main():
 
 
 # Define pages for navigation
+# This new Streamlit feature (st.navigation) handles the sidebar menu automatically.
+# We define the pages here so they share the same configuration and state.
 pages = {
     "Grant Seeker AI": [
         st.Page(main, title="Home", icon="🏠", default=True),

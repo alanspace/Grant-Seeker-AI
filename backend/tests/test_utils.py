@@ -5,7 +5,7 @@ from pathlib import Path
 from datetime import datetime
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from adk_agent_v2 import get_current_date, normalize_value, clean_json_string
+from adk_agent import get_current_date, normalize_value, clean_json_string
 
 
 def test_get_current_date():

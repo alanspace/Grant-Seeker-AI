@@ -4,7 +4,15 @@ from typing import List, Dict, Optional
 import asyncio
 
 class TavilyClient:
-    """Wrapper for Tavily API with retry logic, error handling, and rate limiting"""
+    """
+    Wrapper for Tavily API with retry logic, error handling, and rate limiting.
+    
+    This client handles the communication with the Tavily Search API.
+    It includes built-in resilience features:
+    - **Retries**: Automatically retries failed requests.
+    - **Exponential Backoff**: Waits longer between each retry to avoid overwhelming the server.
+    - **Timeout Handling**: Prevents the app from hanging indefinitely if the API is slow.
+    """
     
     def __init__(self, api_key: str, max_retries: int = 3, timeout: float = 30.0):
         self.api_key = api_key
@@ -21,7 +29,20 @@ class TavilyClient:
         include_raw_content: bool = False,
         days: Optional[int] = None  # Filter by recency (e.g., last 90 days)
     ) -> List[Dict]:
-        """Search using Tavily API with retry logic"""
+        """
+        Search using Tavily API with retry logic.
+        
+        Args:
+            query: The search query string.
+            max_results: Maximum number of results to return.
+            search_depth: "basic" or "advanced" (advanced is slower but deeper).
+            include_answer: Whether to include an AI-generated answer.
+            include_raw_content: Whether to include the full HTML content.
+            days: Optional filter for recency (e.g., last 30 days).
+            
+        Returns:
+            A list of search result dictionaries.
+        """
         url = f"{self.base_url}/search"
         payload = {
             "api_key": self.api_key,
@@ -73,7 +94,12 @@ class TavilyClient:
         return []
     
     async def extract(self, urls: List[str]) -> Dict[str, str]:
-        """Extract content from URLs using Tavily extract endpoint"""
+        """
+        Extract content from URLs using Tavily extract endpoint.
+        
+        This method uses Tavily's ability to scrape and clean webpage content,
+        converting cluttered HTML into clean text that LLMs can process easily.
+        """
         url = f"{self.base_url}/extract"
         payload = {
             "api_key": self.api_key,
