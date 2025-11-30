@@ -142,7 +142,7 @@ Our system is built using the **Google Agent Development Kit (ADK)** and impleme
 - Date-aware extraction with context injection
 - Parallel processing with Semaphore(3) concurrency control
 
-
+```mermaid
 graph TD
     %% Styles
     classDef frontend fill:#e1f5fe,stroke:#01579b,stroke-width:2px;
@@ -180,7 +180,6 @@ graph TD
         UI -->|4. Select Grant| WriterAgent(🤖 Writer Agent)
         WriterAgent -->|Draft Proposal| Gemini4[Gemini Flash]
     end
-
     %% Output
     WriterAgent -->|5. Final Draft| UI
 
@@ -190,7 +189,7 @@ graph TD
     class QueryAgent,FinderAgent,ExtractorAgent,WriterAgent agent;
     class Tavily,Gemini1,Gemini2,Gemini3,Gemini4 tool;
     class Cache storage;
-
+  ```  
 ---
 
 ## 4. Technology Stack
