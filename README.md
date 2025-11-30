@@ -24,6 +24,7 @@ A sophisticated AI assistant that automates the grant-seeking lifecycle, empower
 6. [Our Team](#6-our-team)
 7. [Future Work](#7-future-work)
 8. [Acknowledgements](#8-acknowledgements)
+9. [Citations](#9-citations)
 
 ---
 
@@ -143,58 +144,7 @@ Our system is built using the **Google Agent Development Kit (ADK)** and impleme
 - Date-aware extraction with context injection
 - Parallel processing with Semaphore(3) concurrency control
 
-```mermaid
-graph TD
-    %% Styles - Added padding to make boxes bigger
-    classDef frontend fill:#e1f5fe,stroke:#01579b,stroke-width:2px,color:black,padding:10px;
-    classDef orchestrator fill:#fff9c4,stroke:#fbc02d,stroke-width:2px,color:black,padding:10px;
-    classDef agent fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,rx:10,ry:10,color:black,padding:10px;
-    classDef tool fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px,stroke-dasharray: 5 5,color:black,padding:10px;
-    classDef storage fill:#eceff1,stroke:#607d8b,stroke-width:2px,color:black,padding:10px;
-
-    %% Subgraph Frontend
-    subgraph Frontend ["&nbsp;&nbsp;&nbsp;🖥️ Frontend Layer&nbsp;&nbsp;&nbsp;"]
-        %% Added spaces to force width
-        User([&nbsp;&nbsp;&nbsp;👤 User&nbsp;&nbsp;&nbsp;]) -->|1. Input Info| UI[&nbsp;&nbsp;Streamlit App&nbsp;&nbsp;]
-        UI -->|2. Request| API[&nbsp;&nbsp;API Bridge&nbsp;&nbsp;]
-    end
-
-    %% Subgraph Backend
-    subgraph Backend ["&nbsp;&nbsp;&nbsp;⚙️ Backend Orchestration&nbsp;&nbsp;&nbsp;"]
-        API -->|3. Start| Workflow[&nbsp;&nbsp;Orchestrator&nbsp;&nbsp;]
-        
-        %% Phase 0
-        Workflow -->|Phase 0| QueryAgent(🤖 Query<br/>Gen Agent)
-        QueryAgent -->|Optimize| Gemini1[&nbsp;&nbsp;Gemini&nbsp;&nbsp;]
-        
-        %% Phase 1
-        Workflow -->|Phase 1| FinderAgent(🤖 Finder<br/>Agent)
-        FinderAgent <-->|Search| Tavily[&nbsp;&nbsp;🛠️ Tavily API&nbsp;&nbsp;]
-        FinderAgent -->|Analyze| Gemini2[&nbsp;&nbsp;Gemini&nbsp;&nbsp;]
-        
-        %% Phase 2
-        Workflow -->|Phase 2| ExtractorAgent(🤖 Extractor<br/>Agent)
-        ExtractorAgent <-->|Scrape| Tavily
-        ExtractorAgent -->|Extract| Gemini3[&nbsp;&nbsp;Gemini&nbsp;&nbsp;]
-        
-        %% Caching
-        ExtractorAgent -.->|Read/Write| Cache[(&nbsp;&nbsp;📂 File Cache&nbsp;&nbsp;)]
-        
-        %% Phase 3
-        UI -->|4. Select| WriterAgent(🤖 Writer<br/>Agent)
-        WriterAgent -->|Draft| Gemini4[&nbsp;&nbsp;Gemini&nbsp;&nbsp;]
-    end
-
-    %% Output
-    WriterAgent -->|5. Final Draft| UI
-
-    %% Apply Styles
-    class UI,API frontend;
-    class Workflow orchestrator;
-    class QueryAgent,FinderAgent,ExtractorAgent,WriterAgent agent;
-    class Tavily,Gemini1,Gemini2,Gemini3,Gemini4 tool;
-    class Cache storage;
-```
+![Grant Seeker Architecture](architecture_diagram.png)
 ---
 
 ## 4. Technology Stack
