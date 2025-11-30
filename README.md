@@ -1,17 +1,20 @@
-# Grant Seeker AI
+# Grant Seeker AI 🚀
 
 **An "Agents for Good" Multi-Agent System for the Google ADK Capstone Project**
 
-![Project Status: In Progress](https://img.shields.io/badge/status-in--progress-yellow)
+![Project Status: In Progress](https://img.shields.io/badge/status-completed-green)
+![Python](https://img.shields.io/badge/python-3.10%2B-blue)
+![ADK](https://img.shields.io/badge/Google-ADK-red)
 
 A sophisticated AI assistant that automates the grant-seeking lifecycle, empowering non-profits and researchers to secure funding more efficiently.
 
 ---
 
+
 <!-- **ADD A GIF OF THE FINAL APP IN ACTION HERE. This is the most important visual element.** -->
 <!-- To create a GIF, use a free tool like Giphy Capture or ScreenToGif to record your screen during the demo. -->
 
-![Demo GIF](docs/demo.gif)
+![Grant Seeker Demo](demo_38.gif)
 
 ---
 
@@ -163,8 +166,8 @@ Our system is built using the **Google Agent Development Kit (ADK)** and impleme
 
 1.  **Clone the repository:**
     ```bash
-    git clone https://github.com/alanspace/adk-grant-seeker-copilot.git
-    cd adk-grant-seeker-copilot
+    git clone https://github.com/alanspace/adk-grant-seeker-ai.git
+    cd adk-grant-seeker-ai
     ```
 2.  **Create and activate a virtual environment:**
 
