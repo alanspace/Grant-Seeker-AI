@@ -307,12 +307,12 @@ We would like to extend a special thank you to **Ujjwal Ruhal** for his valuable
 *   Barbara Bijelic, Benjamin Michel, and Konstantin Mann. **[Behind ESG Ratings](https://www.oecd.org/content/dam/oecd/en/publications/reports/2025/02/behind-esg-ratings_4591b8bb/3f055f0c-en.pdf)**. © OECD 2025. *This is an adaptation of an original work by the OECD. The opinions expressed and arguments employed in this adaptation should not be reported as representing the official views of the OECD or of its Member countries.*
 *   Directorate-General for Internal Market, Industry, Entrepreneurship and SMEs. **[Corporate sustainability and responsibility](https://single-market-economy.ec.europa.eu/industry/sustainability/corporate-sustainability-and-responsibility_en#esg-environmental-social-and-corporate-governance)**. European Commission, 2025.
 
-// Anastasiia Skok. ESG for NGOs: How Sustainable Development Unlocks New Funding and Partnership Opportunities. https://www.bdo.ua/en-gb/insights-1/information-materials/2025/esg-for-ngos-how-sustainable-development-unlocks-new-funding-and-partnership-opportunities, 2025. BDO.
+<!-- // Anastasiia Skok. ESG for NGOs: How Sustainable Development Unlocks New Funding and Partnership Opportunities. https://www.bdo.ua/en-gb/insights-1/information-materials/2025/esg-for-ngos-how-sustainable-development-unlocks-new-funding-and-partnership-opportunities, 2025. BDO.
 
 // AnhNguyen. EU’s CSRD Set to Reshape Corporate-Nonprofit Partnerships by 2025.  https://senecaesg.com/insights/eus-csrd-set-to-reshape-corporate-nonprofit-partnerships-by-2025/#:~:text=The%20CSRD's%20emphasis%20on%20sustainability,Sources:. 2025. Seneca Technologies Pte. Ltd
 
 // Barbara Bijelic, Benjamin Michel, and Konstantin Mann. Behind ESG Ratings.  https://www.oecd.org/content/dam/oecd/en/publications/reports/2025/02/behind-esg-ratings_4591b8bb/3f055f0c-en.pdf, 2025. © OECD 2025.  This is an adaptation of an original work by the OECD. The opinions expressed and arguments employed in this adaptation should not be reported as representing the official views of the OECD or of its Member countries. 
 
-// Directorate-General for Internal Market, Industry, Entrepreneurship and SMEs.  Corporate sustainability and responsibility. https://single-market-economy.ec.europa.eu/industry/sustainability/corporate-sustainability-and-responsibility_en#esg-environmental-social-and-corporate-governance, 2025.  European Commission.
+// Directorate-General for Internal Market, Industry, Entrepreneurship and SMEs.  Corporate sustainability and responsibility. https://single-market-economy.ec.europa.eu/industry/sustainability/corporate-sustainability-and-responsibility_en#esg-environmental-social-and-corporate-governance, 2025.  European Commission. -->
 
 ---
