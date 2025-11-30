@@ -2,6 +2,7 @@
 
 **An "Agents for Good" Multi-Agent System for the Google ADK Capstone Project**
 
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://grantseeker-ai.streamlit.app/)
 ![Project Status: Completed](https://img.shields.io/badge/status-completed-green)
 ![Python](https://img.shields.io/badge/python-3.10%2B-blue)
 ![ADK](https://img.shields.io/badge/Google-ADK-red)
