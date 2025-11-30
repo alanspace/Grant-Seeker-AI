@@ -270,7 +270,8 @@ The `GrantExtractor` agent produces structured JSON data strictly adhering to a 
     "fit_score": 63,
     "..." : "..."
   }
-]```
+]
+```
 
 
 ## 7. Our Team
