@@ -168,14 +168,6 @@ Our system is built using the **Google Agent Development Kit (ADK)** and impleme
 ### Prerequisites
 
 - Python 3.10 or higher
-- An API key for Google Gemini
-- An API key and Custom Search Engine ID from Google Custom Search Engine
-
-## 5. Setup and Run the Project
-
-### Prerequisites
-
-- Python 3.10 or higher
 - pip or Conda for environment management
 - An API key for Google Gemini (get from [Google AI Studio](https://aistudio.google.com/app/apikey))
 - An API key for Tavily (get from [Tavily](https://tavily.com/))
@@ -225,6 +217,16 @@ Our system is built using the **Google Agent Development Kit (ADK)** and impleme
 cd backend
 pytest tests/ -v
 ```
+
+### Test Scope
+*   **`test_models.py`**: Validates the Pydantic data models (GrantData, DiscoveredLead) to ensure type safety.
+*   **`test_cache.py`**: Verifies that the file-based caching system correctly stores, retrieves, and expires data.
+*   **`test_utils.py`**: Checks helper functions for date formatting and string cleaning.
+
+### Cache Management
+The application creates a hidden `.cache/` directory.
+*   **To clear the cache manually:** Run `rm -rf .cache/*.json` or use the "Clear Cache" button (if available in dev mode).
+*   **Behavior:** Failed requests are not cached. Only successful grant extractions are stored.
 
 ---
 ## 5. Data Schema & Output
