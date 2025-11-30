@@ -192,7 +192,7 @@ def main():
         st.warning("No grant selected. Please go back to the search page and select a grant.")
         if st.button("🔙 Back to Search Grants"):
             st.session_state.selected_grant = {}
-            st.switch_page("pages/1_🔍_Search_Grants.py")
+            st.switch_page("frontend/search_grants.py")
         st.stop()
     
     # Get insights from grant data (API format) or fall back to defaults
@@ -226,7 +226,7 @@ def main():
     with btn_col1:
         if st.button("✍️ Generate Proposal", type="primary", use_container_width=True):
             st.session_state.selected_grant = grant
-            st.switch_page("pages/3_✍️_Proposal_Builder.py")
+            st.switch_page("frontend/proposal_builder.py")
     
     with btn_col2:
         if st.button("📄 Download Grant Details PDF", use_container_width=True):

@@ -226,7 +226,7 @@ def render_grant_card(grant, col_key):
         with btn_col1:
             if st.button("📋 View Details", key=f"view_{grant_id}_{col_key}", use_container_width=True):
                 st.session_state.selected_grant = grant
-                st.switch_page("pages/2_📋_Grant_Details.py")
+                st.switch_page("frontend/grant_details.py")
         
         with btn_col2:
             if st.button("💾 Download Grant Details PDF", key=f"export_{grant_id}_{col_key}", use_container_width=True):

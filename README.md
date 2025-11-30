@@ -146,41 +146,42 @@ Our system is built using the **Google Agent Development Kit (ADK)** and impleme
 ```mermaid
 graph TD
     %% Styles
-    classDef frontend fill:#e1f5fe,stroke:#01579b,stroke-width:2px;
-    classDef orchestrator fill:#fff9c4,stroke:#fbc02d,stroke-width:2px;
-    classDef agent fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,rx:10,ry:10;
-    classDef tool fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px,stroke-dasharray: 5 5;
-    classDef storage fill:#eceff1,stroke:#607d8b,stroke-width:2px;
+    classDef frontend fill:#e1f5fe,stroke:#01579b,stroke-width:2px,color:black;
+    classDef orchestrator fill:#fff9c4,stroke:#fbc02d,stroke-width:2px,color:black;
+    classDef agent fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,rx:10,ry:10,color:black;
+    classDef tool fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px,stroke-dasharray: 5 5,color:black;
+    classDef storage fill:#eceff1,stroke:#607d8b,stroke-width:2px,color:black;
 
     subgraph Frontend ["🖥️ Frontend Layer"]
-        User([👤 User]) -->|1. Input Project Details| UI[Streamlit App]
-        UI -->|2. Request| API[API Bridge]
+        User([👤 User]) -->|1. Input Info| UI[Streamlit<br/>App]
+        UI -->|2. Request| API[API<br/>Bridge]
     end
 
     subgraph Backend ["⚙️ Backend Orchestration (ADK)"]
-        API -->|3. Start Workflow| Workflow[GrantSeekerWorkflow]
+        API -->|3. Start| Workflow[GrantSeeker<br/>Workflow]
         
         %% Phase 0
-        Workflow -->|Phase 0| QueryAgent(🤖 QueryGenerator Agent)
-        QueryAgent -->|Optimize| Gemini1[Gemini Flash]
+        Workflow -->|Phase 0| QueryAgent(🤖 Query<br/>Agent)
+        QueryAgent -->|Optimize| Gemini1[Gemini<br/>Flash]
         
         %% Phase 1
-        Workflow -->|Phase 1| FinderAgent(🤖 GrantFinder Agent)
-        FinderAgent <-->|Search| Tavily[🛠️ Tavily Search API]
-        FinderAgent -->|Analyze| Gemini2[Gemini Flash]
+        Workflow -->|Phase 1| FinderAgent(🤖 Finder<br/>Agent)
+        FinderAgent <-->|Search| Tavily[🛠️ Tavily<br/>Search API]
+        FinderAgent -->|Analyze| Gemini2[Gemini<br/>Flash]
         
         %% Phase 2
-        Workflow -->|Phase 2| ExtractorAgent(🤖 GrantExtractor Agent)
+        Workflow -->|Phase 2| ExtractorAgent(🤖 Extractor<br/>Agent)
         ExtractorAgent <-->|Scrape| Tavily
-        ExtractorAgent -->|Extract| Gemini3[Gemini Flash]
+        ExtractorAgent -->|Extract| Gemini3[Gemini<br/>Flash]
         
         %% Caching
-        ExtractorAgent -.->|Read/Write| Cache[(📂 File Cache .json)]
+        ExtractorAgent -.->|Read/Write| Cache[(📂 File<br/>Cache)]
         
         %% Phase 3
-        UI -->|4. Select Grant| WriterAgent(🤖 Writer Agent)
-        WriterAgent -->|Draft Proposal| Gemini4[Gemini Flash]
+        UI -->|4. Select Grant| WriterAgent(🤖 Writer<br/>Agent)
+        WriterAgent -->|Draft Proposal| Gemini4[Gemini<br/>Flash]
     end
+
     %% Output
     WriterAgent -->|5. Final Draft| UI
 
@@ -190,7 +191,7 @@ graph TD
     class QueryAgent,FinderAgent,ExtractorAgent,WriterAgent agent;
     class Tavily,Gemini1,Gemini2,Gemini3,Gemini4 tool;
     class Cache storage;
-  ```  
+```
 ---
 
 ## 4. Technology Stack

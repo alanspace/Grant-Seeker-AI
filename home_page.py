@@ -126,7 +126,7 @@ def main():
         st.markdown("<br>", unsafe_allow_html=True)
         
         if st.button("🔎 ✨ Start Searching Grants", type="primary", use_container_width=True):
-            st.switch_page("pages/1_🔍_Search_Grants.py")
+            st.switch_page("frontend/search_grants.py")
         
         # Secondary actions
         st.markdown("<br>", unsafe_allow_html=True)
@@ -166,9 +166,9 @@ def main():
 pages = {
     "Grant Seeker AI": [
         st.Page(main, title="Home", icon="🏠", default=True),
-        st.Page("pages/1_🔍_Search_Grants.py", title="Search Grants", icon="🔍"),
-        st.Page("pages/2_📋_Grant_Details.py", title="Grant Details", icon="📋"),
-        st.Page("pages/3_✍️_Proposal_Builder.py", title="Proposal Builder", icon="✍️"),
+        st.Page("frontend/search_grants.py", title="Search Grants", icon="🔍"),
+        st.Page("frontend/grant_details.py", title="Grant Details", icon="📋"),
+        st.Page("frontend/proposal_builder.py", title="Proposal Builder", icon="✍️"),
     ]
 }
 
