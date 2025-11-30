@@ -8,15 +8,10 @@
 
 A sophisticated AI assistant that automates the grant-seeking lifecycle, empowering non-profits and researchers to secure funding more efficiently.
 
----
-
-
 <!-- **ADD A GIF OF THE FINAL APP IN ACTION HERE. This is the most important visual element.** -->
 <!-- To create a GIF, use a free tool like Giphy Capture or ScreenToGif to record your screen during the demo. -->
 
 ![Grant Seeker Demo](demo_38.gif)
-
----
 
 ## Table of Contents
 
@@ -89,6 +84,7 @@ The quantifiable benefits include:
 *   **Quality:** Ensures strict adherence to "Proposal Requirements" via AI blueprints.
 *   **Democratization:** Removes resource hurdles for under-resourced organizations. -->
 
+---
 
 ## 2. How It Works
 
@@ -229,7 +225,7 @@ The application creates a hidden `.cache/` directory.
 *   **Behavior:** Failed requests are not cached. Only successful grant extractions are stored.
 
 ---
-## 5. Data Schema & Output
+## 6. Data Schema & Output
 
 The `GrantExtractor` agent produces structured JSON data strictly adhering to a Pydantic schema. This ensures downstream compatibility with the `WriterAgent` and allows for consistent UI rendering.
 
@@ -274,9 +270,10 @@ The `GrantExtractor` agent produces structured JSON data strictly adhering to a 
     "fit_score": 63,
     "..." : "..."
   }
-]
+]```
 
-## 6. Our Team
+
+## 7. Our Team
 
 - **Shek Lun:** Technical Lead & AI Architect
 - **Ante Krtalić:** Backend & DevOps Engineer
@@ -285,7 +282,7 @@ The `GrantExtractor` agent produces structured JSON data strictly adhering to a 
 
 ---
 
-## 7. Future Work
+## 8. Future Work
 
 While this prototype demonstrates our core vision, we have a clear roadmap for future development:
 
@@ -297,11 +294,11 @@ While this prototype demonstrates our core vision, we have a clear roadmap for f
 - **Export Options:** PDF/Word export for grant proposals
 - **Production Deployment:** Deploy on Google Cloud Run or Streamlit Cloud with CI/CD pipeline
 
-## 8. Acknowledgements
+## 9. Acknowledgements
 
 We would like to extend a special thank you to **Ujjwal Ruhal** for his valuable contributions during the initial UI conceptualization phase of this project.
 
-## 9 Citations
+## 10. Citations
 
 
 *   Anastasiia Skok. **[ESG for NGOs: How Sustainable Development Unlocks New Funding and Partnership Opportunities](https://www.bdo.ua/en-gb/insights-1/information-materials/2025/esg-for-ngos-how-sustainable-development-unlocks-new-funding-and-partnership-opportunities)**. BDO, 2025.
