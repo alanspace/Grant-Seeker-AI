@@ -1,5 +1,29 @@
 [
   {
+    "title": "Artificial Intelligence Grant Program (DE-FOA-0003458)",
+    "funder": "U.S. Department of Energy Office of Science (SC)",
+    "deadline": "Not specified in the provided text. (The full content is truncated.)",
+    "amount": "Not specified in the provided text.",
+    "description": "This is a funding opportunity announcement from the DOE Office of Science supporting research related to Artificial Intelligence.",
+    "detailed_overview": "This funding opportunity announcement (DE-FOA-0003458) is issued by the U.S. Department of Energy Office of Science (SC) to solicit applications for research projects, likely focused on advancements in Artificial Intelligence (AI). Due to the highly truncated nature of the source document, specific program goals, scope, and funding details cannot be confirmed.",
+    "tags": [
+      "Artificial Intelligence",
+      "Science",
+      "Research",
+      "Energy",
+      "Federal Grant"
+    ],
+    "eligibility": "Not specified in the provided text.",
+    "url": "https://science.osti.gov/grants/FOAs/FOAs/2025/DE-FOA-0003458",
+    "application_requirements": [
+      "Not specified in the provided text."
+    ],
+    "funding_type": "Grant",
+    "geography": "United States",
+    "fit_score": 0,
+    "id": 1
+  },
+  {
     "url": "https://arpa-e-foa.energy.gov/",
     "title": "eXCHANGE Funding Opportunities Portal (Referencing QC 3 Program)",
     "funder": "ARPA-E (DOE)",
@@ -14,54 +38,31 @@
     "funding_type": "Grant",
     "geography": "Not specified",
     "fit_score": 0,
-    "id": 1
-  },
-  {
-    "title": "Funding Opportunities for Engineering Research in Artificial Intelligence",
-    "funder": "U.S. National Science Foundation (NSF) Directorate for Engineering (ENG)",
-    "deadline": "Expired (Document archived)",
-    "amount": "Not specified",
-    "description": "This Dear Colleague Letter (DCL) encourages research and education proposals related to artificial intelligence as an emerging industry, focusing on the rapid advancement and potential of AI.",
-    "detailed_overview": "With this Dear Colleague Letter, the U.S. National Science Foundation (NSF) Directorate for Engineering (ENG) encouraged the submission of research and education proposals related to Artificial Intelligence as an Emerging Industry. The goal was to support research and development into rapidly advancing AI technologies. Note: This document has been officially archived by the NSF.",
-    "tags": [
-      "Artificial Intelligence",
-      "Engineering Research",
-      "Education",
-      "Technology",
-      "NSF"
-    ],
-    "eligibility": "Not specified. Eligibility typically includes universities, non-profit organizations, and other institutions capable of conducting research, as defined by general NSF requirements.",
-    "url": "https://www.nsf.gov/funding/opportunities/dcl-funding-opportunities-engineering-research-artificial/nsf24-039",
-    "application_requirements": [
-      "Must be submitted in accordance with the requirements specified in this funding opportunity (when active) and in the NSF Proposal & Award Policies & Procedures Guide (PAPPG)."
-    ],
-    "funding_type": "Grant",
-    "geography": "United States (Implied)",
-    "fit_score": 0,
     "id": 2
   },
   {
-    "title": "SandboxAQ Scholarship Program for Quantum Computing and AI Researchers",
-    "funder": "SandboxAQ",
-    "deadline": "2026-04-01",
-    "amount": "$5,000 - $10,000",
-    "description": "SandboxAQ offers two scholarships—the Research Excellence Scholarship ($10,000) for groundbreaking AI/Quantum research projects and the Global Travel Scholarship ($5,000) for presenting research at scientific conferences.",
-    "detailed_overview": "The SandboxAQ Scholarship Program offers two distinct opportunities for PhD students focusing on cutting-edge research in AQ (AI and Quantum) technology. The Research Excellence Scholarship is a $10,000 award designed to support PhD students in their research pursuits, based on the innovation, relevance, potential impact, and academic merit of their proposals. The Global Travel Scholarship is a $5,000 award that supports PhD students in attending and presenting their research at scientific conferences, aiming to foster global collaboration and networking. Both scholarships are open to all topics in AI, Quantum, and associated research, including Agentic AI Systems, AI Alignment, AI Ethics, Cybersecurity, LLMs, LQMs, and Post-Quantum Cryptography.",
+    "title": "AFRL/RITQ Quantum Algorithms Research",
+    "funder": "NRC Research Associateship Programs",
+    "deadline": "Expired (2025-05-01)",
+    "amount": "Approximately $95,000 (Stipend) plus $5,000 (Travel Allowance)",
+    "description": "Postdoctoral and senior researchers are invited to conduct quantum algorithms research at AFRL, focusing on amplitude amplification and quantum machine learning.",
+    "detailed_overview": "This is a Research Associateship Program inviting postdoctoral and senior researchers to conduct quantum algorithms research at AFRL. The focus areas include amplitude amplification and quantum machine learning for near-term and future quantum devices. The typical duration for the associateship is 2-3 years, and the program includes relocation and health insurance benefits. Supplements may be provided based on experience.",
     "tags": [
-      "Scholarship",
-      "Quantum Computing",
-      "Artificial Intelligence",
       "Research",
-      "Academic Travel"
+      "Quantum Computing",
+      "Postdoctoral",
+      "Science",
+      "Technology"
     ],
-    "eligibility": "Open to PhD students enrolled in accredited institutions worldwide. Open to international applicants. Research focus must span AI and/or quantum technology and related disciplines.",
-    "url": "https://grad.uchicago.edu/fellowship/sandboxaq-scholarship-program-for-quantum-computing-and-ai-researchers/",
+    "eligibility": "Open to U.S. citizens; requires PhD.",
+    "url": "https://atomgrants.com/grant/afrl-ritq-quantum-algorithms-nrc",
     "application_requirements": [
-      "Research proposal/Work submission (for assessment of innovation, relevance, potential impact, and academic merit)"
+      "Requires PhD",
+      "Must contact Research Adviser prior to applying"
     ],
-    "funding_type": "Scholarship",
-    "geography": "Worldwide",
-    "fit_score": 45,
+    "funding_type": "Fellowship/Associateship",
+    "geography": "United States",
+    "fit_score": 100,
     "id": 3
   },
   {

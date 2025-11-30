@@ -237,7 +237,14 @@ def main():
     """Main function for the Search Grants page."""
     
     # Header
-    st.markdown("<h1 style='text-align: center;'>🔍 Search Grants</h1>", unsafe_allow_html=True)
+    col_back, col_title = st.columns([1, 5])
+    with col_back:
+        if st.button("🏠 Home"):
+            st.switch_page("home_page.py")
+            
+    with col_title:
+        st.markdown("<h1 style='text-align: center; margin-top: -1rem;'>🔍 Search Grants</h1>", unsafe_allow_html=True)
+    
     st.markdown("<p style='text-align: center; color: #4a5568;'>Find relevant grant opportunities for your project</p>", unsafe_allow_html=True)
     
     # Search Section
