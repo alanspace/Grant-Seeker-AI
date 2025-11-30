@@ -153,33 +153,33 @@ graph TD
     classDef storage fill:#eceff1,stroke:#607d8b,stroke-width:2px,color:black;
 
     subgraph Frontend ["🖥️ Frontend Layer"]
-        User([👤 User]) -->|1. Input Info| UI[Streamlit<br/>App]
-        UI -->|2. Request| API[API<br/>Bridge]
+        User([👤 User]) -->|1. Input| UI[Streamlit UI]
+        UI -->|2. Request| API[API Layer]
     end
 
-    subgraph Backend ["⚙️ Backend Orchestration (ADK)"]
-        API -->|3. Start| Workflow[GrantSeeker<br/>Workflow]
+    subgraph Backend ["⚙️ Backend Orchestration"]
+        API -->|3. Start| Workflow[Orchestrator]
         
         %% Phase 0
-        Workflow -->|Phase 0| QueryAgent(🤖 Query<br/>Agent)
-        QueryAgent -->|Optimize| Gemini1[Gemini<br/>Flash]
+        Workflow -->|Phase 0| QueryAgent(🤖 Query Gen)
+        QueryAgent -->|Optimize| Gemini1[Gemini]
         
         %% Phase 1
-        Workflow -->|Phase 1| FinderAgent(🤖 Finder<br/>Agent)
-        FinderAgent <-->|Search| Tavily[🛠️ Tavily<br/>Search API]
-        FinderAgent -->|Analyze| Gemini2[Gemini<br/>Flash]
+        Workflow -->|Phase 1| FinderAgent(🤖 Finder)
+        FinderAgent <-->|Search| Tavily[🛠️ Tavily API]
+        FinderAgent -->|Analyze| Gemini2[Gemini]
         
         %% Phase 2
-        Workflow -->|Phase 2| ExtractorAgent(🤖 Extractor<br/>Agent)
+        Workflow -->|Phase 2| ExtractorAgent(🤖 Extractor)
         ExtractorAgent <-->|Scrape| Tavily
-        ExtractorAgent -->|Extract| Gemini3[Gemini<br/>Flash]
+        ExtractorAgent -->|Extract| Gemini3[Gemini]
         
         %% Caching
-        ExtractorAgent -.->|Read/Write| Cache[(📂 File<br/>Cache)]
+        ExtractorAgent -.->|Read/Write| Cache[(📂 Cache)]
         
         %% Phase 3
-        UI -->|4. Select Grant| WriterAgent(🤖 Writer<br/>Agent)
-        WriterAgent -->|Draft Proposal| Gemini4[Gemini<br/>Flash]
+        UI -->|4. Select| WriterAgent(🤖 Writer)
+        WriterAgent -->|Draft| Gemini4[Gemini]
     end
 
     %% Output
