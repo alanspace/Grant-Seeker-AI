@@ -143,7 +143,7 @@ Our system is built using the **Google Agent Development Kit (ADK)** and impleme
 - Date-aware extraction with context injection
 - Parallel processing with Semaphore(3) concurrency control
 
-```
+```mermaid
 graph TD
     %% Styles - Added padding to make boxes bigger
     classDef frontend fill:#e1f5fe,stroke:#01579b,stroke-width:2px,color:black,padding:10px;
