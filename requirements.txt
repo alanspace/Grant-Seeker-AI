@@ -13,6 +13,7 @@ tavily-python
 # --- Frontend (Streamlit) ---
 streamlit
 st-copy-to-clipboard
+pyarrow
 
 # --- Networking & HTTP ---
 httpx

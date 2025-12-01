@@ -1,85 +1,62 @@
 [
   {
-    "title": "Centre for Quantum Technology Research",
-    "funder": "The Research Council of Norway (Forskningsrådet)",
-    "deadline": "Expired (2025-09-24)",
-    "amount": "Not specified",
-    "description": "Funding is provided for research centres focused on basic research activities in quantum technology, aiming to build strong Norwegian academic communities in fields like quantum computing and sensors.",
-    "detailed_overview": "The purpose of this call is to establish solid Norwegian academic communities conducting high-international-level research in quantum computing, quantum sensors, and quantum communication. Norway requires strong academic communities that conduct groundbreaking research in quantum technology, alongside increased recruitment to the field. Funding is specifically available for research centres focusing on basic research activities in mathematical, natural sciences, and/or technological research.",
+    "title": "Verizon Small Business Digital Ready Grant Program (Current Round)",
+    "funder": "Verizon (in partnership with LISC)",
+    "deadline": "2025-12-10",
+    "amount": "$10,000",
+    "description": "This program awards 50 grants of $10,000 each to eligible U.S. small businesses upon completion of required digital readiness courses and resources.",
+    "detailed_overview": "This grant program is offered through the Verizon Small Business Digital Ready platform, in partnership with LISC, to complement the free resources provided. The current round aims to award 50 small businesses with $10,000 grants. To access the application, owners must register and complete a combination of two eligible courses or events between July 1, 2025, and December 10, 2025. Since 2021, the program has awarded $14 million in total grants.",
     "tags": [
-      "Research",
-      "Quantum Technology",
-      "Science",
-      "Academic Research",
+      "Small Business",
+      "Digital Readiness",
+      "Economic Development",
       "Technology"
     ],
-    "eligibility": "Funding under this call is available for research centres focusing on basic research activities in mathematical, natural sciences and/or technological research.",
-    "url": "https://www.forskningsradet.no/en/call-for-proposals/2025/centre-quantum-technology-research/",
+    "eligibility": "Owners of for-profit small businesses based in the U.S., Puerto Rico, or US Virgin Islands. Nonprofits are not eligible. Applicants may apply for one business only and must be over the age of 18.",
+    "url": "https://dashboard-digitalready.verizonwireless.com/grants",
     "application_requirements": [
-      "Application submitted by deadline (2025-09-24)",
-      "Focus on basic research activities in quantum technology",
-      "Use of provided templates for submission"
+      "Must register and complete the Digital Ready resources",
+      "Complete any combination of two eligible courses or events between July 1, 2025 and December 10, 2025 to unlock the application",
+      "Submission of the final application by the deadline"
     ],
     "funding_type": "Grant",
-    "geography": "Norway",
-    "fit_score": 100,
+    "geography": "U.S., Puerto Rico, or US Virgin Islands",
+    "fit_score": 0,
     "id": 1
   },
   {
-    "title": "Proof of Concept Grants in AI or Quantum technologies",
-    "funder": "Knut & Alice Wallenbers Stiftelse (KAW)",
-    "deadline": "2026-04-13",
-    "amount": "Not specified",
-    "description": "The grant supports academic scientists in AI or Quantum technologies to develop early-stage discoveries towards validated methods, products, or processes, bridging the gap from research to innovation.",
-    "detailed_overview": "This is a directed Proof of Concept call opened by the Knut & Alice Wallenberg Foundation (KAW) in collaboration with WASP and WACQT. The purpose is to bridge the gap from academic research to innovation, allowing researchers the opportunity to develop their early-stage discoveries towards validated methods, products or processes. The grant provides the opportunity to carry out activities that validate and accelerate the development of the project and prepare for innovation and commercialization. The grant is tied to the Wallenberg Launch Pad (WALP) mechanism and will be paid directly to the researcher's university, complying with the university's regulations, the Swedish professor’s privilege, and KAW's specific terms and conditions.",
+    "title": "Digitizing Hidden Collections: Amplifying Unheard Voices",
+    "funder": "CLIR (Council on Library and Information Resources)",
+    "deadline": "Check website for current cycle",
+    "amount": "Not specified in provided text",
+    "description": "This program supports nonprofit organizations in the US and Canada to digitize rare and unique materials from hidden collections, specifically aiming to amplify unheard or underrepresented voices.",
+    "detailed_overview": "The *Digitizing Hidden Collections: Amplifying Unheard Voices* grant program supports projects that digitize rare and unique materials held by eligible organizations. The program aims to make these collections publicly accessible, focusing on those materials that can amplify unheard voices or underrepresented perspectives. The application process begins with an Initial Application. Two or more eligible organizations may apply to collaborate, but one must be appointed as the lead applicant responsible for project oversight and fund management. The program is specifically designed for nonprofit academic, independent, and community-based organizations in the US and Canada that collect, preserve, and share such materials.",
     "tags": [
-      "AI",
-      "Quantum Technology",
-      "Research",
-      "Innovation",
-      "Academic",
-      "Sweden"
+      "Digitization",
+      "Archives",
+      "Cultural Heritage",
+      "Nonprofit",
+      "Amplifying Voices"
     ],
-    "eligibility": "Eligible to apply are scientists that are employed at a Swedish University and have or have had grants from the Wallenberg Foundations (Wallenberg Academy Fellows, Wallenberg Scholars, Wallenberg Clinical Scholars, PI and Co PIs in KAW projects) Or are part of KAWs strategic initiatives (Wallenberg AI, Autonomous Systems and Software Program (WASP), Wallenberg Centre for Quantum Technology (WACQT), Wallenberg Initiative Material Science for Sustainability (WISE), Wallenberg Wood Science Cente (WWSC), Wallenberg Centers for Molecular Medicine (WCMM), Data Driven Life Science (DDLS)).",
-    "url": "https://kaw.wallenberg.org/en/calls/proof-concept-grants-ai-or-quantum-technologies",
+    "eligibility": "This program is for nonprofit academic, independent, and community-based organizations in the US and Canada that collect, preserve, and share rare and unique materials with the general public. Eligible organizations must propose eligible projects falling within the program’s scope and be prepared to abide by the program’s award terms.\n\nApplicant organizations and any collaborating organizations must fall under one of the following categories and meet the requirements for that category:\n* US organizations that fit the above description must also be tax-exempt under\n  + IRS Code Section 501(c)3;\n  + IRS Code Section 115; or\n  + IRS Code Section 170(c)1.\n* Canadian organizations that fit the above description must be\n  + a current registered charity listed by the Canada Revenue Agency; and/or\n  + a designated educational institution recognized as eligible to receive Canada Student Loans.\n* Federal, state, provincial, territorial, municipal, tribal, or indigenous government units may also be eligible, provided they can present evidence that collecting, preserving, and sharing rare and unique materials with the general public is part of the purpose and normal functioning of the unit. Government organizations should email hiddencollections@clir.org and confirm their ability to demonstrate eligibility before preparing and submitting a proposal.\n\nTwo or more eligible organizations may apply to collaborate on a project. When two or more organizations collaborate, one must be appointed as the lead applicant, accepting responsibility for project oversight and the management of grant funds. Eligible projects must support the digitization of rare and unique materials.",
+    "url": "https://www.clir.org/hiddencollections/apply-for-an-award/",
     "application_requirements": [
-      "Employed at a Swedish University",
-      "Affiliation with a Wallenberg Foundation grant (Wallenberg Academy Fellows, Wallenberg Scholars, Wallenberg Clinical Scholars, PI and Co PIs in KAW projects)",
-      "Affiliation with a KAW strategic initiative (WASP, WACQT, WISE, WWSC, WCMM, DDLS)"
+      "Submission of the Initial Application form during an open call for applications",
+      "Project must fall within the program's scope (digitization of hidden collections)",
+      "US applicants must demonstrate 501(c)3, 115, or 170(c)1 tax-exempt status",
+      "Canadian applicants must be a registered charity or designated educational institution",
+      "Government units must confirm eligibility with CLIR Grants Team prior to submission",
+      "Designation of a lead applicant for collaborative projects"
     ],
     "funding_type": "Grant",
-    "geography": "Sweden",
+    "geography": "United States, Canada",
     "fit_score": 100,
     "id": 2
   },
   {
-    "title": "U.S.-UK Center-to-Centre Collaboration Opportunities for Artificial Intelligence and Quantum Information Science and Technology",
-    "funder": "NSF - National Science Foundation",
-    "deadline": "Not specified in provided text",
-    "amount": "Not specified in provided text",
-    "description": "This opportunity supports collaboration between research centers in the U.S. and the U.K. focusing on advancements in Artificial Intelligence (AI) and Quantum Information Science and Technology (QIST).",
-    "detailed_overview": "This program, likely issued through a Dear Colleague Letter (DCL) or similar mechanism, seeks to establish robust center-to-centre research partnerships between institutions in the United States and the United Kingdom. The focus areas are the strategic fields of Artificial Intelligence and Quantum Information Science and Technology, promoting joint research, knowledge sharing, and capacity building between the two nations. The full program details, including specific goals, budget limitations, and submission instructions, are missing due to the truncation of the source text.",
-    "tags": [
-      "Artificial Intelligence",
-      "Quantum Information Science",
-      "International Collaboration",
-      "Research",
-      "STEM"
-    ],
-    "eligibility": "Not specified in provided text (Typically academic and research institutions for NSF center programs.)",
-    "url": "https://www.nsf.gov/funding/opportunities/dcl-us-uk-center-centre-collaboration-opportunities-artificial",
-    "application_requirements": [
-      "Not specified in provided text"
-    ],
-    "funding_type": "Grant",
-    "geography": "United States (U.S.) and United Kingdom (U.K.)",
-    "fit_score": 100,
-    "id": 3
-  },
-  {
-    "url": "https://www.icds.psu.edu/faculty-upskilling-fellowships-in-ai-and-quantum-sciences-faqs/",
-    "title": "Faculty Upskilling Fellowships in AI and Quantum Sciences",
-    "funder": "ICDS (Penn State University)",
+    "url": "https://www.clir.org/2025/08/auv4-2/",
+    "title": "CLIR Application Announcement for Digitizing Hidden Collections (Deadline Oct 20, 2025)",
+    "funder": "CLIR (Council on Library and Information Resources)",
     "error": "No content retrieved",
     "deadline": "Not specified",
     "amount": "Not specified",
@@ -90,7 +67,7 @@
     "application_requirements": [],
     "funding_type": "Grant",
     "geography": "Not specified",
-    "fit_score": 100,
-    "id": 4
+    "fit_score": 0,
+    "id": 3
   }
 ]
