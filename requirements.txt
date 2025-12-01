@@ -1,7 +1,6 @@
 # --- Core AI & Google SDKs ---
 google-adk
 google-generativeai
-google-cloud-aiplatform
 
 # --- Agent Framework & Data Models ---
 pydantic
@@ -19,6 +18,3 @@ pyarrow
 httpx
 anyio
 requests
-
-# --- Web Scraping Utilities ---
-beautifulsoup4
