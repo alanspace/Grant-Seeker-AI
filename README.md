@@ -30,7 +30,7 @@ A sophisticated AI assistant that automates the grant-seeking lifecycle, empower
 
 ## 1. The Pitch
 
-[![Watch the Pitch](https://img.youtube.com/vi/PLACEHOLDER_VIDEO_ID/0.jpg)](https://www.youtube.com/watch?v=Q_5NrZEUk2Y)
+[![Watch the Pitch](https://img.youtube.com/vi/Q_5NrZEUk2Y/0.jpg)](https://www.youtube.com/watch?v=Q_5NrZEUk2Y)
 
 ### The Problem
 
