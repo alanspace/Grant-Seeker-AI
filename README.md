@@ -30,6 +30,8 @@ A sophisticated AI assistant that automates the grant-seeking lifecycle, empower
 
 ## 1. The Pitch
 
+[![Watch the Pitch](https://img.youtube.com/vi/PLACEHOLDER_VIDEO_ID/0.jpg)](https://www.youtube.com/watch?v=Q_5NrZEUk2Y)
+
 ### The Problem
 
 <!-- The Grant Seeker AI is a sophisticated, collaborative multi-agent AI system designed to serve as an intelligent partner for non-profit organizations, transforming the grant-seeking process from a fragmented, weeks-long ordeal into a streamlined, automated workflow.
