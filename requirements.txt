@@ -11,7 +11,7 @@ tavily-python
 
 # --- Frontend (Streamlit) ---
 streamlit
-st-copy-to-clipboard
+st-copy
 pyarrow
 
 # --- Networking & HTTP ---

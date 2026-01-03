@@ -102,6 +102,8 @@ if 'search_query' not in st.session_state:
     st.session_state.search_query = ""
 if 'has_searched' not in st.session_state:
     st.session_state.has_searched = False
+if 'searching' not in st.session_state:
+    st.session_state.searching = False
 
 
 GRANTS_FILE_PATH = Path(__file__).resolve().parents[1] / "backend" / "grants_output.json"
@@ -238,9 +240,6 @@ def main():
     
     # Header
     col_back, col_title = st.columns([1, 5])
-    with col_back:
-        if st.button("🏠 Home"):
-            st.switch_page("home_page.py")
             
     with col_title:
         st.markdown("<h1 style='text-align: center; margin-top: -1rem;'>🔍 Search Grants</h1>", unsafe_allow_html=True)
@@ -261,7 +260,12 @@ def main():
         )
     
     with search_col2:
-        search_clicked = st.button("🔎 Search", type="primary", use_container_width=True)
+        search_clicked = st.button(
+            "🔎 Search" if not st.session_state.searching else "⏳ Searching...", 
+            type="primary", 
+            use_container_width=True,
+            disabled=st.session_state.searching
+        )
     
     
     
@@ -277,11 +281,17 @@ def main():
     
     # Perform search only when search button is clicked
     if search_clicked:
+        st.session_state.searching = True
         st.session_state.has_searched = True
+        st.rerun()
+    
+    if st.session_state.searching:
         with st.spinner("Searching for grants..."):
             results = search_grants(search_query)
             st.session_state.search_results = results
             st.session_state.search_query = search_query
+            st.session_state.searching = False
+            st.rerun()
     
     # Results Section - only show if user has searched
     if st.session_state.has_searched:
