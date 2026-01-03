@@ -13,6 +13,7 @@ import os
 
 # Add backend to path for imports
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'backend'))
+from pdf_generator import generate_grant_pdf
 
 # Page configuration handled in home_page.py
 
@@ -231,8 +232,15 @@ def render_grant_card(grant, col_key):
                 st.switch_page("frontend/grant_details.py")
         
         with btn_col2:
-            if st.button("💾 Download Grant Details PDF", key=f"export_{grant_id}_{col_key}", use_container_width=True):
-                st.info("Download feature coming soon!")
+            pdf_data = generate_grant_pdf(grant)
+            st.download_button(
+                label="💾 Download PDF",
+                data=pdf_data,
+                file_name=f"grant_{grant_id}.pdf",
+                mime="application/pdf",
+                key=f"export_{grant_id}_{col_key}",
+                use_container_width=True
+            )
 
 
 def main():
