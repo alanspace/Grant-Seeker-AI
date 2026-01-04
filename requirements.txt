@@ -8,6 +8,7 @@ python-dotenv
 
 # --- External Tools (Search) ---
 tavily-python
+fpdf
 
 # --- Frontend (Streamlit) ---
 streamlit
