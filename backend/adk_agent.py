@@ -718,12 +718,7 @@ class GrantSeekerWorkflow:
         
         logger.info("Workflow complete")
         return results
-    
-    def save_results(self, results: list[dict], output_file: str = "grants_output.json") -> None:
-        """Save results to JSON file."""
-        with open(output_file, 'w', encoding='utf-8') as f:
-            json.dump(results, f, indent=2, ensure_ascii=False)
-        logger.info(f"Results saved to: {output_file}")
+
     
     def print_results(self, results: list[dict]) -> None:
         """Print results in a formatted manner."""
@@ -780,7 +775,6 @@ async def main():
     results = await workflow.run(query)
     
     # Save and print results
-    workflow.save_results(results)
     workflow.print_results(results)
     
     return results
