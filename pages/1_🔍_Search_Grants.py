@@ -5,7 +5,6 @@ Allows users to search the grant database or paste grant URLs/description to fin
 import asyncio
 import importlib
 import json
-from pathlib import Path
 
 import streamlit as st
 import sys
@@ -103,28 +102,8 @@ if 'search_query' not in st.session_state:
 if 'has_searched' not in st.session_state:
     st.session_state.has_searched = False
 
-
-GRANTS_FILE_PATH = Path(__file__).resolve().parents[1] / "backend" / "grants_output.json"
-
-
-@st.cache_data(show_spinner=False)
-def load_grants_from_file() -> list[dict]:
-    """Load grants data from the shared JSON file."""
-    try:
-        with GRANTS_FILE_PATH.open("r", encoding="utf-8") as fp:
-            data = json.load(fp)
-            if isinstance(data, list):
-                return data
-            st.error("Grant data file is not in the expected format. Showing empty results.")
-    except FileNotFoundError:
-        st.error("Grant data file not found. Please generate `backend/grants_output.json`.")
-    except json.JSONDecodeError:
-        st.error("Grant data file is not valid JSON. Please fix the file contents.")
-    return []
-
-
 def execute_grant_workflow(query: str) -> list[dict]:
-    """Run the ADK workflow for the given query and persist results."""
+    """Run the ADK workflow for the given query and return results."""
     # Force reimport to get fresh module state
     if "adk_agent" in sys.modules:
         del sys.modules["adk_agent"]
@@ -142,10 +121,6 @@ def execute_grant_workflow(query: str) -> list[dict]:
         loop.close()
         asyncio.set_event_loop(None)
 
-    if results:
-        # Save results to a shared JSON file so other pages can access them if needed
-        workflow.save_results(results, output_file=str(GRANTS_FILE_PATH))
-        load_grants_from_file.clear()
     return results
 
 
@@ -159,16 +134,13 @@ def search_grants(query, filters=None):
     if query:
         try:
             workflow_results = execute_grant_workflow(query)
-        except Exception as exc:
-            st.error(f"Grant workflow failed: {exc}")
-        else:
             if workflow_results:
                 return workflow_results
-            st.warning("Grant workflow returned no results. Showing cached data instead.")
-
-    all_grants = load_grants_from_file()
-    if not query:
-        return all_grants
+            st.warning("Grant workflow returned no results.")
+        except Exception as exc:
+            st.error(f"Grant workflow failed: {exc}")
+            
+    return []
 
     query_lower = query.lower()
     results = []
