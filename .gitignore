@@ -159,6 +159,7 @@ venv.bak/
 .mypy_cache/
 .dmypy.json
 dmypy.json
+frontend/planForMigration.md
 
 # Pyre type checker
 .pyre/
