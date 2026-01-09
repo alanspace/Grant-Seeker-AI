@@ -177,6 +177,7 @@ pages = {
         st.Page("frontend/search_grants.py", title="Search Grants", icon="🔍"),
         st.Page("frontend/grant_details.py", title="Grant Details", icon="📋"),
         st.Page("frontend/proposal_builder.py", title="Proposal Builder", icon="✍️"),
+        st.Page("frontend/diagnostics.py", title="Diagnostics", icon="🛠️"),
     ]
 }
 
