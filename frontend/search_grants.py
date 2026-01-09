@@ -155,6 +155,21 @@ def has_active_filters():
     )
 
 
+def clear_all_filters():
+    """
+    Callback function to reset all filter selections to default values.
+    Must be used with on_click parameter because widgets with keys cannot be
+    modified directly after instantiation in the same script run.
+    """
+    st.session_state.demographic_focus = []
+    st.session_state.funding_min = None
+    st.session_state.funding_max = None
+    st.session_state.funding_types = []
+    st.session_state.geographic_scope = None
+    st.session_state.applicant_type = None
+    st.session_state.project_stage = None
+
+
 def generate_mock_canadian_grants(filters, query):
     """
     Generate mock Canadian grant data for development purposes.
@@ -650,16 +665,8 @@ def main():
         
         st.markdown("---")
         
-        # Clear All Filters button - resets all filter selections to default values
-        if st.button("🗑️ Clear All Filters", use_container_width=True):
-            st.session_state.demographic_focus = []
-            st.session_state.funding_min = None
-            st.session_state.funding_max = None
-            st.session_state.funding_types = []
-            st.session_state.geographic_scope = ""
-            st.session_state.applicant_type = ""
-            st.session_state.project_stage = ""
-            st.rerun()
+        # Clear All Filters button - uses callback to reset before widgets are instantiated
+        st.button("🗑️ Clear All Filters", use_container_width=True, on_click=clear_all_filters)
         
         # Show active filters indicator with count
         # Displays when user has selected any filters, notifying them about mock data mode
