@@ -1,5 +1,7 @@
 # Grant Seeker AI 🚀
 
+![](Home_Page.png)
+
 **An "Agents for Good" Multi-Agent System for the Google ADK Capstone Project**
 
 [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://grantseekerai.streamlit.app//)
@@ -24,10 +26,13 @@ A sophisticated AI assistant that automates the grant-seeking lifecycle, empower
 6. [Our Team](#6-our-team)
 7. [Future Work](#7-future-work)
 8. [Acknowledgements](#8-acknowledgements)
+9. [Citations](#9-citations)
 
 ---
 
 ## 1. The Pitch
+
+[![Watch the Pitch](https://img.youtube.com/vi/Q_5NrZEUk2Y/0.jpg)](https://www.youtube.com/watch?v=Q_5NrZEUk2Y)
 
 ### The Problem
 
@@ -39,9 +44,9 @@ A sophisticated AI assistant that automates the grant-seeking lifecycle, empower
 
 For small to medium, high-impact non-profits, the mission is vital, but the administrative burden of grant seeking is crippling. Dedicated grant writers and staff face immense pain points that divert critical resources away from doing good, hindering organizations from accessing the capital they need to survive and thrive. Current workflows are manual, fragmented, and inefficient.
 The key challenges addressed by this project include:
-Endless Discovery: Countless hours are lost manually scanning databases and the web for relevant opportunities, lacking a tireless researcher constantly monitoring the landscape.
-Compliance Complexity: Decoding complex guidelines from various websites and PDFs to extract essential information—such as key requirements, deadlines, and eligibility criteria—is highly error-prone and tedious.
-The Drafting Challenge: Writing high-quality, tailored proposals that strictly adhere to specific funder requirements is difficult to achieve at scale, especially when managing tight deadlines.
+* **Endless Discovery:** Countless hours are lost manually scanning databases and the web for relevant opportunities, lacking a tireless researcher constantly monitoring the landscape.
+* **Compliance Complexity:** Decoding complex guidelines from various websites and PDFs to extract essential information—such as key requirements, deadlines, and eligibility criteria—is highly error-prone and tedious.
+* **The Drafting Challenge:** Writing high-quality, tailored proposals that strictly adhere to specific funder requirements is difficult to achieve at scale, especially when managing tight deadlines.
 
 ### Our Solution
 
@@ -53,12 +58,13 @@ The Grant Seeker AI is built as a true Agent for Good, automating the most burde
 The project’s innovation lies in a specialized team of AI agents coordinated by an intelligent Orchestrator. Instead of a simple chatbot, we have built a pipeline of distinct agents that collaborate to automate the workflow from start to finish, delivering a streamlined one-button flow.
 
 #### The Specialized Agents
-* The Finder Agent - Discovery 
+* **The Finder Agent - Discovery**
 This agent acts as a tireless researcher, scanning the web to find grant opportunities that match the user’s specific project mission and funding needs.
-* The Create Extractor Agent and Create Query Agent - Compliance
+* **The Create Extractor Agent and Create Query Agent - Compliance**
 These  agents function as  compliance officers, reading through dense guidelines and PDFs to extract and analytically structure actionable intelligence, creating a proposal requirements blueprint.
-* The Writer Agent - Drafting
+* **The Writer Agent - Drafting**
 This agent acts as a professional grant writer, combining the user's narrative with the Analyst’s strict blueprint to generate a compliant, persuasive, and well-formatted proposal.
+
 #### ESG Context
 Our project’s central idea of an Agent for Good is pertinent as it is intrinsically related to the Environmental, Social and Corporate Governance (ESG) framework, specifically the Governance pillar, and the crucial issue of Business Resilience and Corporate Governance. Utilizing the Grant Seeker AI to embrace transparency plays an important role in sustainability reporting, allowing non-profit organizations to monitor impact, automate reporting, and engage donors more effectively.
 
@@ -76,9 +82,9 @@ Bringing this vision to life required agility and collaboration. This applicatio
 
 The Grant Seeker AI serves as a force multiplier, giving smaller organizations the professional capacity of a large fundraising department.
 The quantifiable benefits include:
-* Time Savings: We automate the entire workflow, potentially saving hundreds of hours per grant cycle.
-* Quality and Consistency: By strictly adhering to the "Proposal Requirements" blueprint provided by the Analyst Agent, our system maximizes success rates through compliance.
-* Democratization: Ultimately, this project achieves the Agents for Good mission by removing resource hurdles, thereby democratizing access to funding for under-resourced organizations. This allows non-profits to focus on their core mission rather than paperwork.
+* **Time Savings:** We automate the entire workflow, potentially saving hundreds of hours per grant cycle.
+* **Quality and Consistency:** By strictly adhering to the "Proposal Requirements" blueprint provided by the Analyst Agent, our system maximizes success rates through compliance.
+* **Democratization:** Ultimately, this project achieves the Agents for Good mission by removing resource hurdles, thereby democratizing access to funding for under-resourced organizations. This allows non-profits to focus on their core mission rather than paperwork.
 
 <!-- ### The Value
 *   **Time Savings:** Automates 90% of the research workflow.
@@ -143,54 +149,7 @@ Our system is built using the **Google Agent Development Kit (ADK)** and impleme
 - Date-aware extraction with context injection
 - Parallel processing with Semaphore(3) concurrency control
 
-```mermaid
-graph TD
-    %% Styles
-    classDef frontend fill:#e1f5fe,stroke:#01579b,stroke-width:2px;
-    classDef orchestrator fill:#fff9c4,stroke:#fbc02d,stroke-width:2px;
-    classDef agent fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,rx:10,ry:10;
-    classDef tool fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px,stroke-dasharray: 5 5;
-    classDef storage fill:#eceff1,stroke:#607d8b,stroke-width:2px;
-
-    subgraph Frontend ["🖥️ Frontend Layer"]
-        User([👤 User]) -->|1. Input Project Details| UI[Streamlit App]
-        UI -->|2. Request| API[API Bridge]
-    end
-
-    subgraph Backend ["⚙️ Backend Orchestration (ADK)"]
-        API -->|3. Start Workflow| Workflow[GrantSeekerWorkflow]
-        
-        %% Phase 0
-        Workflow -->|Phase 0| QueryAgent(🤖 QueryGenerator Agent)
-        QueryAgent -->|Optimize| Gemini1[Gemini Flash]
-        
-        %% Phase 1
-        Workflow -->|Phase 1| FinderAgent(🤖 GrantFinder Agent)
-        FinderAgent <-->|Search| Tavily[🛠️ Tavily Search API]
-        FinderAgent -->|Analyze| Gemini2[Gemini Flash]
-        
-        %% Phase 2
-        Workflow -->|Phase 2| ExtractorAgent(🤖 GrantExtractor Agent)
-        ExtractorAgent <-->|Scrape| Tavily
-        ExtractorAgent -->|Extract| Gemini3[Gemini Flash]
-        
-        %% Caching
-        ExtractorAgent -.->|Read/Write| Cache[(📂 File Cache .json)]
-        
-        %% Phase 3
-        UI -->|4. Select Grant| WriterAgent(🤖 Writer Agent)
-        WriterAgent -->|Draft Proposal| Gemini4[Gemini Flash]
-    end
-    %% Output
-    WriterAgent -->|5. Final Draft| UI
-
-    %% Apply Styles
-    class UI,API frontend;
-    class Workflow orchestrator;
-    class QueryAgent,FinderAgent,ExtractorAgent,WriterAgent agent;
-    class Tavily,Gemini1,Gemini2,Gemini3,Gemini4 tool;
-    class Cache storage;
-  ```  
+![Grant Seeker Architecture](architecture_diagram.png)
 ---
 
 ## 4. Technology Stack
@@ -204,7 +163,7 @@ graph TD
 - **Concurrency:** asyncio with Semaphore for parallel processing
 - **Caching:** File-based cache system with MD5 hashing (24h TTL)
 - **Testing:** pytest with 26 comprehensive unit tests
-- **Deployment:** Ready for Streamlit Cloud or Google Cloud Run
+- **Deployment:** Ready for Streamlit Cloud
 
 ---
 
