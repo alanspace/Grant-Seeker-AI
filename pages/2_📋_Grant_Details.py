@@ -6,7 +6,9 @@ import sys
 import os
 
 # Add backend to path for imports
+# Add backend to path for imports
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'backend'))
+from pdf_generator import generate_grant_pdf
 
 # Page configuration handled in home_page.py
 
@@ -233,8 +235,18 @@ def main():
             st.switch_page("pages/3_✍️_Proposal_Builder.py")
     
     with btn_col2:
-        if st.button("📄 Download Grant Details PDF", use_container_width=True):
-            st.info("PDF Download feature coming soon!")
+    with btn_col2:
+        # Generate the PDF in memory
+        pdf_data = generate_grant_pdf(grant)
+        
+        # Streamlit download button
+        st.download_button(
+            label="📄 Download Grant Details PDF",
+            data=pdf_data,
+            file_name=f"grant_{grant.get('id', 'details')}.pdf",
+            mime="application/pdf",
+            use_container_width=True
+        )
     
     with btn_col3:
         # Render an HTML link styled as a full-width button that opens the grant URL in a new tab

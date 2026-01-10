@@ -1,0 +1,110 @@
+[
+    {
+        "title": "Digital Ready Small Business Grant Program (Verizon/LISC)",
+        "funder": "Verizon (in partnership with LISC)",
+        "deadline": "Expired (2025-12-10)",
+        "amount": "$10,000",
+        "description": "This program awards $10,000 grants to 50 for-profit small businesses that successfully complete two eligible educational courses or events through the Digital Ready platform.",
+        "detailed_overview": "Verizon and LISC have partnered to provide 50 small businesses with $10,000 grants. This funding initiative is designed to complement the hundreds of free resources available on the Digital Ready platform. To access the grant application, small business owners must register and complete any combination of two eligible courses or events between July 1, 2025, and December 10, 2025.",
+        "tags": [
+            "Small Business",
+            "Digital Literacy",
+            "Economic Development",
+            "Training",
+            "Grants"
+        ],
+        "eligibility": "Owners of for-profit small businesses based in the U.S., Puerto Rico, or US Virgin Islands. Nonprofits are not eligible. Applicants may apply for one business only and must be over the age of 18.",
+        "url": "https://dashboard-digitalready.verizonwireless.com/grants",
+        "application_requirements": [
+            "Registration on the Digital Ready platform",
+            "Completion of any combination of two eligible courses or events (must be completed between July 1, 2025 and December 10, 2025)",
+            "Submission of the online application form"
+        ],
+        "funding_type": "Grant",
+        "geography": "United States, Puerto Rico, U.S. Virgin Islands",
+        "fit_score": 0,
+        "id": 1
+    },
+    {
+        "title": "Digital Humanities Advancement Grants (DHAG)",
+        "funder": "Institute of Museum and Library Services (IMLS) and National Endowment for the Humanities (NEH)",
+        "deadline": "Expired (2025-05-22)",
+        "amount": "Not specified",
+        "description": "This joint IMLS and NEH program supports innovative, experimental, and computationally challenging digital projects focusing on digital collections and services throughout their lifecycle.",
+        "detailed_overview": "The Digital Humanities Advancement Grants (DHAG) program is a joint effort of IMLS and the NEH to support innovative, experimental, and/or computationally challenging digital projects at different stages of their lifecycles, from early start-up phases through implementation and sustainability. IMLS encourages innovative collaborations between library and archives professionals, humanities professionals, information scientists, and relevant public communities to advance preservation of, access to, and public engagement with digital collections and services that will strengthen community learning, foster civic cohesion, advance research, and enhance knowledge networks. The funding opportunity is generally offered twice a year. Updated guidelines will be posted in advance of the next deadline.",
+        "tags": [
+            "Digital Humanities",
+            "Libraries",
+            "Archives",
+            "Technology",
+            "Research"
+        ],
+        "eligibility": "Institutions can apply. The program encourages innovative collaborations between library and archives professionals, humanities professionals, information scientists, and relevant public communities.",
+        "url": "https://www.imls.gov/find-funding/funding-opportunities/grant-programs/digital-humanities-advancement-grants",
+        "application_requirements": [
+            "Visit the National Endowment for the Humanities (NEH) website for application information and guidelines."
+        ],
+        "funding_type": "Grant",
+        "geography": "United States (Implied Federal Program)",
+        "fit_score": 0,
+        "id": 2
+    },
+    {
+        "url": "https://www.clir.org/2025/08/auv4-2/",
+        "title": "Digitizing Hidden Collections Grant Program",
+        "funder": "CLIR (Council on Library and Information Resources)",
+        "error": "No content retrieved",
+        "deadline": "Not specified",
+        "amount": "Not specified",
+        "description": "No description available",
+        "detailed_overview": "No detailed overview available",
+        "tags": [],
+        "eligibility": "Not specified",
+        "application_requirements": [],
+        "funding_type": "Grant",
+        "geography": "Not specified",
+        "fit_score": 0,
+        "id": 3
+    },
+    {
+        "title": "Archival Projects",
+        "funder": "National Historical Publications & Records Commission (NHPRC)",
+        "deadline": "Expired (Date not provided in source)",
+        "amount": "Not specified",
+        "description": "Funding for projects to improve online public discovery and use of historical records collections.",
+        "detailed_overview": "This program provides funding for archival projects specifically designed to improve the online discovery, access, and use of historical records collections by the general public. The goal is to make these valuable historical materials more readily available and usable through digital means.",
+        "tags": [
+            "Archives",
+            "Historical Records",
+            "Digital Access",
+            "Public Discovery"
+        ],
+        "eligibility": "The application deadline for this program has passed. Eligibility is not specified on this page. Contact your program officer for details.",
+        "url": "https://www.archives.gov/nhprc/announcement",
+        "application_requirements": [
+            "The application deadline has passed.",
+            "Consult program officer for specific requirements."
+        ],
+        "funding_type": "Grant",
+        "geography": "Not explicitly stated (NHPRC typically funds U.S. based initiatives)",
+        "fit_score": 0,
+        "id": 4
+    },
+    {
+        "url": "https://tocker.org/library-grants/",
+        "title": "Library Grants",
+        "funder": "Tocker Foundation",
+        "error": "No content retrieved",
+        "deadline": "Not specified",
+        "amount": "Not specified",
+        "description": "No description available",
+        "detailed_overview": "No detailed overview available",
+        "tags": [],
+        "eligibility": "Not specified",
+        "application_requirements": [],
+        "funding_type": "Grant",
+        "geography": "Not specified",
+        "fit_score": 0,
+        "id": 5
+    }
+]
