@@ -21,3 +21,5 @@ requests
 
 # --- Web Scraping Utilities ---
 beautifulsoup4
+fpdf
+
