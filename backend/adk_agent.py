@@ -10,6 +10,7 @@ It handles:
 4.  **Data Models**: Defining the structure of the data using Pydantic models.
 """
 import os
+import re
 import time
 import asyncio
 import json
@@ -193,9 +194,25 @@ class GrantData(BaseModel):
     eligibility: str = "Not specified"
     url: str = ""
     application_requirements: list[str] = []
-    funding_type: str = "Grant"
+    funding_nature: str = "Unknown"
     geography: str = "Not specified"
     fit_score: int = 0
+    founder_demographics: list[str] = []
+
+def normalize_funding_nature(value: str | None) -> str:
+    """Normalize funding type to 'Grant', 'Loan', 'Tax Credit' or 'Unknown'."""
+    if not value:
+        return "Unknown"
+    
+    val_lower = value.lower()
+    if "tax credit" in val_lower:
+        return "Tax Credit"
+    if "loan" in val_lower:
+        return "Loan"
+    if "grant" in val_lower:
+        return "Grant"
+        
+    return "Unknown"
 
 def calculate_fit_score(grant_data: dict, query: str) -> int:
     """Calculate a fit score (0-100) based on query match."""
@@ -327,8 +344,17 @@ def create_extractor_agent() -> LlmAgent:
         - eligibility: Full eligibility requirements text
         - url: The URL provided
         - application_requirements: Array of application requirements (e.g., ["501(c)(3) status", "Program budget"])
-        - funding_type: Type of funding (default to "Grant")
-        - geography: Geographic scope or location requirements (e.g., "Chicago", "Illinois", "United States")
+        - funding_nature: Type of funding (Must be "Grant", "Loan", "Tax Credit", or "Unknown")
+        - geography: Geographic scope. For Canadian grants, distinguish Federal vs Provincial:
+          * "Federal - Canada" -> if keywords: "Government of Canada", "Federal", "Canada-wide", "National"
+          * "[Province Name]" -> if specific to a province (e.g., "Ontario", "British Columbia", "Quebec")
+          * "[City, Province]" -> if city-specific (e.g., "Toronto, Ontario", "Vancouver, BC")
+          * For non-Canadian grants, use country or region (e.g., "United States", "California")
+        - founder_demographics: Tag any specific demographics focus. List of strings. PRIORITIZE these keywords:
+          * "Women" -> if keywords: "Women", "Female", "Girl", "She/Her", "Women-owned"
+          * "Youth" -> if keywords: "Youth", "Student", "Young Entrepreneur", "Next Gen" or ages 15-30
+          * "Indigenous" -> if keywords: "Indigenous", "First Nations", "Inuit", "Métis"
+          Also tag other demographic groups if mentioned (e.g., "Veterans", "LGBTQ+", "Immigrants", "People with Disabilities", "Minorities", etc.)
         
         CRITICAL - Deadline & Amount Extraction:
         - deadline: Search ENTIRE page for dates! Look for "deadline", "due", "apply by", "submit by", grant cycles, fiscal years
@@ -359,8 +385,9 @@ def create_extractor_agent() -> LlmAgent:
           "eligibility": "501(c)(3) non-profit organizations serving Chicago communities",
           "url": "https://example.com/grant",
           "application_requirements": ["501(c)(3) status", "Project budget", "Site plan"],
-          "funding_type": "Grant",
-          "geography": "Chicago, Illinois"
+          "funding_nature": "Grant",
+          "geography": "Federal - Canada",
+          "founder_demographics": ["Women", "Youth", "Indigenous"]
         }}
         """
     )
@@ -414,6 +441,33 @@ class GrantSeekerWorkflow:
         self.finder_agent = create_finder_agent()
         self.extractor_agent = create_extractor_agent()
         self.query_agent = create_query_agent()
+
+    def _is_grant_expired(self, grant_data: dict) -> bool:
+        """Check if a grant is expired based on its deadline."""
+        deadline = grant_data.get('deadline', '')
+        if not deadline:
+            return False
+            
+        deadline_lower = deadline.lower()
+        
+        # Check for explicit "expired" label from LLM
+        if "expired" in deadline_lower:
+            return True
+            
+        # Try to parse date YYYY-MM-DD
+        try:
+            # Find YYYY-MM-DD pattern
+            match = re.search(r'(\d{4}-\d{2}-\d{2})', deadline)
+            if match:
+                date_str = match.group(1)
+                grant_date = datetime.strptime(date_str, "%Y-%m-%d")
+                # Compare with today
+                if grant_date.date() < datetime.now().date():
+                    return True
+        except Exception:
+            pass # Parsing failed, assume not expired
+            
+        return False
 
 
 
@@ -544,7 +598,7 @@ class GrantSeekerWorkflow:
                 return cached_data
         
         # Create session for this extraction
-        session_id = f"extract-{hashlib.md5(lead.url.encode()).hexdigest()[:8]}"
+        session_id = f"extract-{hashlib.md5(lead.url.encode()).hexdigest()[:8]}-{uuid.uuid4()}"
         await self.session_service.create_session(
             app_name="grant-seeker",
             user_id="user-1",
@@ -614,14 +668,21 @@ class GrantSeekerWorkflow:
                         "eligibility": normalize_value(parsed.get("eligibility"), "Not specified"),
                         "url": lead.url,
                         "application_requirements": parsed.get("application_requirements", []),
-                        "funding_type": normalize_value(parsed.get("funding_type"), "Grant"),
-                        "geography": normalize_value(parsed.get("geography"), "Not specified")
+                        "funding_nature": normalize_funding_nature(parsed.get("funding_nature")),
+                        "geography": normalize_value(parsed.get("geography"), "Not specified"),
+                        "founder_demographics": parsed.get("founder_demographics", [])
                     }
                     
+                    # Check if grant_data is essentially empty (critical fields are defaults)
+                    # We consider it empty if Title, Description AND Funder are all missing.
+                    # Even if deadline/amount are missing, a description might make it valuable.
                     # Check if grant_data is essentially empty (all defaults)
+                    # We consider it empty only if ALL critical fields are missing.
                     if (grant_data["title"] == "Untitled Grant" and 
                         grant_data["deadline"] == "Not specified" and 
-                        grant_data["amount"] == "Not specified"):
+                        grant_data["amount"] == "Not specified" and
+                        grant_data["description"] == "No description available" and
+                        grant_data["funder"] == "Unknown"):
                         logger.warning(f"Extracted data appears empty for {lead.url}")
                         grant_data["error"] = "Failed to extract meaningful data"
                         
@@ -674,10 +735,11 @@ class GrantSeekerWorkflow:
         logger.info(f"Starting Grant Seeker Workflow with {MODEL_NAME}")
         
         # Create main session
+        main_session_id = f"main-session-{uuid.uuid4()}"
         await self.session_service.create_session(
             app_name="grant-seeker",
             user_id="user-1",
-            session_id="main-session"
+            session_id=main_session_id
         )
         
         # Phase 0: Generate Query
@@ -692,7 +754,7 @@ class GrantSeekerWorkflow:
             logger.warning("No search results found")
             return []
         
-        leads = await self.analyze_results(search_results, "main-session")
+        leads = await self.analyze_results(search_results, main_session_id)
         
         if not leads:
             logger.warning("No promising grants identified")
@@ -710,8 +772,12 @@ class GrantSeekerWorkflow:
         
         # Process all leads concurrently
         tasks = [extract_with_semaphore(lead) for lead in leads]
-        results = await asyncio.gather(*tasks)
+        raw_results = await asyncio.gather(*tasks)
         
+        # Filter expired grants
+        results = [g for g in raw_results if not self._is_grant_expired(g)]
+        logger.info(f"Filtered {len(raw_results) - len(results)} expired grants")
+
         # Assign IDs
         for i, grant in enumerate(results, 1):
             grant['id'] = i
@@ -734,7 +800,7 @@ class GrantSeekerWorkflow:
             print(f"Amount: {grant.get('amount', 'Not specified')}")
             print(f"Deadline: {grant.get('deadline', 'Not specified')}")
             print(f"Geography: {grant.get('geography', 'Not specified')}")
-            print(f"Funding Type: {grant.get('funding_type', 'Grant')}")
+            print(f"Funding Nature: {grant.get('funding_nature', 'Grant')}")
             print(f"\nDescription:")
             print(f"  {grant.get('description', 'No description available')}")
             print(f"\nDetailed Overview:")
@@ -746,6 +812,11 @@ class GrantSeekerWorkflow:
             tags = grant.get('tags', [])
             if tags:
                 print(f"\nTags: {', '.join(tags)}")
+
+            # Show founder demographics
+            demographics = grant.get('founder_demographics', [])
+            if demographics:
+                print(f"\nFounder Demographics: {', '.join(demographics)}")
             
             # Show application requirements
             app_reqs = grant.get('application_requirements', [])
