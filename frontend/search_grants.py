@@ -5,8 +5,6 @@ Includes advanced filtering for Canadian grant context with mock data fallback f
 """
 import asyncio
 import importlib
-import json
-from pathlib import Path
 
 import streamlit as st
 import sys
@@ -131,7 +129,8 @@ if 'project_stage' not in st.session_state:
     st.session_state.project_stage = ""
 
 
-GRANTS_FILE_PATH = Path(__file__).resolve().parents[1] / "backend" / "grants_output.json"
+# Deprecated: previously used for file-based persistence
+GRANTS_FILE_PATH = None
 
 # ============================================================================
 # HELPER FUNCTIONS
@@ -284,42 +283,19 @@ def generate_mock_canadian_grants(filters, query):
 
 
 # ============================================================================
-# DATA LOADING & CACHING
+# DATA LOADING & CACHING (Removed file-based persistence)
 # ============================================================================
-
-@st.cache_data(show_spinner=False)
-def load_grants_from_file() -> list[dict]:
-    """
-    Load grants data from the shared JSON file with caching.
-    
-    This function reads from backend/grants_output.json which is populated by
-    the adk_agent workflow. Streamlit caches the results to avoid repeated file I/O.
-    
-    Returns:
-        List of grant dictionaries, or empty list if file doesn't exist or is invalid
-    """
-    try:
-        with GRANTS_FILE_PATH.open("r", encoding="utf-8") as fp:
-            data = json.load(fp)
-            if isinstance(data, list):
-                return data
-            st.error("Grant data file is not in the expected format. Showing empty results.")
-    except FileNotFoundError:
-        st.error("Grant data file not found. Please generate `backend/grants_output.json`.")
-    except json.JSONDecodeError:
-        st.error("Grant data file is not valid JSON. Please fix the file contents.")
-    return []
 
 
 def execute_grant_workflow(query: str) -> list[dict]:
     """
-    Run the ADK workflow for the given query and persist results.
+    Run the ADK workflow for the given query and return results.
     
     This function:
     1. Imports the adk_agent module (forcing a fresh import)
     2. Creates a new GrantSeekerWorkflow instance
     3. Runs the workflow asynchronously with the user's query
-    4. Saves results to a shared JSON file for access by other pages
+    4. Returns results directly (no file persistence)
     
     Args:
         query: User's search query for finding relevant grants
@@ -344,11 +320,7 @@ def execute_grant_workflow(query: str) -> list[dict]:
         loop.close()
         asyncio.set_event_loop(None)
 
-    if results:
-        # Save results to a shared JSON file so other pages can access them if needed
-        workflow.save_results(results, output_file=str(GRANTS_FILE_PATH))
-        load_grants_from_file.clear()
-    return results
+    return results or []
 
 
 def search_grants(query, filters=None):
@@ -381,31 +353,12 @@ def search_grants(query, filters=None):
             workflow_results = execute_grant_workflow(query)
         except Exception as exc:
             st.error(f"Grant workflow failed: {exc}")
+            return []
         else:
-            if workflow_results:
-                return workflow_results
-            st.warning("Grant workflow returned no results. Showing cached data instead.")
+            return workflow_results
 
-    # Fallback: Load all grants from cached file
-    all_grants = load_grants_from_file()
-    if not query:
-        return all_grants
-
-    # Search through cached grants using basic text matching
-    query_lower = query.lower()
-    results = []
-
-    for grant in all_grants:
-        # Search in title, description, tags, and funder
-        title = grant.get("title", "")
-        description = grant.get("description", "")
-        tags = " ".join(grant.get("tags", []))
-        funder = grant.get("funder", "")
-        searchable = f"{title} {description} {tags} {funder}".lower()
-        if query_lower in searchable:
-            results.append(grant)
-
-    return results
+    # Fallback: return any existing session results (no query provided)
+    return st.session_state.get("search_results", [])
 
 
 # ============================================================================
