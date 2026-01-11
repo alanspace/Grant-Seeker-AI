@@ -454,13 +454,22 @@ class GrantSeekerWorkflow:
         if "expired" in deadline_lower:
             return True
             
-        # Try to parse date YYYY-MM-DD
+        # Try to parse date in multiple formats
         try:
-            # Find YYYY-MM-DD pattern
+            # Try YYYY-MM-DD pattern first
             match = re.search(r'(\d{4}-\d{2}-\d{2})', deadline)
             if match:
                 date_str = match.group(1)
                 grant_date = datetime.strptime(date_str, "%Y-%m-%d")
+                # Compare with today
+                if grant_date.date() < datetime.now().date():
+                    return True
+            
+            # Try DD-MM-YYYY pattern
+            match = re.search(r'(\d{2}-\d{2}-\d{4})', deadline)
+            if match:
+                date_str = match.group(1)
+                grant_date = datetime.strptime(date_str, "%d-%m-%Y")
                 # Compare with today
                 if grant_date.date() < datetime.now().date():
                     return True
