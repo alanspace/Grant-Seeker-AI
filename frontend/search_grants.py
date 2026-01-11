@@ -642,10 +642,6 @@ def main():
     # SEARCH EXECUTION
     # ========================================================================
     # Triggered when user clicks the Search button
-    # ========================================================================
-    # SEARCH EXECUTION
-    # ========================================================================
-    # Triggered when user clicks the Search button
     if search_clicked:
         st.session_state.searching = True
         st.session_state.has_searched = True

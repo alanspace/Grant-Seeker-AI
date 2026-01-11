@@ -197,7 +197,7 @@ def main():
         st.stop()
     
     # If no tags are found for the selected grant, we display "No tags available"
-    if not grant['tags']:
+    if not grant.get('tags'):
         grant['tags'] = ["No tags available"]
 
     # Get insights from grant data (API format) or fall back to defaults
