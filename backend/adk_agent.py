@@ -293,21 +293,28 @@ def create_finder_agent() -> LlmAgent:
         # The GrantFinder agent is responsible for filtering search results.
         # It looks at the raw list of URLs from Tavily and decides which ones are worth investigating further.
         instruction="""
-        You are a Grant Scout. You will receive search results from Tavily.
-        Your job is to analyze these results and identify the top 5-7 most promising grant opportunities.
+        You are a Grant Scout specializing in CANADIAN grants, loans, and tax credits.
+        You will receive search results from Tavily.
+        Your job is to analyze these results and identify the top 5-7 most promising CANADIAN grant opportunities.
+        
+        CRITICAL FILTERING RULES:
+        - ONLY select grants from Canadian sources (Government of Canada, provincial governments, Canadian foundations)
+        - EXCLUDE any USA grants (federal, state, or US-based foundations)
+        - Look for .gc.ca, .canada.ca, provincial .ca domains, and Canadian organization websites
+        - Verify the source is Canadian before including it
         
         Return a JSON object with a 'discovered_leads' list.
         Each lead must have:
         - 'url': the URL of the grant page
-        - 'source': the name of the organization
+        - 'source': the name of the Canadian organization
         - 'title': the grant title or program name
         
-        Focus on official funder pages and active grant programs, NOT grant directories or lists.
+        Focus on official Canadian funder pages and active grant programs, NOT grant directories or lists.
         
         Example format:
         {
           "discovered_leads": [
-            {"url": "https://example.com/grant", "source": "Example Foundation", "title": "Community Grant"}
+            {"url": "https://example.gc.ca/grant", "source": "Innovation Canada", "title": "Community Innovation Grant"}
           ]
         }
         """
@@ -345,11 +352,11 @@ def create_extractor_agent() -> LlmAgent:
         - url: The URL provided
         - application_requirements: Array of application requirements (e.g., ["501(c)(3) status", "Program budget"])
         - funding_nature: Type of funding (Must be "Grant", "Loan", "Tax Credit", or "Unknown")
-        - geography: Geographic scope. For Canadian grants, distinguish Federal vs Provincial:
-          * "Federal - Canada" -> if keywords: "Government of Canada", "Federal", "Canada-wide", "National"
+        - geography: Geographic scope. ONLY extract CANADIAN grants, loans, and tax credits:
+          * "Federal - Canada" -> if keywords: "Government of Canada", "Federal", "Canada-wide", "National", "Canadian"
           * "[Province Name]" -> if specific to a province (e.g., "Ontario", "British Columbia", "Quebec")
           * "[City, Province]" -> if city-specific (e.g., "Toronto, Ontario", "Vancouver, BC")
-          * For non-Canadian grants, use country or region (e.g., "United States", "California")
+          * If you detect USA geography (states, US federal, American cities), SKIP this grant entirely or mark as "USA - Not Applicable"
         - founder_demographics: Tag any specific demographics focus. List of strings. PRIORITIZE these keywords:
           * "Women" -> if keywords: "Women", "Female", "Girl", "She/Her", "Women-owned"
           * "Youth" -> if keywords: "Youth", "Student", "Young Entrepreneur", "Next Gen" or ages 15-30
@@ -400,18 +407,23 @@ def create_query_agent() -> LlmAgent:
         # The QueryGenerator agent translates a user's natural language project description
         # into a keyword-optimized search query for the search engine.
         instruction="""
-        You are a Search Query Expert. Your job is to convert a user's project description into a targeted search query for finding grants.
+        You are a Search Query Expert. Your job is to convert a user's project description into a targeted search query for finding grants IN CANADA ONLY.
         
         Rules:
         1. Extract the core topic (e.g., "community garden", "youth education", "renewable energy").
-        2. Identify the location if mentioned (e.g., "Chicago", "California").
+        2. Identify the location if mentioned, but ALWAYS prioritize Canadian context.
         3. Identify the target audience (e.g., "non-profit", "schools").
         4. Combine these into a concise search query string.
-        5. Add keywords like "grants", "funding", "application", "deadline".
-        6. Return ONLY the query string, no other text.
+        5. ALWAYS add "Canada" or "Canadian" to the query to ensure Canadian results.
+        6. Add keywords like "grants", "funding", "application", "deadline".
+        7. Exclude USA-specific terms unless explicitly converting them to Canadian equivalents.
+        8. Return ONLY the query string, no other text.
         
-        Example Input: "We are a non-profit in Chicago looking to build a community garden."
-        Example Output: community garden grants Chicago non-profit funding application
+        Example Input: "We are a non-profit looking to build a community garden."
+        Example Output: community garden grants Canada non-profit funding application
+        
+        Example Input: "Youth education program in Toronto"
+        Example Output: youth education grants Toronto Ontario Canada funding
         """
     )
 
@@ -476,6 +488,34 @@ class GrantSeekerWorkflow:
         except Exception:
             pass # Parsing failed, assume not expired
             
+        return False
+    
+    def _is_usa_grant(self, grant_data: dict) -> bool:
+        """Check if a grant is from the USA and should be filtered out."""
+        geography = grant_data.get('geography', '').lower()
+        
+        # Check for explicit USA markers
+        if 'usa' in geography or 'united states' in geography or 'not applicable' in geography:
+            return True
+        
+        # Check for US state names (common ones)
+        us_states = [
+            'alabama', 'alaska', 'arizona', 'arkansas', 'california', 'colorado',
+            'connecticut', 'delaware', 'florida', 'georgia', 'hawaii', 'idaho',
+            'illinois', 'indiana', 'iowa', 'kansas', 'kentucky', 'louisiana',
+            'maine', 'maryland', 'massachusetts', 'michigan', 'minnesota',
+            'mississippi', 'missouri', 'montana', 'nebraska', 'nevada',
+            'new hampshire', 'new jersey', 'new mexico', 'new york',
+            'north carolina', 'north dakota', 'ohio', 'oklahoma', 'oregon',
+            'pennsylvania', 'rhode island', 'south carolina', 'south dakota',
+            'tennessee', 'texas', 'utah', 'vermont', 'virginia', 'washington',
+            'west virginia', 'wisconsin', 'wyoming'
+        ]
+        
+        for state in us_states:
+            if state in geography:
+                return True
+        
         return False
 
 
@@ -783,9 +823,12 @@ class GrantSeekerWorkflow:
         tasks = [extract_with_semaphore(lead) for lead in leads]
         raw_results = await asyncio.gather(*tasks)
         
-        # Filter expired grants
-        results = [g for g in raw_results if not self._is_grant_expired(g)]
-        logger.info(f"Filtered {len(raw_results) - len(results)} expired grants")
+        # Filter expired grants and USA grants
+        results = [g for g in raw_results if not self._is_grant_expired(g) and not self._is_usa_grant(g)]
+        expired_count = sum(1 for g in raw_results if self._is_grant_expired(g))
+        usa_count = sum(1 for g in raw_results if self._is_usa_grant(g) and not self._is_grant_expired(g))
+        logger.info(f"Filtered {expired_count} expired grants and {usa_count} USA grants")
+
 
         # Assign IDs
         for i, grant in enumerate(results, 1):
