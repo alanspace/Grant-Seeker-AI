@@ -42,9 +42,9 @@ A sophisticated AI assistant that automates the grant-seeking lifecycle, empower
 
 For small to medium, high-impact non-profits, the mission is vital, but the administrative burden of grant seeking is crippling. Dedicated grant writers and staff face immense pain points that divert critical resources away from doing good, hindering organizations from accessing the capital they need to survive and thrive. Current workflows are manual, fragmented, and inefficient.
 The key challenges addressed by this project include:
-Endless Discovery: Countless hours are lost manually scanning databases and the web for relevant opportunities, lacking a tireless researcher constantly monitoring the landscape.
-Compliance Complexity: Decoding complex guidelines from various websites and PDFs to extract essential information—such as key requirements, deadlines, and eligibility criteria—is highly error-prone and tedious.
-The Drafting Challenge: Writing high-quality, tailored proposals that strictly adhere to specific funder requirements is difficult to achieve at scale, especially when managing tight deadlines.
+* **Endless Discovery:** Countless hours are lost manually scanning databases and the web for relevant opportunities, lacking a tireless researcher constantly monitoring the landscape.
+* **Compliance Complexity:** Decoding complex guidelines from various websites and PDFs to extract essential information—such as key requirements, deadlines, and eligibility criteria—is highly error-prone and tedious.
+* **The Drafting Challenge:** Writing high-quality, tailored proposals that strictly adhere to specific funder requirements is difficult to achieve at scale, especially when managing tight deadlines.
 
 ### Our Solution
 
@@ -56,12 +56,13 @@ The Grant Seeker AI is built as a true Agent for Good, automating the most burde
 The project’s innovation lies in a specialized team of AI agents coordinated by an intelligent Orchestrator. Instead of a simple chatbot, we have built a pipeline of distinct agents that collaborate to automate the workflow from start to finish, delivering a streamlined one-button flow.
 
 #### The Specialized Agents
-* The Finder Agent - Discovery 
+* **The Finder Agent - Discovery**
 This agent acts as a tireless researcher, scanning the web to find grant opportunities that match the user’s specific project mission and funding needs.
-* The Create Extractor Agent and Create Query Agent - Compliance
+* **The Create Extractor Agent and Create Query Agent - Compliance**
 These  agents function as  compliance officers, reading through dense guidelines and PDFs to extract and analytically structure actionable intelligence, creating a proposal requirements blueprint.
-* The Writer Agent - Drafting
+* **The Writer Agent - Drafting**
 This agent acts as a professional grant writer, combining the user's narrative with the Analyst’s strict blueprint to generate a compliant, persuasive, and well-formatted proposal.
+
 #### ESG Context
 Our project’s central idea of an Agent for Good is pertinent as it is intrinsically related to the Environmental, Social and Corporate Governance (ESG) framework, specifically the Governance pillar, and the crucial issue of Business Resilience and Corporate Governance. Utilizing the Grant Seeker AI to embrace transparency plays an important role in sustainability reporting, allowing non-profit organizations to monitor impact, automate reporting, and engage donors more effectively.
 
@@ -79,9 +80,9 @@ Bringing this vision to life required agility and collaboration. This applicatio
 
 The Grant Seeker AI serves as a force multiplier, giving smaller organizations the professional capacity of a large fundraising department.
 The quantifiable benefits include:
-* Time Savings: We automate the entire workflow, potentially saving hundreds of hours per grant cycle.
-* Quality and Consistency: By strictly adhering to the "Proposal Requirements" blueprint provided by the Analyst Agent, our system maximizes success rates through compliance.
-* Democratization: Ultimately, this project achieves the Agents for Good mission by removing resource hurdles, thereby democratizing access to funding for under-resourced organizations. This allows non-profits to focus on their core mission rather than paperwork.
+* **Time Savings:** We automate the entire workflow, potentially saving hundreds of hours per grant cycle.
+* **Quality and Consistency:** By strictly adhering to the "Proposal Requirements" blueprint provided by the Analyst Agent, our system maximizes success rates through compliance.
+* **Democratization:** Ultimately, this project achieves the Agents for Good mission by removing resource hurdles, thereby democratizing access to funding for under-resourced organizations. This allows non-profits to focus on their core mission rather than paperwork.
 
 <!-- ### The Value
 *   **Time Savings:** Automates 90% of the research workflow.
