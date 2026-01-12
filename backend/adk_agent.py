@@ -83,9 +83,6 @@ def normalize_value(value: str | None, default: str) -> str:
         return default
     return value
 
-def clean_json_string(json_str: str) -> str:
-    """Remove markdown code blocks from JSON string."""
-    return json_str.replace("```json", "").replace("```", "").strip()
 
 # ============================================================================
 # CACHE SERVICE
@@ -286,12 +283,20 @@ def create_retry_config() -> types.HttpRetryOptions:
     )
 
 def create_finder_agent() -> LlmAgent:
-    """Create the grant finder agent."""
+    """Create the grant finder agent with structured output schema."""
     return LlmAgent(
         name="GrantFinder",
-        model=Gemini(model=MODEL_NAME, retry_options=create_retry_config()),
+        model=Gemini(
+            model=MODEL_NAME,
+            retry_options=create_retry_config(),
+            generation_config=types.GenerateContentConfig(
+                response_mime_type="application/json",
+                response_schema=DiscoveredLeadsReport
+            )
+        ),
         # The GrantFinder agent is responsible for filtering search results.
         # It looks at the raw list of URLs from Tavily and decides which ones are worth investigating further.
+        # Output schema ensures structured JSON matching DiscoveredLeadsReport model.
         instruction="""
         You are a Grant Scout specializing in CANADIAN grants, loans, and tax credits.
         You will receive search results from Tavily.
@@ -303,33 +308,35 @@ def create_finder_agent() -> LlmAgent:
         - Look for .gc.ca, .canada.ca, provincial .ca domains, and Canadian organization websites
         - Verify the source is Canadian before including it
         
-        Return a JSON object with a 'discovered_leads' list.
+        Return a structured response with discovered_leads list.
         Each lead must have:
-        - 'url': the URL of the grant page
-        - 'source': the name of the Canadian organization
-        - 'title': the grant title or program name
+        - url: the URL of the grant page
+        - source: the name of the Canadian organization
+        - title: the grant title or program name
         
         Focus on official Canadian funder pages and active grant programs, NOT grant directories or lists.
-        
-        Example format:
-        {
-          "discovered_leads": [
-            {"url": "https://example.gc.ca/grant", "source": "Innovation Canada", "title": "Community Innovation Grant"}
-          ]
         }
         """
     )
 
 def create_extractor_agent() -> LlmAgent:
-    """Create the grant extractor agent."""
+    """Create the grant extractor agent with structured output schema."""
     current_date, current_date_iso = get_current_date()
     
     return LlmAgent(
         name="GrantExtractor",
-        model=Gemini(model=MODEL_NAME, retry_options=create_retry_config()),
+        model=Gemini(
+            model=MODEL_NAME,
+            retry_options=create_retry_config(),
+            generation_config=types.GenerateContentConfig(
+                response_mime_type="application/json",
+                response_schema=GrantData
+            )
+        ),
         # The GrantExtractor agent is the heavy lifter.
         # It reads the full text of a webpage and extracts structured data (deadlines, amounts, eligibility).
         # We inject the current date so it can intelligently determine if a grant is expired.
+        # Output schema ensures structured JSON matching GrantData model.
         instruction=f"""
         You are a Data Extractor. You will receive the content of a grant webpage.
 
@@ -360,7 +367,7 @@ def create_extractor_agent() -> LlmAgent:
         - founder_demographics: Tag any specific demographics focus. List of strings. PRIORITIZE these keywords:
           * "Women" -> if keywords: "Women", "Female", "Girl", "She/Her", "Women-owned"
           * "Youth" -> if keywords: "Youth", "Student", "Young Entrepreneur", "Next Gen" or ages 15-30
-          * "Indigenous" -> if keywords: "Indigenous", "First Nations", "Inuit", "Métis"
+          * "Indigenous" -> if keywords: "Indigenous", "First Nations", "Inuit", "Métis", "Aboriginal Peoples", "Inuk"
           Also tag other demographic groups if mentioned (e.g., "Veterans", "LGBTQ+", "Immigrants", "People with Disabilities", "Minorities", etc.)
         
         CRITICAL - Deadline & Amount Extraction:
@@ -612,20 +619,17 @@ class GrantSeekerWorkflow:
                 if event.is_final_response() and event.content and event.content.parts:
                     response_text = event.content.parts[0].text
             
+            
             if not response_text:
                 logger.error("No response text received from agent")
                 return []
             
-            # Parse response
-            content = response_text
-            cleaned_content = clean_json_string(content)
-            
+            # Parse response using Pydantic (output schema guarantees valid JSON)
             try:
-                parsed = json.loads(cleaned_content)
-                leads_data = DiscoveredLeadsReport(**parsed)
+                leads_data = DiscoveredLeadsReport.model_validate_json(response_text)
                 logger.info(f"Identified {len(leads_data.discovered_leads)} promising grants")
                 return leads_data.discovered_leads
-            except (json.JSONDecodeError, Exception) as e:
+            except Exception as e:
                 logger.error(f"Failed to parse leads: {e}")
                 return []
                 
@@ -691,42 +695,16 @@ class GrantSeekerWorkflow:
                     if event.is_final_response() and event.content and event.content.parts:
                         response_text = event.content.parts[0].text
                 
-                # Parse response
-                content_str = response_text
-                cleaned_content = clean_json_string(content_str)
                 
+                # Parse response using Pydantic (output schema guarantees valid JSON)
                 try:
-                    parsed = json.loads(cleaned_content)
+                    grant_data_obj = GrantData.model_validate_json(response_text)
+                    grant_data = grant_data_obj.model_dump()
                     
-                    # Handle case where LLM returns a list instead of a dict
-                    if isinstance(parsed, list):
-                        if len(parsed) > 0:
-                            parsed = parsed[0]
-                        else:
-                            parsed = {}
+                    # Override URL to ensure it matches the lead
+                    grant_data["url"] = lead.url
                     
-                    # Validate and normalize the data
-                    grant_data = {
-                        "title": normalize_value(parsed.get("title"), "Untitled Grant"),
-                        "funder": normalize_value(parsed.get("funder"), lead.source or "Unknown"),
-                        "deadline": normalize_value(parsed.get("deadline"), "Not specified"),
-                        "amount": normalize_value(parsed.get("amount"), "Not specified"),
-                        "description": normalize_value(parsed.get("description"), "No description available"),
-                        "detailed_overview": normalize_value(parsed.get("detailed_overview"), "No detailed overview available"),
-                        "tags": parsed.get("tags", []),
-                        "eligibility": normalize_value(parsed.get("eligibility"), "Not specified"),
-                        "url": lead.url,
-                        "application_requirements": parsed.get("application_requirements", []),
-                        "funding_nature": normalize_funding_nature(parsed.get("funding_nature")),
-                        "geography": normalize_value(parsed.get("geography"), "Not specified"),
-                        "founder_demographics": parsed.get("founder_demographics", [])
-                    }
-                    
-                    # Check if grant_data is essentially empty (critical fields are defaults)
-                    # We consider it empty if Title, Description AND Funder are all missing.
-                    # Even if deadline/amount are missing, a description might make it valuable.
-                    # Check if grant_data is essentially empty (all defaults)
-                    # We consider it empty only if ALL critical fields are missing.
+                    # Check if grant_data is essentially empty (all critical fields are defaults)
                     if (grant_data["title"] == "Untitled Grant" and 
                         grant_data["deadline"] == "Not specified" and 
                         grant_data["amount"] == "Not specified" and
@@ -735,8 +713,8 @@ class GrantSeekerWorkflow:
                         logger.warning(f"Extracted data appears empty for {lead.url}")
                         grant_data["error"] = "Failed to extract meaningful data"
                         
-                except json.JSONDecodeError as e:
-                    logger.error(f"JSON parse error for {lead.url}: {e}")
+                except Exception as e:
+                    logger.error(f"Failed to parse response for {lead.url}: {e}")
                     grant_data = {
                         "url": lead.url,
                         "title": lead.title or "Untitled Grant",
