@@ -10,7 +10,7 @@ from google.genai import types
 
 # Load Env
 load_dotenv()
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 
 # Config
 # Use Flash for writing (faster/cheaper) or Pro for quality. 

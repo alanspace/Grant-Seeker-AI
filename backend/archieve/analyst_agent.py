@@ -96,7 +96,7 @@ def analyze_grant_webpage(url: str) -> dict:
     # Define the configuration for ScrapeGraphAI
     graph_config = {
         "llm": {
-            "api_key": os.getenv("GEMINI_API_KEY"),
+            "api_key": os.getenv("GOOGLE_API_KEY"),
             "model": "google_genai/gemini-pro",
         },
     }

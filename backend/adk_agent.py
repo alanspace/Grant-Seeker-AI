@@ -26,6 +26,7 @@ from google.adk.runners import Runner
 from google.adk.sessions import InMemorySessionService
 from google.genai import types
 from pydantic import BaseModel
+from googleapiclient.discovery import build
 from tavily_client import TavilyClient
 
 # Configure logging
@@ -47,6 +48,7 @@ load_dotenv("../.env")
 
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 TAVILY_API_KEY = os.getenv("TAVILY_API_KEY")
+GOOGLE_CSE_ID = os.getenv("GOOGLE_CSE_ID")
 MODEL_NAME = "gemini-flash-latest"
 TAVILY_MAX_RESULTS = 5
 MAX_CONCURRENT_EXTRACTIONS = 3
@@ -164,6 +166,59 @@ class CacheService:
             count += 1
         logger.info(f"Cleared {count} cache files")
         return count
+
+# ============================================================================
+# GOOGLE SEARCH SERVICE
+# Service for searching specific domains using Google Custom Search Engine
+# ============================================================================
+
+class GoogleCSEService:
+    """Service for searching with Google Custom Search Engine."""
+    
+    def __init__(self, api_key: str, cse_id: str):
+        self.api_key = api_key
+        self.cse_id = cse_id
+        try:
+            self.service = build("customsearch", "v1", developerKey=api_key, cache_discovery=False)
+            logger.info("Google CSE Service initialized")
+        except Exception as e:
+            logger.error(f"Failed to initialize Google CSE: {e}")
+            self.service = None
+    
+    def search(self, query: str, num_results: int = 10) -> list[dict]:
+        """Search using Google CSE - returns formatted list of results."""
+        if not self.service:
+            logger.error("CSE Service not initialized")
+            return []
+            
+        results = []
+        try:
+            # CSE allows max 10 results per call
+            # For this implementation we'll just take the top 10 which is usually sufficient
+            # To get more, we'd need pagination
+            limit = min(num_results, 10)
+            
+            response = self.service.cse().list(
+                q=query,
+                cx=self.cse_id,
+                num=limit
+            ).execute()
+            
+            if 'items' in response:
+                for item in response['items']:
+                    results.append({
+                        'url': item['link'],
+                        'title': item.get('title', ''),
+                        'content': item.get('snippet', ''),  # Use snippet as initial content
+                        'source': item.get('displayLink', '')
+                    })
+            
+            logger.info(f"CSE returned {len(results)} results")
+                    
+        except Exception as e:
+            logger.error(f"CSE search failed: {e}")
+            
+        return results
 
 # ============================================================================
 # PYDANTIC MODELS
@@ -404,8 +459,15 @@ class GrantSeekerWorkflow:
         if CACHE_ENABLED:
             self.cache = CacheService(cache_dir=CACHE_DIR, ttl_hours=CACHE_TTL_HOURS)
         
-        # Initialize Tavily client
+        # Initialize Tavily client (still used for content extraction)
         self.tavily = TavilyClient(api_key=TAVILY_API_KEY, max_retries=2, timeout=15.0)
+        
+        # Initialize Google CSE
+        self.cse = None
+        if GOOGLE_API_KEY and GOOGLE_CSE_ID:
+            self.cse = GoogleCSEService(api_key=GOOGLE_API_KEY, cse_id=GOOGLE_CSE_ID)
+        else:
+            logger.warning("Google CSE credentials missing - search capabilities may be limited")
         
         # Initialize session service
         self.session_service = InMemorySessionService()
@@ -458,7 +520,7 @@ class GrantSeekerWorkflow:
             return " ".join(description.split()[:10]) + " grants"
     
     async def search_grants(self, query: str) -> list[dict]:
-        """Search for grants using Tavily API with caching."""
+        """Search for grants using Google CSE with caching."""
         # Check cache first
         cache_key = f"search:{query}:{TAVILY_MAX_RESULTS}"
         if self.cache:
@@ -470,7 +532,21 @@ class GrantSeekerWorkflow:
         # Perform search
         try:
             logger.info(f"Searching for grants with query: {query}")
-            results = await self.tavily.search(query, max_results=TAVILY_MAX_RESULTS)
+            
+            if self.cse:
+                # Use Google CSE
+                loop = asyncio.get_event_loop()
+                results = await loop.run_in_executor(
+                    None, 
+                    self.cse.search, 
+                    query, 
+                    TAVILY_MAX_RESULTS
+                )
+            else:
+                # Fallback to Tavily if CSE not configured
+                logger.warning("CSE not configured, falling back to Tavily search")
+                results = await self.tavily.search(query, max_results=TAVILY_MAX_RESULTS)
+                
             logger.info(f"Found {len(results)} search results")
             
             # Cache results
