@@ -27,7 +27,10 @@ from google.adk.runners import Runner
 from google.adk.sessions import InMemorySessionService
 from google.genai import types
 from pydantic import BaseModel
-from tavily_client import TavilyClient
+try:
+    from backend.tavily_client import TavilyClient
+except ImportError:
+    from tavily_client import TavilyClient
 
 # Configure logging
 logging.basicConfig(
@@ -49,7 +52,7 @@ load_dotenv("../.env")
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 TAVILY_API_KEY = os.getenv("TAVILY_API_KEY")
 MODEL_NAME = "gemini-flash-latest"
-TAVILY_MAX_RESULTS = 5
+TAVILY_MAX_RESULTS = 10
 MAX_CONCURRENT_EXTRACTIONS = 3
 CONTENT_PREVIEW_LENGTH = 3000
 
@@ -315,7 +318,9 @@ def create_finder_agent() -> LlmAgent:
         - title: the grant title or program name
         
         Focus on official Canadian funder pages and active grant programs, NOT grant directories or lists.
-        }
+        
+        IMPORTANT: Return RAW JSON only. Do not include markdown formatting like ```json ... ```. 
+        Start with { and end with }.
         """
     )
 
@@ -624,6 +629,9 @@ class GrantSeekerWorkflow:
                 logger.error("No response text received from agent")
                 return []
             
+            # Clean up response text (remove markdown if present)
+            response_text = response_text.replace("```json", "").replace("```", "").strip()
+
             # Parse response using Pydantic (output schema guarantees valid JSON)
             try:
                 leads_data = DiscoveredLeadsReport.model_validate_json(response_text)
@@ -698,6 +706,8 @@ class GrantSeekerWorkflow:
                 
                 # Parse response using Pydantic (output schema guarantees valid JSON)
                 try:
+                    # Clean up response text (remove markdown if present)
+                    response_text = response_text.replace("```json", "").replace("```", "").strip()
                     grant_data_obj = GrantData.model_validate_json(response_text)
                     grant_data = grant_data_obj.model_dump()
                     

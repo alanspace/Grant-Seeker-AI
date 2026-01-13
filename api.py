@@ -10,7 +10,7 @@ from google.adk.sessions import InMemorySessionService
 from google.genai import types
 import uuid
 # Import our two main agent engines
-from backend.adk_agent import root_agent as tavily_agent
+from backend.adk_agent import GrantSeekerWorkflow
 from backend.writer_agent import draft_proposal_section as run_writer_agent
 
 # Load environment variables once at the start
@@ -23,56 +23,19 @@ def find_and_analyze_grants(project_description: str) -> list[dict]:
     This function runs the entire Tavily multi-agent workflow.
     Returns a clean LIST of grant dictionaries.
     """
-    print(f"API: Running Tavily Sequential Agent for: '{project_description}'")
+    print(f"API: Running Grant Seeker Workflow for: '{project_description}'")
 
-    # We need a helper to run our async ADK code from a sync function
-    async def _run_tavily_workflow():
-        session_service = InMemorySessionService()
-        session_id = f"tavily_session_{int(time.time() * 1000)}"
-        await session_service.create_session(
-            app_name="tavily_app",
-            user_id="ui_user",
-            session_id=session_id
-        )
-        runner = Runner(
-            agent=tavily_agent,
-            app_name="tavily_app",
-            session_service=session_service
-        )
-        user_msg = types.Content(role="user", parts=[types.Part(text=project_description)])
-
-        # Run the async stream and capture the final text result
-        final_text = ""
-        async for event in runner.run_async(
-            user_id="ui_user",
-            session_id=session_id,
-            new_message=user_msg
-        ):
-            if event.is_final_response() and event.content and event.content.parts:
-                final_text = event.content.parts[0].text
-        return final_text
+    # Helper to run async workflow
+    async def _run_workflow():
+        workflow = GrantSeekerWorkflow()
+        return await workflow.run(project_description)
 
     # Run the async helper
-    raw_json_string = asyncio.run(_run_tavily_workflow())
-
-    # --- PARSE THE OUTPUT ---
-    # The agent returns a string that looks like JSON. We must parse it.
     try:
-        # The LLM might wrap the JSON in ```json ... ```. We remove that.
-        clean_json_string = raw_json_string.replace("```json", "").replace("```", "").strip()
-        data = json.loads(clean_json_string)
-
-        # Based on the Pydantic schema, the key should be 'found_grants'
-        if "found_grants" in data:
-            return data["found_grants"]
-        else:
-            print("API WARNING: Agent ran but did not return 'found_grants' key.")
-            return []
-            
-    except (json.JSONDecodeError, TypeError) as e:
-        print(f"API ERROR: Could not parse agent's final output as JSON. Error: {e}")
-        print(f"--- Raw Agent Output --- \n{raw_json_string}\n--------------------")
-        return [{"error": "The AI agent returned a non-JSON response. Please try rephrasing your query."}]
+        return asyncio.run(_run_workflow())
+    except Exception as e:
+        print(f"API ERROR: Workflow failed. Error: {e}")
+        return [{"error": f"The workflow encountered an error: {str(e)}"}]
 
 
 # --- API FUNCTION 2: DRAFT THE PROPOSAL ---
