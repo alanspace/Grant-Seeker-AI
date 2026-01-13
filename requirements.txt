@@ -2,6 +2,7 @@
 google-adk
 google-generativeai
 google-cloud-aiplatform
+google-api-python-client
 
 # --- Agent Framework & Data Models ---
 pydantic
