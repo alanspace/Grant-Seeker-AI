@@ -126,7 +126,7 @@ def main():
         st.markdown("<br>", unsafe_allow_html=True)
         
         if st.button("🔎 ✨ Start Searching Grants", type="primary", use_container_width=True):
-            st.switch_page("pages/1_🔍_Search_Grants.py")
+            st.switch_page("frontend/search_grants.py")
         
         # Secondary actions
         st.markdown("<br>", unsafe_allow_html=True)
@@ -135,21 +135,29 @@ def main():
         with sec_col1:
             if st.button("📖 How It Works", use_container_width=True):
                 st.info("""
-                    **How it works**
+                    **How to use Grant Seeker AI:**
 
-                    1. Describe your project and search for matching grants.
-                    2. AI extracts eligibility, deadlines, and key requirements from grant pages.
-                    3. Generate a tailored proposal draft and refine it interactively.
+                    1.  **🔍 Search & Discover**
+                        Enter your project mission and details. Our AI Scout scans the web to find the best matching grant opportunities for you.
+
+                    2.  **📋 Analyze & Verify**
+                        Click on any grant to see a detailed breakdown. The AI extracts eligibility criteria, deadlines, and funding amounts so you don't have to read complex PDFs.
+
+                    3.  **✍️ Draft & Apply**
+                        Select a grant and click "Generate Proposal". The AI Writer creates a tailored first draft based on your project and the specific grant requirements.
                 """)
         
         with sec_col2:
             if st.button("📄 See Sample", use_container_width=True):
                 st.info("""
-                    **Sample — Community Garden for Urban Youth**
+                    **Try this sample search:**
 
-                    Mission: Empower youth with hands-on gardens teaching STEM, nutrition, and entrepreneurship.
+                    Copy and paste the following into the search bar:
 
-                    AI delivered: top matches, key requirements, and a ready proposal draft. Try it with your project.
+                    > *Grants for a community garden in Chicago focused on youth education and STEM skills, budget under $50k*
+
+                    **What happens next?**
+                    The AI will find relevant grants, extract their details, and even draft a proposal for you!
                 """)
     
     # Footer
@@ -166,9 +174,9 @@ def main():
 pages = {
     "Grant Seeker AI": [
         st.Page(main, title="Home", icon="🏠", default=True),
-        st.Page("pages/1_🔍_Search_Grants.py", title="Search Grants", icon="🔍"),
-        st.Page("pages/2_📋_Grant_Details.py", title="Grant Details", icon="📋"),
-        st.Page("pages/3_✍️_Proposal_Builder.py", title="Proposal Builder", icon="✍️"),
+        st.Page("frontend/search_grants.py", title="Search Grants", icon="🔍"),
+        st.Page("frontend/grant_details.py", title="Grant Details", icon="📋"),
+        st.Page("frontend/proposal_builder.py", title="Proposal Builder", icon="✍️"),
     ]
 }
 
