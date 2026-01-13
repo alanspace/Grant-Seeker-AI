@@ -1,7 +1,6 @@
 # --- Core AI & Google SDKs ---
 google-adk
 google-generativeai
-google-cloud-aiplatform
 
 # --- Agent Framework & Data Models ---
 pydantic
@@ -9,15 +8,14 @@ python-dotenv
 
 # --- External Tools (Search) ---
 tavily-python
+fpdf
 
 # --- Frontend (Streamlit) ---
 streamlit
 st-copy
+pyarrow
 
 # --- Networking & HTTP ---
 httpx
 anyio
 requests
-
-# --- Web Scraping Utilities ---
-beautifulsoup4

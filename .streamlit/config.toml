@@ -1,0 +1,3 @@
+[server]
+# Aggressively kill idle sessions to free up slots for new users
+disconnectWebsocketOnReconnect = true

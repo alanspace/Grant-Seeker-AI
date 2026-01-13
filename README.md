@@ -1,7 +1,5 @@
 # Grant Seeker AI 🚀
-
 ![](Home_Page.png)
-
 **An "Agents for Good" Multi-Agent System for the Google ADK Capstone Project**
 
 [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://grantseekerai.streamlit.app//)

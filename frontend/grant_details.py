@@ -7,6 +7,7 @@ import os
 
 # Add backend to path for imports
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'backend'))
+from pdf_generator import generate_grant_pdf
 
 # Page configuration handled in home_page.py
 
@@ -192,11 +193,11 @@ def main():
         st.warning("No grant selected. Please go back to the search page and select a grant.")
         if st.button("🔙 Back to Search Grants"):
             st.session_state.selected_grant = {}
-            st.switch_page("pages/1_🔍_Search_Grants.py")
+            st.switch_page("frontend/search_grants.py")
         st.stop()
     
     # If no tags are found for the selected grant, we display "No tags available"
-    if not grant['tags']:
+    if not grant.get('tags'):
         grant['tags'] = ["No tags available"]
 
     # Get insights from grant data (API format) or fall back to defaults
@@ -230,11 +231,17 @@ def main():
     with btn_col1:
         if st.button("✍️ Generate Proposal", type="primary", use_container_width=True):
             st.session_state.selected_grant = grant
-            st.switch_page("pages/3_✍️_Proposal_Builder.py")
+            st.switch_page("frontend/proposal_builder.py")
     
     with btn_col2:
-        if st.button("📄 Download Grant Details PDF", use_container_width=True):
-            st.info("PDF Download feature coming soon!")
+        pdf_data = generate_grant_pdf(grant)
+        st.download_button(
+            label="📄 Download Grant Details PDF",
+            data=pdf_data,
+            file_name=f"grant_{grant.get('id', 'details')}.pdf",
+            mime="application/pdf",
+            use_container_width=True
+        )
     
     with btn_col3:
         # Render an HTML link styled as a full-width button that opens the grant URL in a new tab

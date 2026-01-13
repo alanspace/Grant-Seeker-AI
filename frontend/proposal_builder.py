@@ -115,7 +115,7 @@ def main():
     if not grant:
         st.warning("No grant selected. Please go back to the search page and select a grant.")
         if st.button("🔙 Back to Search Grants"):
-            st.switch_page("pages/1_🔍_Search_Grants.py")
+            st.switch_page("frontend/search_grants.py")
         st.stop()
     
     # Header
