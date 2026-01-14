@@ -287,18 +287,19 @@ def generate_mock_canadian_grants(filters, query):
 # ============================================================================
 
 
-def execute_grant_workflow(query: str) -> list[dict]:
+def execute_grant_workflow(query: str, filters: dict = None) -> list[dict]:
     """
     Run the ADK workflow for the given query and return results.
     
     This function:
     1. Imports the adk_agent module (forcing a fresh import)
     2. Creates a new GrantSeekerWorkflow instance
-    3. Runs the workflow asynchronously with the user's query
+    3. Runs the workflow asynchronously with the user's query + filters
     4. Returns results directly (no file persistence)
     
     Args:
         query: User's search query for finding relevant grants
+        filters: Optional dictionary of active filters
     
     Returns:
         List of grant results from the workflow, or empty list if workflow fails
@@ -315,7 +316,23 @@ def execute_grant_workflow(query: str) -> list[dict]:
     loop = asyncio.new_event_loop()
     try:
         asyncio.set_event_loop(loop)
-        results = loop.run_until_complete(workflow.run(query))
+        # Pass filters to the workflow run method (requires backend update, but safe to pass here)
+        # We merge query + filters context string for now to ensure immediately compatiblity
+        
+        # Construct specific filter context strings to append to query
+        filter_context = ""
+        if filters:
+            if filters.get('demographic_focus'):
+                filter_context += f" for {' '.join(filters['demographic_focus'])}"
+            if filters.get('geographic_scope'):
+                filter_context += f" in {filters['geographic_scope']}"
+            if filters.get('funding_types'):
+                filter_context += f" {', '.join(filters['funding_types'])}"
+        
+        full_query = f"{query} {filter_context}".strip()
+        
+        # We pass the enhanced query to the backend
+        results = loop.run_until_complete(workflow.run(full_query))
     finally:
         loop.close()
         asyncio.set_event_loop(None)
@@ -343,14 +360,11 @@ def search_grants(query, filters=None):
         List of grant dictionaries matching the search criteria
     """
     
-    # Check if advanced filters are active - use mock data for development
-    if filters and has_active_filters():
-        return generate_mock_canadian_grants(filters, query)
-    
     # If user provided a search query, run the real workflow agent
+    # Note: We now pass filters to the real workflow instead of using mock data
     if query:
         try:
-            workflow_results = execute_grant_workflow(query)
+            workflow_results = execute_grant_workflow(query, filters)
         except Exception as exc:
             st.error(f"Grant workflow failed: {exc}")
             return []
