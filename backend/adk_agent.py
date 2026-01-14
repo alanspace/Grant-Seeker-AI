@@ -10,6 +10,7 @@ It handles:
 4.  **Data Models**: Defining the structure of the data using Pydantic models.
 """
 import os
+import re
 import time
 import asyncio
 import json
@@ -26,7 +27,10 @@ from google.adk.runners import Runner
 from google.adk.sessions import InMemorySessionService
 from google.genai import types
 from pydantic import BaseModel
-from tavily_client import TavilyClient
+try:
+    from backend.tavily_client import TavilyClient
+except ImportError:
+    from tavily_client import TavilyClient
 
 # Configure logging
 logging.basicConfig(
@@ -48,7 +52,7 @@ load_dotenv("../.env")
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 TAVILY_API_KEY = os.getenv("TAVILY_API_KEY")
 MODEL_NAME = "gemini-flash-latest"
-TAVILY_MAX_RESULTS = 5
+TAVILY_MAX_RESULTS = 10
 MAX_CONCURRENT_EXTRACTIONS = 3
 CONTENT_PREVIEW_LENGTH = 3000
 
@@ -82,9 +86,6 @@ def normalize_value(value: str | None, default: str) -> str:
         return default
     return value
 
-def clean_json_string(json_str: str) -> str:
-    """Remove markdown code blocks from JSON string."""
-    return json_str.replace("```json", "").replace("```", "").strip()
 
 # ============================================================================
 # CACHE SERVICE
@@ -193,9 +194,25 @@ class GrantData(BaseModel):
     eligibility: str = "Not specified"
     url: str = ""
     application_requirements: list[str] = []
-    funding_type: str = "Grant"
+    funding_nature: str = "Unknown"
     geography: str = "Not specified"
     fit_score: int = 0
+    founder_demographics: list[str] = []
+
+def normalize_funding_nature(value: str | None) -> str:
+    """Normalize funding type to 'Grant', 'Loan', 'Tax Credit' or 'Unknown'."""
+    if not value:
+        return "Unknown"
+    
+    val_lower = value.lower()
+    if "tax credit" in val_lower:
+        return "Tax Credit"
+    if "loan" in val_lower:
+        return "Loan"
+    if "grant" in val_lower:
+        return "Grant"
+        
+    return "Unknown"
 
 def calculate_fit_score(grant_data: dict, query: str) -> int:
     """Calculate a fit score (0-100) based on query match."""
@@ -269,43 +286,62 @@ def create_retry_config() -> types.HttpRetryOptions:
     )
 
 def create_finder_agent() -> LlmAgent:
-    """Create the grant finder agent."""
+    """Create the grant finder agent with structured output schema."""
     return LlmAgent(
         name="GrantFinder",
-        model=Gemini(model=MODEL_NAME, retry_options=create_retry_config()),
+        model=Gemini(
+            model=MODEL_NAME,
+            retry_options=create_retry_config(),
+            generation_config=types.GenerateContentConfig(
+                response_mime_type="application/json",
+                response_schema=DiscoveredLeadsReport
+            )
+        ),
         # The GrantFinder agent is responsible for filtering search results.
         # It looks at the raw list of URLs from Tavily and decides which ones are worth investigating further.
+        # Output schema ensures structured JSON matching DiscoveredLeadsReport model.
         instruction="""
-        You are a Grant Scout. You will receive search results from Tavily.
-        Your job is to analyze these results and identify the top 5-7 most promising grant opportunities.
+        You are a Grant Scout specializing in CANADIAN grants, loans, and tax credits.
+        You will receive search results from Tavily.
+        Your job is to analyze these results and identify the top 5-7 most promising CANADIAN grant opportunities.
         
-        Return a JSON object with a 'discovered_leads' list.
+        CRITICAL FILTERING RULES:
+        - ONLY select grants from Canadian sources (Government of Canada, provincial governments, Canadian foundations)
+        - EXCLUDE any USA grants (federal, state, or US-based foundations)
+        - Look for .gc.ca, .canada.ca, provincial .ca domains, and Canadian organization websites
+        - Verify the source is Canadian before including it
+        
+        Return a structured response with discovered_leads list.
         Each lead must have:
-        - 'url': the URL of the grant page
-        - 'source': the name of the organization
-        - 'title': the grant title or program name
+        - url: the URL of the grant page
+        - source: the name of the Canadian organization
+        - title: the grant title or program name
         
-        Focus on official funder pages and active grant programs, NOT grant directories or lists.
+        Focus on official Canadian funder pages and active grant programs, NOT grant directories or lists.
         
-        Example format:
-        {
-          "discovered_leads": [
-            {"url": "https://example.com/grant", "source": "Example Foundation", "title": "Community Grant"}
-          ]
-        }
+        IMPORTANT: Return RAW JSON only. Do not include markdown formatting like ```json ... ```. 
+        Start with { and end with }.
         """
     )
 
 def create_extractor_agent() -> LlmAgent:
-    """Create the grant extractor agent."""
+    """Create the grant extractor agent with structured output schema."""
     current_date, current_date_iso = get_current_date()
     
     return LlmAgent(
         name="GrantExtractor",
-        model=Gemini(model=MODEL_NAME, retry_options=create_retry_config()),
+        model=Gemini(
+            model=MODEL_NAME,
+            retry_options=create_retry_config(),
+            generation_config=types.GenerateContentConfig(
+                response_mime_type="application/json",
+                response_schema=GrantData
+            )
+        ),
         # The GrantExtractor agent is the heavy lifter.
         # It reads the full text of a webpage and extracts structured data (deadlines, amounts, eligibility).
         # We inject the current date so it can intelligently determine if a grant is expired.
+        # Output schema ensures structured JSON matching GrantData model.
         instruction=f"""
         You are a Data Extractor. You will receive the content of a grant webpage.
 
@@ -327,8 +363,17 @@ def create_extractor_agent() -> LlmAgent:
         - eligibility: Full eligibility requirements text
         - url: The URL provided
         - application_requirements: Array of application requirements (e.g., ["501(c)(3) status", "Program budget"])
-        - funding_type: Type of funding (default to "Grant")
-        - geography: Geographic scope or location requirements (e.g., "Chicago", "Illinois", "United States")
+        - funding_nature: Type of funding (Must be "Grant", "Loan", "Tax Credit", or "Unknown")
+        - geography: Geographic scope. ONLY extract CANADIAN grants, loans, and tax credits:
+          * "Federal - Canada" -> if keywords: "Government of Canada", "Federal", "Canada-wide", "National", "Canadian"
+          * "[Province Name]" -> if specific to a province (e.g., "Ontario", "British Columbia", "Quebec")
+          * "[City, Province]" -> if city-specific (e.g., "Toronto, Ontario", "Vancouver, BC")
+          * If you detect USA geography (states, US federal, American cities), SKIP this grant entirely or mark as "USA - Not Applicable"
+        - founder_demographics: Tag any specific demographics focus. List of strings. PRIORITIZE these keywords:
+          * "Women" -> if keywords: "Women", "Female", "Girl", "She/Her", "Women-owned"
+          * "Youth" -> if keywords: "Youth", "Student", "Young Entrepreneur", "Next Gen" or ages 15-30
+          * "Indigenous" -> if keywords: "Indigenous", "First Nations", "Inuit", "Métis", "Aboriginal Peoples", "Inuk"
+          Also tag other demographic groups if mentioned (e.g., "Veterans", "LGBTQ+", "Immigrants", "People with Disabilities", "Minorities", etc.)
         
         CRITICAL - Deadline & Amount Extraction:
         - deadline: Search ENTIRE page for dates! Look for "deadline", "due", "apply by", "submit by", grant cycles, fiscal years
@@ -359,8 +404,9 @@ def create_extractor_agent() -> LlmAgent:
           "eligibility": "501(c)(3) non-profit organizations serving Chicago communities",
           "url": "https://example.com/grant",
           "application_requirements": ["501(c)(3) status", "Project budget", "Site plan"],
-          "funding_type": "Grant",
-          "geography": "Chicago, Illinois"
+          "funding_nature": "Grant",
+          "geography": "Federal - Canada",
+          "founder_demographics": ["Women", "Youth", "Indigenous"]
         }}
         """
     )
@@ -373,18 +419,23 @@ def create_query_agent() -> LlmAgent:
         # The QueryGenerator agent translates a user's natural language project description
         # into a keyword-optimized search query for the search engine.
         instruction="""
-        You are a Search Query Expert. Your job is to convert a user's project description into a targeted search query for finding grants.
+        You are a Search Query Expert. Your job is to convert a user's project description into a targeted search query for finding grants IN CANADA ONLY.
         
         Rules:
         1. Extract the core topic (e.g., "community garden", "youth education", "renewable energy").
-        2. Identify the location if mentioned (e.g., "Chicago", "California").
+        2. Identify the location if mentioned, but ALWAYS prioritize Canadian context.
         3. Identify the target audience (e.g., "non-profit", "schools").
         4. Combine these into a concise search query string.
-        5. Add keywords like "grants", "funding", "application", "deadline".
-        6. Return ONLY the query string, no other text.
+        5. ALWAYS add "Canada" or "Canadian" to the query to ensure Canadian results.
+        6. Add keywords like "grants", "funding", "application", "deadline".
+        7. Exclude USA-specific terms unless explicitly converting them to Canadian equivalents.
+        8. Return ONLY the query string, no other text.
         
-        Example Input: "We are a non-profit in Chicago looking to build a community garden."
-        Example Output: community garden grants Chicago non-profit funding application
+        Example Input: "We are a non-profit looking to build a community garden."
+        Example Output: community garden grants Canada non-profit funding application
+        
+        Example Input: "Youth education program in Toronto"
+        Example Output: youth education grants Toronto Ontario Canada funding
         """
     )
 
@@ -414,6 +465,70 @@ class GrantSeekerWorkflow:
         self.finder_agent = create_finder_agent()
         self.extractor_agent = create_extractor_agent()
         self.query_agent = create_query_agent()
+
+    def _is_grant_expired(self, grant_data: dict) -> bool:
+        """Check if a grant is expired based on its deadline."""
+        deadline = grant_data.get('deadline', '')
+        if not deadline:
+            return False
+            
+        deadline_lower = deadline.lower()
+        
+        # Check for explicit "expired" label from LLM
+        if "expired" in deadline_lower:
+            return True
+            
+        # Try to parse date in multiple formats
+        try:
+            # Try YYYY-MM-DD pattern first
+            match = re.search(r'(\d{4}-\d{2}-\d{2})', deadline)
+            if match:
+                date_str = match.group(1)
+                grant_date = datetime.strptime(date_str, "%Y-%m-%d")
+                # Compare with today
+                if grant_date.date() < datetime.now().date():
+                    return True
+            
+            # Try DD-MM-YYYY pattern
+            match = re.search(r'(\d{2}-\d{2}-\d{4})', deadline)
+            if match:
+                date_str = match.group(1)
+                grant_date = datetime.strptime(date_str, "%d-%m-%Y")
+                # Compare with today
+                if grant_date.date() < datetime.now().date():
+                    return True
+        except Exception:
+            pass # Parsing failed, assume not expired
+            
+        return False
+    
+    def _is_usa_grant(self, grant_data: dict) -> bool:
+        """Check if a grant is from the USA and should be filtered out."""
+        geography = grant_data.get('geography', '').lower()
+        
+        # Check for explicit USA markers
+        if 'usa' in geography or 'united states' in geography or 'not applicable' in geography:
+            return True
+        
+        # Check for US state names (common ones)
+        us_states = [
+            'alabama', 'alaska', 'arizona', 'arkansas', 'california', 'colorado',
+            'connecticut', 'delaware', 'florida', 'georgia', 'hawaii', 'idaho',
+            'illinois', 'indiana', 'iowa', 'kansas', 'kentucky', 'louisiana',
+            'maine', 'maryland', 'massachusetts', 'michigan', 'minnesota',
+            'mississippi', 'missouri', 'montana', 'nebraska', 'nevada',
+            'new hampshire', 'new jersey', 'new mexico', 'new york',
+            'north carolina', 'north dakota', 'ohio', 'oklahoma', 'oregon',
+            'pennsylvania', 'rhode island', 'south carolina', 'south dakota',
+            'tennessee', 'texas', 'utah', 'vermont', 'virginia', 'washington',
+            'west virginia', 'wisconsin', 'wyoming'
+        ]
+        
+        for state in us_states:
+            if state in geography:
+                return True
+        
+        return False
 
 
 
@@ -509,20 +624,20 @@ class GrantSeekerWorkflow:
                 if event.is_final_response() and event.content and event.content.parts:
                     response_text = event.content.parts[0].text
             
+            
             if not response_text:
                 logger.error("No response text received from agent")
                 return []
             
-            # Parse response
-            content = response_text
-            cleaned_content = clean_json_string(content)
-            
+            # Clean up response text (remove markdown if present)
+            response_text = response_text.replace("```json", "").replace("```", "").strip()
+
+            # Parse response using Pydantic (output schema guarantees valid JSON)
             try:
-                parsed = json.loads(cleaned_content)
-                leads_data = DiscoveredLeadsReport(**parsed)
+                leads_data = DiscoveredLeadsReport.model_validate_json(response_text)
                 logger.info(f"Identified {len(leads_data.discovered_leads)} promising grants")
                 return leads_data.discovered_leads
-            except (json.JSONDecodeError, Exception) as e:
+            except Exception as e:
                 logger.error(f"Failed to parse leads: {e}")
                 return []
                 
@@ -544,7 +659,7 @@ class GrantSeekerWorkflow:
                 return cached_data
         
         # Create session for this extraction
-        session_id = f"extract-{hashlib.md5(lead.url.encode()).hexdigest()[:8]}"
+        session_id = f"extract-{hashlib.md5(lead.url.encode()).hexdigest()[:8]}-{uuid.uuid4()}"
         await self.session_service.create_session(
             app_name="grant-seeker",
             user_id="user-1",
@@ -588,45 +703,28 @@ class GrantSeekerWorkflow:
                     if event.is_final_response() and event.content and event.content.parts:
                         response_text = event.content.parts[0].text
                 
-                # Parse response
-                content_str = response_text
-                cleaned_content = clean_json_string(content_str)
                 
+                # Parse response using Pydantic (output schema guarantees valid JSON)
                 try:
-                    parsed = json.loads(cleaned_content)
+                    # Clean up response text (remove markdown if present)
+                    response_text = response_text.replace("```json", "").replace("```", "").strip()
+                    grant_data_obj = GrantData.model_validate_json(response_text)
+                    grant_data = grant_data_obj.model_dump()
                     
-                    # Handle case where LLM returns a list instead of a dict
-                    if isinstance(parsed, list):
-                        if len(parsed) > 0:
-                            parsed = parsed[0]
-                        else:
-                            parsed = {}
+                    # Override URL to ensure it matches the lead
+                    grant_data["url"] = lead.url
                     
-                    # Validate and normalize the data
-                    grant_data = {
-                        "title": normalize_value(parsed.get("title"), "Untitled Grant"),
-                        "funder": normalize_value(parsed.get("funder"), lead.source or "Unknown"),
-                        "deadline": normalize_value(parsed.get("deadline"), "Not specified"),
-                        "amount": normalize_value(parsed.get("amount"), "Not specified"),
-                        "description": normalize_value(parsed.get("description"), "No description available"),
-                        "detailed_overview": normalize_value(parsed.get("detailed_overview"), "No detailed overview available"),
-                        "tags": parsed.get("tags", []),
-                        "eligibility": normalize_value(parsed.get("eligibility"), "Not specified"),
-                        "url": lead.url,
-                        "application_requirements": parsed.get("application_requirements", []),
-                        "funding_type": normalize_value(parsed.get("funding_type"), "Grant"),
-                        "geography": normalize_value(parsed.get("geography"), "Not specified")
-                    }
-                    
-                    # Check if grant_data is essentially empty (all defaults)
+                    # Check if grant_data is essentially empty (all critical fields are defaults)
                     if (grant_data["title"] == "Untitled Grant" and 
                         grant_data["deadline"] == "Not specified" and 
-                        grant_data["amount"] == "Not specified"):
+                        grant_data["amount"] == "Not specified" and
+                        grant_data["description"] == "No description available" and
+                        grant_data["funder"] == "Unknown"):
                         logger.warning(f"Extracted data appears empty for {lead.url}")
                         grant_data["error"] = "Failed to extract meaningful data"
                         
-                except json.JSONDecodeError as e:
-                    logger.error(f"JSON parse error for {lead.url}: {e}")
+                except Exception as e:
+                    logger.error(f"Failed to parse response for {lead.url}: {e}")
                     grant_data = {
                         "url": lead.url,
                         "title": lead.title or "Untitled Grant",
@@ -674,10 +772,11 @@ class GrantSeekerWorkflow:
         logger.info(f"Starting Grant Seeker Workflow with {MODEL_NAME}")
         
         # Create main session
+        main_session_id = f"main-session-{uuid.uuid4()}"
         await self.session_service.create_session(
             app_name="grant-seeker",
             user_id="user-1",
-            session_id="main-session"
+            session_id=main_session_id
         )
         
         # Phase 0: Generate Query
@@ -692,7 +791,7 @@ class GrantSeekerWorkflow:
             logger.warning("No search results found")
             return []
         
-        leads = await self.analyze_results(search_results, "main-session")
+        leads = await self.analyze_results(search_results, main_session_id)
         
         if not leads:
             logger.warning("No promising grants identified")
@@ -710,8 +809,15 @@ class GrantSeekerWorkflow:
         
         # Process all leads concurrently
         tasks = [extract_with_semaphore(lead) for lead in leads]
-        results = await asyncio.gather(*tasks)
+        raw_results = await asyncio.gather(*tasks)
         
+        # Filter expired grants and USA grants
+        results = [g for g in raw_results if not self._is_grant_expired(g) and not self._is_usa_grant(g)]
+        expired_count = sum(1 for g in raw_results if self._is_grant_expired(g))
+        usa_count = sum(1 for g in raw_results if self._is_usa_grant(g) and not self._is_grant_expired(g))
+        logger.info(f"Filtered {expired_count} expired grants and {usa_count} USA grants")
+
+
         # Assign IDs
         for i, grant in enumerate(results, 1):
             grant['id'] = i
@@ -734,7 +840,7 @@ class GrantSeekerWorkflow:
             print(f"Amount: {grant.get('amount', 'Not specified')}")
             print(f"Deadline: {grant.get('deadline', 'Not specified')}")
             print(f"Geography: {grant.get('geography', 'Not specified')}")
-            print(f"Funding Type: {grant.get('funding_type', 'Grant')}")
+            print(f"Funding Nature: {grant.get('funding_nature', 'Grant')}")
             print(f"\nDescription:")
             print(f"  {grant.get('description', 'No description available')}")
             print(f"\nDetailed Overview:")
@@ -746,6 +852,11 @@ class GrantSeekerWorkflow:
             tags = grant.get('tags', [])
             if tags:
                 print(f"\nTags: {', '.join(tags)}")
+
+            # Show founder demographics
+            demographics = grant.get('founder_demographics', [])
+            if demographics:
+                print(f"\nFounder Demographics: {', '.join(demographics)}")
             
             # Show application requirements
             app_reqs = grant.get('application_requirements', [])
