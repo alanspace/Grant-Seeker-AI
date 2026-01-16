@@ -52,7 +52,7 @@ load_dotenv("../.env")
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 TAVILY_API_KEY = os.getenv("TAVILY_API_KEY")
 MODEL_NAME = "gemini-flash-latest"
-TAVILY_MAX_RESULTS = 10
+SEARCH_MAX_RESULTS = 20
 MAX_CONCURRENT_EXTRACTIONS = 3
 CONTENT_PREVIEW_LENGTH = 3000
 
@@ -575,7 +575,7 @@ class GrantSeekerWorkflow:
     async def search_grants(self, query: str) -> list[dict]:
         """Search for grants using Tavily API with caching."""
         # Check cache first
-        cache_key = f"search:{query}:{TAVILY_MAX_RESULTS}"
+        cache_key = f"search:{query}:{SEARCH_MAX_RESULTS}"
         if self.cache:
             cached_results = self.cache.get(cache_key)
             if cached_results is not None:
@@ -585,7 +585,7 @@ class GrantSeekerWorkflow:
         # Perform search
         try:
             logger.info(f"Searching for grants with query: {query}")
-            results = await self.tavily.search(query, max_results=TAVILY_MAX_RESULTS)
+            results = await self.tavily.search(query, max_results=SEARCH_MAX_RESULTS)
             logger.info(f"Found {len(results)} search results")
             
             # Cache results
