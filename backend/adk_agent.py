@@ -427,7 +427,7 @@ def create_query_agent() -> LlmAgent:
         3. Identify the target audience (e.g., "non-profit", "schools").
         4. Combine these into a concise search query string.
         5. ALWAYS add "Canada" or "Canadian" to the query to ensure Canadian results.
-        6. Add keywords like "grants", "funding", "application", "deadline".
+        6. Add ACTION keywords to find specific opportunities: "announcement of opportunity", "call for proposals", "application guide", "intake".
         7. Exclude USA-specific terms unless explicitly converting them to Canadian equivalents.
         8. Return ONLY the query string, no other text.
         
