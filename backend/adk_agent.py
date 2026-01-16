@@ -873,11 +873,41 @@ class GrantSeekerWorkflow:
         # Flatten the list of lists (since extract_grant_data now returns list[dict])
         raw_results = [item for sublist in batch_results_nested for item in sublist]
         
-        # Filter expired grants and USA grants
-        results = [g for g in raw_results if not self._is_grant_expired(g) and not self._is_usa_grant(g)]
+        # Filter: Expired, USA, Invalid
+        valid_candidates = []
+        for g in raw_results:
+            title = g.get('title', '').lower()
+            # 1. Check for garbage titles (e.g. error pages or index lists)
+            if "no grant opportunity found" in title or "untitled grant" in title or "legislative index" in g.get('description', '').lower():
+                continue
+            
+            # 2. Check for Expired/USA
+            if not self._is_grant_expired(g) and not self._is_usa_grant(g):
+                valid_candidates.append(g)
+        
+        # Sort candidates by fit_score descending
+        valid_candidates.sort(key=lambda x: x.get('fit_score', 0), reverse=True)
+        
+        # Adaptive Threshold Logic:
+        # We want HIGH RELEVANCE (>40%) results.
+        # BUT we must return at least 3 results if possible.
+        final_results = []
+        for g in valid_candidates:
+            fit = g.get('fit_score', 0)
+            if fit >= 40:
+                final_results.append(g)
+            elif len(final_results) < 3:
+                # If we don't have 3 good ones yet, include this "okay" one
+                logger.info(f"Including lower relevance result ({fit}%) to meet minimum count: {g.get('title')}")
+                final_results.append(g)
+            else:
+                logger.info(f"Filtering out LOW RELEVANCE result ({fit}%): {g.get('title')}")
+        
+        results = final_results
+        
         expired_count = sum(1 for g in raw_results if self._is_grant_expired(g))
         usa_count = sum(1 for g in raw_results if self._is_usa_grant(g) and not self._is_grant_expired(g))
-        logger.info(f"Filtered {expired_count} expired grants and {usa_count} USA grants")
+        logger.info(f"Final Count: {len(results)} grants (Filtered expired/USA/irrelevant)")
 
 
         # Assign IDs
