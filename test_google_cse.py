@@ -8,7 +8,7 @@ load_dotenv()
 load_dotenv("../.env")
 
 API_KEY = os.getenv("GOOGLE_API_KEY")
-CSE_ID = os.getenv("GOOGLE_CSE_ID", "c7810cabc13b24433")
+CSE_ID = os.getenv("GOOGLE_CSE_ID")
 
 async def test_search():
     print(f"Testing Google CSE with ID: {CSE_ID}...\n")

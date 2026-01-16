@@ -63,7 +63,7 @@ CONTENT_PREVIEW_LENGTH = 12000
 
 # Search Provider Configuration
 SEARCH_PROVIDER = os.getenv("SEARCH_PROVIDER", "TAVILY") # Options: "TAVILY", "GOOGLE"
-GOOGLE_CSE_ID = os.getenv("GOOGLE_CSE_ID", "c7810cabc13b24433")
+GOOGLE_CSE_ID = os.getenv("GOOGLE_CSE_ID")
 
 # Cache settings
 CACHE_ENABLED = True
@@ -909,6 +909,7 @@ class GrantSeekerWorkflow:
             title = g.get('title', '').lower()
             # 1. Check for garbage titles (e.g. error pages or index lists)
             if "no grant opportunity found" in title or "untitled grant" in title or "legislative index" in g.get('description', '').lower():
+                logger.info(f"Filtering out garbage result: {g.get('title', 'Unknown')}")
                 continue
             
             # 2. Check for Expired/USA
