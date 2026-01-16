@@ -487,7 +487,18 @@ class GrantSeekerWorkflow:
         if CACHE_ENABLED:
             self.cache = CacheService(cache_dir=CACHE_DIR, ttl_hours=CACHE_TTL_HOURS)
         
-        # Initialize Tavily client
+        # Initialize Search Clients
+        # 1. Google Client (for Discovery/Phase 1)
+        self.google_client = None
+        if SEARCH_PROVIDER == "GOOGLE":
+            logger.info(f"Using Google Custom Search Engine (ID: {GOOGLE_CSE_ID[:4]}...)")
+            self.google_client = GoogleSearchClient(
+                api_key=GOOGLE_API_KEY, 
+                cse_id=GOOGLE_CSE_ID
+            )
+            
+        # 2. Tavily Client (Always init for Extraction/Phase 2)
+        logger.info("Initializing Tavily Client for Content Extraction")
         self.tavily = TavilyClient(api_key=TAVILY_API_KEY, max_retries=2, timeout=15.0)
         
         # Initialize session service
@@ -618,7 +629,15 @@ class GrantSeekerWorkflow:
         try:
             logger.info(f"Searching for grants with query: {query}")
             
-            results = await self.tavily.search(query, max_results=SEARCH_MAX_RESULTS)
+            # HYBRID SEARCH LOGIC
+            if self.google_client:
+                # Use Google CSE for Discovery (Phase 1)
+                logger.info("Phase 1: Using Google CSE for Discovery")
+                results = await self.google_client.search(query, max_results=SEARCH_MAX_RESULTS)
+            else:
+                # Fallback to Tavily for Discovery
+                logger.info("Phase 1: Using Tavily for Discovery")
+                results = await self.tavily.search(query, max_results=SEARCH_MAX_RESULTS)
                 
             logger.info(f"Found {len(results)} search results")
             
@@ -710,8 +729,19 @@ class GrantSeekerWorkflow:
         try:
             logger.info(f"Extracting data from: {lead.url}")
             
-            # Get page content
+            # Get page content - Using Tavily Extract for robust parsing
             content = await self.tavily.get_page_content(lead.url)
+            
+            # FALLBACK LOGIC: If Tavily yields little/no content, try Google Client Scraper
+            if (not content or len(content) < 200) and self.google_client:
+                logger.warning(f"Tavily content empty/short for {lead.url}. Trying Google Scraper fallback...")
+                try:
+                    google_content = await self.google_client.get_page_content(lead.url)
+                    if google_content and len(google_content) > len(content):
+                        logger.info("Google fallback successful! Using Google scraped content.")
+                        content = google_content
+                except Exception as e:
+                    logger.warning(f"Google fallback failed: {e}")
             
             if not content:
                 logger.warning(f"No content retrieved from {lead.url}")
