@@ -53,6 +53,13 @@ load_dotenv("../.env")
 
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 TAVILY_API_KEY = os.getenv("TAVILY_API_KEY")
+
+# Validate required API keys
+if not TAVILY_API_KEY:
+    raise ValueError("TAVILY_API_KEY must be set in .env file")
+if not GOOGLE_API_KEY:
+    raise ValueError("GOOGLE_API_KEY (for Gemini) must be set in .env file")
+
 MODEL_NAME = "gemini-flash-latest"
 TAVILY_MAX_RESULTS = 10
 MAX_CONCURRENT_EXTRACTIONS = 3
@@ -157,7 +164,8 @@ class CacheService:
                 json.dump(cache_data, f, indent=2, ensure_ascii=False)
             logger.debug(f"Cached: {key}")
         except Exception as e:
-            logger.error(f"Failed to cache {key}: {e}")
+            error_type = type(e).__name__
+            logger.error(f"Failed to cache {key}: {error_type}: {str(e)[:100]}")
     
     def clear(self) -> int:
         """Clear all cache files."""
