@@ -3,13 +3,16 @@ import os
 from dotenv import load_dotenv
 from backend.tavily_client import TavilyClient
 
-# Load env vars
+# Load environment variables from .env file in project root
 load_dotenv()
-load_dotenv("../.env")
 
 # URL causing issues
 TEST_URL = "https://www.sac-isc.gc.ca/eng/1375201178602/1610797286236"
 API_KEY = os.getenv("TAVILY_API_KEY")
+
+# Validate that required environment variable is set
+if not API_KEY:
+    raise ValueError("TAVILY_API_KEY must be set in .env file")
 
 async def test_tavily_extraction():
     print(f"Testing Tavily Extraction for: {TEST_URL}\nUsing API Key: {API_KEY[:5]}...")
