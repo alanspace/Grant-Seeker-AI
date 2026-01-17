@@ -3,9 +3,8 @@ import os
 from dotenv import load_dotenv
 from backend.google_search_client import GoogleSearchClient
 
-# Load env vars
+# Load environment variables from .env file in project root
 load_dotenv()
-load_dotenv("../.env")
 
 API_KEY = os.getenv("GOOGLE_API_KEY")
 CSE_ID = os.getenv("GOOGLE_CSE_ID")

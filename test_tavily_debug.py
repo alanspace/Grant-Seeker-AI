@@ -3,9 +3,8 @@ import os
 from dotenv import load_dotenv
 from backend.tavily_client import TavilyClient
 
-# Load env vars
+# Load environment variables from .env file in project root
 load_dotenv()
-load_dotenv("../.env")
 
 # URL causing issues
 TEST_URL = "https://www.sac-isc.gc.ca/eng/1375201178602/1610797286236"
