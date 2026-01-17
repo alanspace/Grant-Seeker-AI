@@ -765,14 +765,18 @@ class GrantSeekerWorkflow:
                     # Handle LIST response (common when multiple grants on one page)
                     if isinstance(parsed_json, list):
                         if len(parsed_json) > 0:
-                            for item in parsed_json:
+                            for i, item in enumerate(parsed_json):
                                 try:
                                     g_obj = GrantData.model_validate(item)
                                     g_dict = g_obj.model_dump()
                                     g_dict["url"] = lead.url
                                     extracted_grants.append(g_dict)
                                 except Exception as e:
-                                    logger.warning(f"Skipping ONE invalid grant in list: {e}")
+                                    error_type = type(e).__name__
+                                    logger.warning(f"Skipping invalid grant at index {i+1}/{len(parsed_json)}: {error_type}")
+                                    logger.warning(f"   Failed grant data: {json.dumps(item, indent=2)[:500]}...")  # Truncate for readability
+                                    logger.warning(f"   Validation error: {str(e)[:200]}")  # Truncate long errors
+                                    logger.debug(f"   Source URL: {lead.url}")
                         else:
                             raise ValueError("Received empty list from LLM")
                     else:
