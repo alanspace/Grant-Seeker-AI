@@ -171,7 +171,10 @@ def main():
                         else:
                             st.error("Failed to generate draft. Please try again.")
                     except Exception as e:
-                        st.error(f"Error generating draft: {str(e)}")
+                        error_type = type(e).__name__
+                        st.error(f"❌ Error generating draft: {error_type}")
+                        st.error(f"Details: {str(e)[:200]}")
+                        st.info("👉 Tip: Try adding more detail to your project description or check if environment variables are set correctly.")
         
         # Display agent draft
         if st.session_state.agent_draft:
