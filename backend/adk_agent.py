@@ -720,14 +720,26 @@ class GrantSeekerWorkflow:
                         response_text = event.content.parts[0].text
                 
                 
-                # Parse response using Pydantic (output schema guarantees valid JSON)
+                # Parse response using Pydantic
                 try:
                     # Clean up response text (remove markdown if present)
                     response_text = response_text.replace("```json", "").replace("```", "").strip()
-                    grant_data_obj = GrantData.model_validate_json(response_text)
-                    grant_data = grant_data_obj.model_dump()
                     
-                    # Override URL to ensure it matches the lead
+                    # Parse JSON to check if it's a list or object
+                    parsed_json = json.loads(response_text)
+                    
+                    # Handle LIST response (multi-grant page - take first for now)
+                    if isinstance(parsed_json, list):
+                        if len(parsed_json) > 0:
+                            logger.warning(f"Multi-grant page detected with {len(parsed_json)} grants, using first grant")
+                            grant_data_obj = GrantData.model_validate(parsed_json[0])
+                        else:
+                            raise ValueError("LLM returned empty list")
+                    # Handle OBJECT response (single grant page)
+                    else:
+                        grant_data_obj = GrantData.model_validate(parsed_json)
+                    
+                    grant_data = grant_data_obj.model_dump()
                     grant_data["url"] = lead.url
                     
                     # Check if grant_data is essentially empty (all critical fields are defaults)
