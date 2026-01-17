@@ -10,6 +10,12 @@ load_dotenv("../.env")
 API_KEY = os.getenv("GOOGLE_API_KEY")
 CSE_ID = os.getenv("GOOGLE_CSE_ID")
 
+# Validate that required environment variables are set
+if not API_KEY:
+    raise ValueError("GOOGLE_API_KEY must be set in .env file")
+if not CSE_ID:
+    raise ValueError("GOOGLE_CSE_ID must be set in .env file")
+
 async def test_search():
     print(f"Testing Google CSE with ID: {CSE_ID}...\n")
     
