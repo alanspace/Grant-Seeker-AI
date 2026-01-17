@@ -379,10 +379,6 @@ def create_extractor_agent() -> LlmAgent:
         1. A specific grant opportunity page (Ideal) -> Extract its specific details.
         2. A list/search results page with multiple grants -> Summarize the opportunities found.
         
-        The text might be:
-        1. A specific grant opportunity page (Ideal) -> Extract its specific details.
-        2. A list/search results page with multiple grants -> Summarize the opportunities found.
-        
         Extract the following fields in JSON format:
         - title: The name of the grant (or "Various [Agency] Opportunities" if a list).
         - funder: The government agency or organization providing the funding.
