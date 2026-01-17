@@ -19,3 +19,7 @@ pyarrow
 httpx
 anyio
 requests
+
+# --- Content Extraction ---
+beautifulsoup4
+pypdf
