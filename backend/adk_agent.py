@@ -29,8 +29,10 @@ from google.genai import types
 from pydantic import BaseModel
 try:
     from backend.tavily_client import TavilyClient
+    from backend.content_extractor import RobustContentExtractor, is_viable_grant
 except ImportError:
     from tavily_client import TavilyClient
+    from content_extractor import RobustContentExtractor, is_viable_grant
 
 # Configure logging
 logging.basicConfig(
@@ -458,6 +460,13 @@ class GrantSeekerWorkflow:
         # Initialize Tavily client
         self.tavily = TavilyClient(api_key=TAVILY_API_KEY, max_retries=2, timeout=15.0)
         
+        # Initialize robust content extractor with fallback strategies
+        self.content_extractor = RobustContentExtractor(
+            tavily_client=self.tavily,
+            google_client=None,  # Will be set if Google is configured
+            timeout=30.0
+        )
+        
         # Initialize session service
         self.session_service = InMemorySessionService()
         
@@ -667,20 +676,27 @@ class GrantSeekerWorkflow:
         )
         
         try:
-            logger.info(f"Extracting data from: {lead.url}")
+            logger.debug(f"Extracting data from: {lead.url}")
             
-            # Get page content
-            content = await self.tavily.get_page_content(lead.url)
+            # Use robust content extractor with multiple fallback strategies
+            content, extraction_method = await self.content_extractor.extract(
+                url=lead.url,
+                min_length=200  # Minimum viable content length
+            )
             
             if not content:
-                logger.warning(f"No content retrieved from {lead.url}")
+                logger.warning(f"All extraction strategies failed for {lead.url}")
                 grant_data = {
                     "url": lead.url,
-                    "title": lead.title or "Untitled Grant",
+                    "title": lead.title or "Content Extraction Failed",
                     "funder": lead.source or "Unknown",
-                    "error": "No content retrieved"
+                    "description": "⚠️ Unable to extract content from this page. Please visit the website directly to view details.",
+                    "error": "All extraction methods failed (Tavily, scraping, PDF)"
                 }
             else:
+                # Log successful extraction with method used
+                logger.info(f"✅ Content extracted via {extraction_method} ({len(content)} chars)")
+                
                 # Truncate content if too long
                 content_preview = content[:CONTENT_PREVIEW_LENGTH]
                 
@@ -812,10 +828,27 @@ class GrantSeekerWorkflow:
         raw_results = await asyncio.gather(*tasks)
         
         # Filter expired grants and USA grants
-        results = [g for g in raw_results if not self._is_grant_expired(g) and not self._is_usa_grant(g)]
+        results_after_location = [g for g in raw_results if not self._is_grant_expired(g) and not self._is_usa_grant(g)]
         expired_count = sum(1 for g in raw_results if self._is_grant_expired(g))
         usa_count = sum(1 for g in raw_results if self._is_usa_grant(g) and not self._is_grant_expired(g))
         logger.info(f"Filtered {expired_count} expired grants and {usa_count} USA grants")
+        
+        # Filter grants with insufficient data (prevent "Untitled Grant" from showing)
+        results = []
+        insufficient_data_grants = []
+        
+        for grant in results_after_location:
+            if is_viable_grant(grant):
+                results.append(grant)
+            else:
+                insufficient_data_grants.append(grant)
+                logger.debug(f"Filtered grant with insufficient data: {grant.get('url', 'unknown URL')}")
+        
+        if insufficient_data_grants:
+            logger.warning(
+                f"⚠️ {len(insufficient_data_grants)} grants filtered due to insufficient data. "
+                f"URLs are available but content extraction failed or returned incomplete information."
+            )
 
 
         # Assign IDs
