@@ -12,6 +12,10 @@ from google.genai import types
 load_dotenv()
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
+# Validate required environment variable
+if not GEMINI_API_KEY:
+    raise ValueError("GEMINI_API_KEY must be set in .env file")
+
 # Config
 # Use Flash for writing (faster/cheaper) or Pro for quality. 
 # Since your key supports Pro, let's use it for better writing quality.
