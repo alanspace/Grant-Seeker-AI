@@ -320,6 +320,11 @@ def execute_grant_workflow(query: str, filters: dict = None) -> list[dict]:
         # We merge query + filters context string for now to ensure immediately compatiblity
         
         # Construct specific filter context strings to append to query
+        # NOTE: Only semantic filters (demographic, geography, types) are appended as text
+        # to the search query. This allows immediate compatibility with the existing workflow.
+        # Other filters like funding_min/max and applicant_type require backend schema changes
+        # to properly handle structured filtering (planned for Part 2).
+        # This is a temporary workaround to ensure filters work end-to-end in Phase 1.
         filter_context = ""
         if filters:
             if filters.get('demographic_focus'):
