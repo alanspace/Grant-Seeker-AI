@@ -624,7 +624,7 @@ class GrantSeekerWorkflow:
         
         # Perform search
         try:
-            logger.info(f"Searching for grants with query: {query}")
+            logger.debug(f"Searching with query: {query}")
             
             results = await self.tavily.search(query, max_results=SEARCH_MAX_RESULTS)
                 
@@ -716,7 +716,7 @@ class GrantSeekerWorkflow:
         extracted_grants = []
         
         try:
-            logger.info(f"Extracting data from: {lead.url}")
+            logger.debug(f"Extracting data from: {lead.url}")
             
             # Get page content
             content = await self.tavily.get_page_content(lead.url)
