@@ -81,8 +81,11 @@ class GoogleSearchClient:
                     return []
                 await asyncio.sleep(1)
             except Exception as e:
-                print(f"⚠️ Google Search error (attempt {attempt + 1}): {e}")
+                error_type = type(e).__name__
+                print(f"⚠️ Google Search error (attempt {attempt + 1}/{self.max_retries}): {error_type}")
+                print(f"   Query: '{query}', Error: {str(e)}")
                 if attempt == self.max_retries - 1:
+                    print(f"   ❌ All retries exhausted for query: '{query}'")
                     return []
                 await asyncio.sleep(1)
         
