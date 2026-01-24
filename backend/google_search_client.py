@@ -76,13 +76,24 @@ class GoogleSearchClient:
                     return results
 
             except httpx.HTTPStatusError as e:
-                print(f"❌ Google Search HTTP error: {e}")
+                print(f"❌ Google Search HTTP error: {e.response.status_code} - {e.response.reason_phrase}")
+                print(f"   Query: '{query}'")
+                if attempt == self.max_retries - 1:
+                    print(f"   ❌ All retries exhausted after {self.max_retries} attempts")
+                    return []
+                await asyncio.sleep(1)
+            except httpx.TimeoutException:
+                print(f"⏱️ Google Search timeout (attempt {attempt + 1}/{self.max_retries})")
+                print(f"   Query: '{query}', Timeout: {self.timeout}s")
                 if attempt == self.max_retries - 1:
                     return []
                 await asyncio.sleep(1)
             except Exception as e:
-                print(f"⚠️ Google Search error (attempt {attempt + 1}): {e}")
+                error_type = type(e).__name__
+                print(f"⚠️ Google Search error (attempt {attempt + 1}/{self.max_retries}): {error_type}")
+                print(f"   Query: '{query}', Error: {str(e)}")
                 if attempt == self.max_retries - 1:
+                    print(f"   ❌ All retries exhausted for query: '{query}'")
                     return []
                 await asyncio.sleep(1)
         
@@ -116,9 +127,27 @@ class GoogleSearchClient:
                     
                     return text
                     
-            except Exception as e:
-                print(f"⚠️ Scrape error for {url}: {e}")
+            except httpx.HTTPStatusError as e:
+                print(f"❌ Scrape HTTP error for {url}")
+                print(f"   Status: {e.response.status_code} - {e.response.reason_phrase}")
+
                 if attempt == self.max_retries - 1:
+                    print(f"   ❌ Failed to extract page content!")
+                    return ""
+                await asyncio.sleep(1)
+            except httpx.TimeoutException:
+                print(f"⏱️ Scrape timeout for {url} (attempt {attempt + 1}/{self.max_retries})")
+                print(f"   Timeout: {self.timeout}s")
+                if attempt == self.max_retries - 1:
+                    print(f"   ❌ Failed to extract page content!")
+                    return ""
+                await asyncio.sleep(1)
+            except Exception as e:
+                error_type = type(e).__name__
+                print(f"⚠️ Scrape error for {url} (attempt {attempt + 1}/{self.max_retries})")
+                print(f"   Error type: {error_type}, Message: {str(e)}")
+                if attempt == self.max_retries - 1:
+                    print(f"   ❌ Failed to extract page content!")
                     return ""
                 await asyncio.sleep(1)
         return ""
