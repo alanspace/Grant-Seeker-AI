@@ -34,7 +34,6 @@ try:
 except ImportError:
     from tavily_client import TavilyClient
     from content_extractor import RobustContentExtractor, is_viable_grant
-
 try:
     from backend.google_search_client import GoogleSearchClient
 except ImportError:
