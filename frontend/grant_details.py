@@ -189,6 +189,7 @@ def main():
     # This page relies on the user having selected a grant from the Search page.
     # If no grant is selected (e.g., direct URL access), we redirect them back.
     grant = st.session_state.get('selected_grant', {})
+    # print(grant) # uncomment to check the recieved data.
     if not grant or grant == {}:
         st.warning("No grant selected. Please go back to the search page and select a grant.")
         if st.button("🔙 Back to Search Grants"):
@@ -201,11 +202,12 @@ def main():
         grant['tags'] = ["No tags available"]
 
     # Get insights from grant data (API format) or fall back to defaults
-    fit_score = grant.get('fit_score', DEFAULT_INSIGHTS['fit_score'])
-    key_dates = grant.get('key_dates', DEFAULT_INSIGHTS['key_dates'])
-    risk_factors = grant.get('risk_factors', DEFAULT_INSIGHTS['risk_factors'])
-    eligibility_checklist = grant.get('eligibility_checklist', DEFAULT_INSIGHTS['eligibility_checklist'])
+    fit_score = grant.get('fit_score', 0)
     application_requirements = grant.get('application_requirements', DEFAULT_INSIGHTS['required_documents'])
+    # New fields from backend
+    funding_nature = grant.get('funding_nature', 'Unknown')
+    geography = grant.get('geography', 'Not specified')
+    founder_demographics = grant.get('founder_demographics', [])
     
     # Header Section
     st.markdown(f"""
@@ -220,6 +222,14 @@ def main():
                 <div class="meta-item">
                     <div class="meta-label">Amount</div>
                     <div class="meta-value">💰 {grant['amount']}</div>
+                </div>
+                <div class="meta-item">
+                    <div class="meta-label">Funding Type</div>
+                    <div class="meta-value">📝 {funding_nature}</div>
+                </div>
+                <div class="meta-item">
+                    <div class="meta-label">Location</div>
+                    <div class="meta-value">🌍 {geography}</div>
                 </div>
             </div>
         </div>
@@ -266,12 +276,18 @@ def main():
     with tab1:
         st.markdown("### Grant Overview")
         # Use detailed_overview if available, otherwise use description
-        overview_text = grant.get('detailed_overview', grant['description'])
+        overview_text = grant.get('detailed_overview', grant.get('description', 'No description available'))
         st.markdown(f"""
             <div class="insight-card" style="color: #2d3748;">
                 <p>{overview_text}</p>
             </div>
         """, unsafe_allow_html=True)
+        
+        # Display founder demographics if available
+        if founder_demographics:
+            st.markdown("### Target Demographics")
+            demographics_html = " ".join([f'<span style="background-color: #FED7E2; color: #702459; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.85rem; margin-right: 0.5rem;">{demo}</span>' for demo in founder_demographics])
+            st.markdown(demographics_html, unsafe_allow_html=True)
         
         st.markdown("### Tags")
         tags_html = " ".join([f'<span style="background-color: #eef6ff; color: #3182ce; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.85rem; margin-right: 0.5rem;">{tag}</span>' for tag in grant['tags']])
@@ -324,6 +340,9 @@ def main():
         st.markdown("### 📊 Quick Stats")
         st.metric("Deadline", grant['deadline'])
         st.metric("Amount", grant['amount'])
+        st.metric("Funding Type", funding_nature)
+        if fit_score > 0:
+            st.metric("Fit Score", f"{fit_score}%")
         st.metric("Documents Required", len(application_requirements))
         
         st.markdown("---")
