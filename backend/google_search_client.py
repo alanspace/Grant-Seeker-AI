@@ -128,6 +128,7 @@ class GoogleSearchClient:
                     return text
                     
             except httpx.HTTPStatusError as e:
+            except httpx.HTTPStatusError as e:
                 print(f"❌ Scrape HTTP error for {url}")
                 print(f"   Status: {e.response.status_code} - {e.response.reason_phrase}")
 
