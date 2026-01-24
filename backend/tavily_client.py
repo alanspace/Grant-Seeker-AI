@@ -83,7 +83,7 @@ class TavilyClient:
                     print(f"⚠️ Rate limited. Retrying in {wait_time}s...")
                     await asyncio.sleep(wait_time)
                     continue
-                print(f"❌ HTTP error: {e.response.status_code} - {e.response.reason_phrase}")
+                print(f"❌ Tavily HTTP error: {e.response.status_code} - {e.response.reason_phrase}")
                 print(f"   Query: '{query}'")
                 if attempt == self.max_retries - 1:
                     print(f"   All {self.max_retries} retries exhausted")
@@ -125,8 +125,16 @@ class TavilyClient:
                         result[item.get("url", "")] = item.get("raw_content", "")
                     return result
             except httpx.HTTPStatusError as e:
-                print(f"❌ Extract HTTP error: {e.response.status_code} - {e.response.reason_phrase}")
-                print(f"   URL: {url}")
+            except httpx.HTTPStatusError as e:
+                print(f"❌ Tavily Extract HTTP error: {e.response.status_code} - {e.response.reason_phrase}")
+                print(f"   URLs: {urls}")
+                if attempt == self.max_retries - 1:
+                    return {}
+                await asyncio.sleep(1)
+            except Exception as e:
+                error_type = type(e).__name__
+                print(f"⚠️ Extract error (attempt {attempt + 1}/{self.max_retries}): {error_type}")
+                print(f"   URLs: {urls}, Error: {str(e)}")
                 if attempt == self.max_retries - 1:
                     print(f"   All {self.max_retries} retries exhausted")
                     return {}
