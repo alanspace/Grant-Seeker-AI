@@ -748,108 +748,121 @@ class GrantSeekerWorkflow:
             
             if not content:
                 logger.warning(f"No content retrieved from {lead.url}")
-                error_grant = {
+                # Return list with single error object
+                return [{
                     "url": lead.url,
                     "title": lead.title or "Untitled Grant",
                     "funder": lead.source or "Unknown",
                     "error": "No content retrieved",
                     **GrantData(url=lead.url).model_dump()
-                }
-                extracted_grants.append(error_grant)
-            else:
-                # Truncate content if too long
-                content_preview = content[:CONTENT_PREVIEW_LENGTH]
-                
-                # Run extraction agent
-                runner = Runner(
-                    agent=self.extractor_agent,
-                    app_name="grant-seeker",
-                    session_service=self.session_service
-                )
-                
-                user_msg = types.Content(role="user", parts=[types.Part(text=content_preview)])
-                
-                response_text = ""
-                async for event in runner.run_async(
-                    user_id="user-1",
-                    session_id=session_id,
-                    new_message=user_msg
-                ):
-                    if hasattr(event, 'text') and event.text:
-                        response_text += event.text
-                    elif hasattr(event, 'content') and event.content and event.content.parts:
-                        # Fallback for some event types
-                        response_text += event.content.parts[0].text or ""
-                
-                # Clean up response (remove markdown code blocks)
+                }]
+
+            # Truncate content if too long
+            content_preview = content[:CONTENT_PREVIEW_LENGTH]
+            
+            # Run extraction agent
+            runner = Runner(
+                agent=self.extractor_agent,
+                app_name="grant-seeker",
+                session_service=self.session_service
+            )
+            
+            prompt = f"Extract grant information from this webpage:\n\n{content_preview}"
+            user_msg = types.Content(role="user", parts=[types.Part(text=prompt)])
+            
+            response_text = ""
+            async for event in runner.run_async(
+                user_id="user-1",
+                session_id=session_id,
+                new_message=user_msg
+            ):
+                if event.is_final_response() and event.content and event.content.parts:
+                    response_text = event.content.parts[0].text
+            
+            
+            # Parse response
+            grant_data_list = []
+            try:
+                # Clean up response text (remove markdown if present)
                 response_text = response_text.replace("```json", "").replace("```", "").strip()
+                parsed_json = json.loads(response_text)
                 
-                try:
-                    parsed_json = json.loads(response_text)
+                extracted_grants = []
+                
+                # Helper to process a raw grant dict
+                def process_grant_dict(d):
+                    # Use Pydantic to validate and set defaults
+                    obj = GrantData.model_validate(d)
+                    g = obj.model_dump()
+                    g["url"] = lead.url
+                    return g
+
+                # Handle List vs Object
+                if isinstance(parsed_json, list):
+                    logger.info(f"Multi-grant page detected: {len(parsed_json)} grants")
+                    for item in parsed_json:
+                        try:
+                            extracted_grants.append(process_grant_dict(item))
+                        except Exception as e:
+                            logger.warning(f"Skipping invalid grant in list from {lead.url}: {e}")
+                elif isinstance(parsed_json, dict):
+                    extracted_grants.append(process_grant_dict(parsed_json))
+                
+                grant_data_list = extracted_grants
+                
+                # Check for "empty" single grant (legacy check)
+                if len(grant_data_list) == 1:
+                    g = grant_data_list[0]
+                    if (g["title"] == "Untitled Grant" and 
+                        g["deadline"] == "Not specified" and 
+                        g["amount"] == "Not specified" and
+                        g["description"] == "No description available" and
+                        g["funder"] == "Unknown"):
+                        logger.warning(f"Extracted data appears empty for {lead.url}")
+                        g["error"] = "Failed to extract meaningful data"
                     
-                    # Handle LIST response (common when multiple grants on one page)
-                    if isinstance(parsed_json, list):
-                        if len(parsed_json) > 0:
-                            for item in parsed_json:
-                                try:
-                                    g_obj = GrantData.model_validate(item)
-                                    g_dict = g_obj.model_dump()
-                                    g_dict["url"] = lead.url
-                                    extracted_grants.append(g_dict)
-                                except Exception as e:
-                                    logger.warning(f"Skipping ONE invalid grant in list: {e}")
-                        else:
-                            raise ValueError("Received empty list from LLM")
-                    else:
-                        # Handle standard OBJECT response
-                        grant_data_obj = GrantData.model_validate(parsed_json)
-                        g_dict = grant_data_obj.model_dump()
-                        g_dict["url"] = lead.url
-                        extracted_grants.append(g_dict)
-                        
-                except Exception as e:
-                    logger.error(f"Failed to parse response for {lead.url}: {e}")
-                    extracted_grants.append({
-                        "url": lead.url,
-                        "title": lead.title or "Untitled Grant",
-                        "funder": lead.source or "Unknown",
-                        "error": f"Failed to parse LLM response: {str(e)}",
-                         **GrantData(url=lead.url).model_dump()
-                    })
-            
-            # Post-processing: Calculate scores and check fallbacks for ALL extracted items
-            final_grants = []
-            for grant_data in extracted_grants:
-                # Fill in defaults
-                defaults = GrantData(url=lead.url).model_dump()
-                for key, value in defaults.items():
-                    if key not in grant_data:
-                        grant_data[key] = value
-                
-                # Calculate fit score
-                if query:
-                    grant_data['fit_score'] = calculate_fit_score(grant_data, query)
-                
-                final_grants.append(grant_data)
-            
-            # Cache the result (store the LIST)
-            if self.cache:
-                self.cache.set(cache_key, final_grants)
-            
-            logger.info(f"Successfully extracted {len(final_grants)} grants from {lead.url}")
-            return final_grants
-            
-        except Exception as e:
-            logger.error(f"Extraction failed for {lead.url}: {e}")
-            return [
-                {
+            except Exception as e:
+                logger.error(f"Failed to parse response for {lead.url}: {e}")
+                grant_data_list = [{
                     "url": lead.url,
                     "title": lead.title or "Untitled Grant",
                     "funder": lead.source or "Unknown",
-                    "error": str(e),
+                    "error": f"Failed to parse LLM response: {str(e)}",
                     **GrantData(url=lead.url).model_dump()
-                }
-            ]
+                }]
+            
+            # Final processing for all extracted grants
+            final_results = []
+            defaults = GrantData(url=lead.url).model_dump()
+            
+            for g in grant_data_list:
+                # Fill in defaults for any missing fields (safety)
+                for key, value in defaults.items():
+                    if key not in g:
+                        g[key] = value
+                
+                # Calculate fit score
+                if query:
+                    g['fit_score'] = calculate_fit_score(g, query)
+                
+                final_results.append(g)
+            
+            # Cache the result
+            if self.cache:
+                self.cache.set(cache_key, final_results)
+            
+            logger.info(f"Successfully extracted {len(final_results)} items from {lead.url}")
+            return final_results
+            
+        except Exception as e:
+            logger.error(f"Extraction failed for {lead.url}: {e}")
+            return [{
+                "url": lead.url,
+                "title": lead.title or "Untitled Grant",
+                "funder": lead.source or "Unknown",
+                "error": str(e),
+                **GrantData(url=lead.url).model_dump()
+            }]
     
     async def run(self, query: str) -> list[dict]:
         """
@@ -901,6 +914,19 @@ class GrantSeekerWorkflow:
         
         # Process all leads concurrently
         tasks = [extract_with_semaphore(lead) for lead in leads]
+<<<<<<< HEAD
+        raw_results_lists = await asyncio.gather(*tasks)
+        
+        # Flatten list of lists and filter
+        # Each 'extract_with_semaphore' now returns a list of grants (one or more)
+        all_grants = [grant for sublist in raw_results_lists for grant in sublist]
+        
+        # Filter expired grants and USA grants
+        results = [g for g in all_grants if not self._is_grant_expired(g) and not self._is_usa_grant(g)]
+        expired_count = sum(1 for g in all_grants if self._is_grant_expired(g))
+        usa_count = sum(1 for g in all_grants if self._is_usa_grant(g) and not self._is_grant_expired(g))
+        logger.info(f"Filtered {expired_count} expired grants and {usa_count} USA grants")
+=======
         batch_results_nested = await asyncio.gather(*tasks)
         
         # Flatten the list of lists (since extract_grant_data now returns list[dict])
@@ -942,6 +968,7 @@ class GrantSeekerWorkflow:
         expired_count = sum(1 for g in raw_results if self._is_grant_expired(g))
         usa_count = sum(1 for g in raw_results if self._is_usa_grant(g) and not self._is_grant_expired(g))
         logger.info(f"Final Count: {len(results)} grants (Filtered expired/USA/irrelevant)")
+>>>>>>> origin/main
 
 
         # Assign IDs
