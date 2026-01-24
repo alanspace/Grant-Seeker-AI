@@ -169,115 +169,115 @@ def clear_all_filters():
     st.session_state.project_stage = None
 
 
-def generate_mock_canadian_grants(filters, query):
-    """
-    Generate mock Canadian grant data for development purposes.
+# def generate_mock_canadian_grants(filters, query):
+#     """
+#     Generate mock Canadian grant data for development purposes.
     
-    When users enable advanced filters, this function returns realistic placeholder grants
-    instead of making real backend calls. This allows developers to test the filtering UI
-    without waiting for the actual agent workflow to complete.
+#     When users enable advanced filters, this function returns realistic placeholder grants
+#     instead of making real backend calls. This allows developers to test the filtering UI
+#     without waiting for the actual agent workflow to complete.
     
-    Args:
-        filters: Dictionary containing all active filter selections
-        query: User's search query text
+#     Args:
+#         filters: Dictionary containing all active filter selections
+#         query: User's search query text
     
-    Returns:
-        List of 5-8 mock grant dictionaries with Canadian context data
-    """
-    import random
+#     Returns:
+#         List of 5-8 mock grant dictionaries with Canadian context data
+#     """
+#     import random
     
-    # Realistic Canadian grant funders
-    funders = [
-        "Natural Sciences and Engineering Research Council of Canada (NSERC)",
-        "Social Sciences and Humanities Research Council (SSHRC)",
-        "Innovation, Science and Economic Development Canada",
-        "Canada Council for the Arts",
-        "Ontario Trillium Foundation",
-        "Business Development Bank of Canada (BDC)",
-        "Indigenous Services Canada",
-        "Women and Gender Equality Canada",
-        "Regional Development Agencies (FedDev Ontario)",
-        "British Columbia Arts Council"
-    ]
+#     # Realistic Canadian grant funders
+#     funders = [
+#         "Natural Sciences and Engineering Research Council of Canada (NSERC)",
+#         "Social Sciences and Humanities Research Council (SSHRC)",
+#         "Innovation, Science and Economic Development Canada",
+#         "Canada Council for the Arts",
+#         "Ontario Trillium Foundation",
+#         "Business Development Bank of Canada (BDC)",
+#         "Indigenous Services Canada",
+#         "Women and Gender Equality Canada",
+#         "Regional Development Agencies (FedDev Ontario)",
+#         "British Columbia Arts Council"
+#     ]
     
-    # Variety of Canadian grant program titles
-    grant_titles = [
-        "Indigenous Innovation Fund",
-        "Women Entrepreneurs Program",
-        "Clean Technology Research Grant",
-        "Community Development Initiative",
-        "Youth Employment and Skills Strategy",
-        "Rural Economic Development Program",
-        "Digital Technology Adoption Program",
-        "Sustainable Agriculture Innovation Grant",
-        "Arts and Culture Creation Fund",
-        "Export Market Development Program",
-        "Social Enterprise Support Grant",
-        "Northern Economic Development Fund"
-    ]
+#     # Variety of Canadian grant program titles
+#     grant_titles = [
+#         "Indigenous Innovation Fund",
+#         "Women Entrepreneurs Program",
+#         "Clean Technology Research Grant",
+#         "Community Development Initiative",
+#         "Youth Employment and Skills Strategy",
+#         "Rural Economic Development Program",
+#         "Digital Technology Adoption Program",
+#         "Sustainable Agriculture Innovation Grant",
+#         "Arts and Culture Creation Fund",
+#         "Export Market Development Program",
+#         "Social Enterprise Support Grant",
+#         "Northern Economic Development Fund"
+#     ]
     
-    # Varied deadline options
-    deadlines = [
-        "March 31, 2026",
-        "April 15, 2026",
-        "May 1, 2026",
-        "June 30, 2026",
-        "Rolling intake",
-        "February 28, 2026"
-    ]
+#     # Varied deadline options
+#     deadlines = [
+#         "March 31, 2026",
+#         "April 15, 2026",
+#         "May 1, 2026",
+#         "June 30, 2026",
+#         "Rolling intake",
+#         "February 28, 2026"
+#     ]
     
-    # Realistic funding amounts in Canadian dollars
-    amounts = [
-        "$5,000 - $25,000",
-        "$10,000 - $50,000",
-        "$25,000 - $100,000",
-        "$50,000 - $250,000",
-        "Up to $500,000",
-        "$15,000 - $75,000"
-    ]
+#     # Realistic funding amounts in Canadian dollars
+#     amounts = [
+#         "$5,000 - $25,000",
+#         "$10,000 - $50,000",
+#         "$25,000 - $100,000",
+#         "$50,000 - $250,000",
+#         "Up to $500,000",
+#         "$15,000 - $75,000"
+#     ]
     
-    # Generic but realistic grant descriptions
-    descriptions = [
-        "This program supports innovative projects that address community needs and promote sustainable development across Canada.",
-        "Funding is available for organizations committed to advancing diversity, equity, and inclusion in their operations and programming.",
-        "This initiative provides non-repayable contributions to eligible applicants pursuing research and development in emerging technologies.",
-        "Support for early-stage ventures and social enterprises focused on creating positive social and environmental impact.",
-        "Designed to help organizations expand their operations, hire skilled workers, and access new markets domestically and internationally.",
-        "This program offers financial assistance for projects that strengthen community capacity and improve quality of life for residents."
-    ]
+#     # Generic but realistic grant descriptions
+#     descriptions = [
+#         "This program supports innovative projects that address community needs and promote sustainable development across Canada.",
+#         "Funding is available for organizations committed to advancing diversity, equity, and inclusion in their operations and programming.",
+#         "This initiative provides non-repayable contributions to eligible applicants pursuing research and development in emerging technologies.",
+#         "Support for early-stage ventures and social enterprises focused on creating positive social and environmental impact.",
+#         "Designed to help organizations expand their operations, hire skilled workers, and access new markets domestically and internationally.",
+#         "This program offers financial assistance for projects that strengthen community capacity and improve quality of life for residents."
+#     ]
     
-    # Tags that might match various filter selections
-    tag_options = [
-        ["Women-led", "Technology", "Innovation"],
-        ["Indigenous", "Community Development", "Capacity Building"],
-        ["Youth", "Employment", "Training"],
-        ["Environmental", "Sustainability", "Research"],
-        ["Arts", "Culture", "Creative Industries"],
-        ["Export", "Trade", "International"],
-        ["Rural", "Northern", "Remote Communities"],
-        ["BIPOC", "Diversity", "Equity"]
-    ]
+#     # Tags that might match various filter selections
+#     tag_options = [
+#         ["Women-led", "Technology", "Innovation"],
+#         ["Indigenous", "Community Development", "Capacity Building"],
+#         ["Youth", "Employment", "Training"],
+#         ["Environmental", "Sustainability", "Research"],
+#         ["Arts", "Culture", "Creative Industries"],
+#         ["Export", "Trade", "International"],
+#         ["Rural", "Northern", "Remote Communities"],
+#         ["BIPOC", "Diversity", "Equity"]
+#     ]
     
-    # Generate 5-8 random grants for realistic variety
-    num_grants = random.randint(5, 8)
-    mock_grants = []
+#     # Generate 5-8 random grants for realistic variety
+#     num_grants = random.randint(5, 8)
+#     mock_grants = []
     
-    for i in range(num_grants):
-        grant = {
-            "id": f"mock_canadian_{i+1}",  # Unique identifier
-            "title": random.choice(grant_titles),
-            "funder": random.choice(funders),
-            "deadline": random.choice(deadlines),
-            "amount": random.choice(amounts),
-            "description": random.choice(descriptions),
-            "tags": random.choice(tag_options),
-            "url": f"https://grants.canada.ca/mock-grant-{i+1}",
-            "eligibility": "Open to Canadian organizations and individuals meeting specific criteria",
-            "application_process": "Online application through the funder's portal"
-        }
-        mock_grants.append(grant)
+#     for i in range(num_grants):
+#         grant = {
+#             "id": f"mock_canadian_{i+1}",  # Unique identifier
+#             "title": random.choice(grant_titles),
+#             "funder": random.choice(funders),
+#             "deadline": random.choice(deadlines),
+#             "amount": random.choice(amounts),
+#             "description": random.choice(descriptions),
+#             "tags": random.choice(tag_options),
+#             "url": f"https://grants.canada.ca/mock-grant-{i+1}",
+#             "eligibility": "Open to Canadian organizations and individuals meeting specific criteria",
+#             "application_process": "Online application through the funder's portal"
+#         }
+#         mock_grants.append(grant)
     
-    return mock_grants
+#     return mock_grants
 
 
 
@@ -287,21 +287,21 @@ def generate_mock_canadian_grants(filters, query):
 # ============================================================================
 
 
-def execute_grant_workflow(query: str) -> list[dict]:
+<<<<<<< HEAD
+    return results or []
+
+
+def execute_grant_workflow(query: str, filters: dict = None, min_results: int = 1) -> list[dict]:
     """
-    Run the ADK workflow for the given query and return results.
-    
-    This function:
-    1. Imports the adk_agent module (forcing a fresh import)
-    2. Creates a new GrantSeekerWorkflow instance
-    3. Runs the workflow asynchronously with the user's query
-    4. Returns results directly (no file persistence)
+    Run the ADK workflow for the given query with optional iterative refinement.
     
     Args:
-        query: User's search query for finding relevant grants
+        query: User's search query
+        filters: Advanced filters dict (for iterative relevance check)
+        min_results: Minimum number of relevant grants to find (default 1)
     
     Returns:
-        List of grant results from the workflow, or empty list if workflow fails
+        List of filtered, relevant grant results
     """
     # Force reimport to get fresh module state
     if "adk_agent" in sys.modules:
@@ -315,12 +315,114 @@ def execute_grant_workflow(query: str) -> list[dict]:
     loop = asyncio.new_event_loop()
     try:
         asyncio.set_event_loop(loop)
-        results = loop.run_until_complete(workflow.run(query))
+        # Decide which method to run
+        if min_results > 1 or (filters and has_active_filters()):
+            # Use new iterative search if we need minimum results or enforce strict filtering
+            results = loop.run_until_complete(
+                workflow.run_with_minimum_results(query, filters=filters, min_results=min_results)
+            )
+        else:
+            # Standard single-pass search
+            results = loop.run_until_complete(workflow.run(query))
     finally:
         loop.close()
         asyncio.set_event_loop(None)
 
     return results or []
+
+
+def apply_filters_to_results(results, filters):
+    """
+    Apply Advanced Filters to real backend search results.
+    
+    Filters real grants based on:
+    - Demographics (founder demographics field) 
+    - Funding amount range
+    - Funding type (grant vs loan)
+    - Geographic scope  
+    - Applicant type
+    - Project stage
+    
+    Args:
+        results: List of grants from backend search
+        filters: Dictionary of active filter selections
+    
+    Returns:
+        Filtered list of grants matching all selected criteria
+    """
+    if not results or not filters:
+        return results
+    
+    filtered = []
+    
+    for grant in results:
+        # Filter 1: Demographic Focus - STRICT matching
+        if filters.get('demographic_focus'):
+            grant_demographics = grant.get('founder_demographics', [])
+            
+            # Must have demographics field populated
+            if not grant_demographics:
+                continue
+            
+            # Check if grant matches ANY of the selected demographics
+            demographic_match = False
+            for demo_filter in filters['demographic_focus']:
+                demo_lower = demo_filter.lower()
+                
+                # Women filter
+                if 'women' in demo_lower:
+                    if any('women' in gd.lower() or 'female' in gd.lower() for gd in grant_demographics):
+                        demographic_match = True
+                        break
+                # Indigenous filter  
+                elif 'indigenous' in demo_lower:
+                    if any('indigenous' in gd.lower() or 'first nations' in gd.lower() for gd in grant_demographics):
+                        demographic_match = True
+                        break
+                # Youth filter
+                elif 'youth' in demo_lower:
+                    if any('youth' in gd.lower() or 'young' in gd.lower() for gd in grant_demographics):
+                        demographic_match = True
+                        break
+            
+            if not demographic_match:
+                continue
+        
+        # Filter 2: Funding Amount Range
+        funding_min = filters.get('funding_min')
+        funding_max = filters.get('funding_max')
+        if funding_min or funding_max:
+            # Extract numeric amount from grant (rough parsing)
+            amount_str = grant.get('amount', '')
+            # Skip if no amount specified
+            if 'not specified' in amount_str.lower():
+                if funding_min:  # If user specified minimum, skip grants without amounts
+                    continue
+            # Note: Full amount parsing would need more sophisticated logic
+        
+        # Filter 3: Funding Type
+        if filters.get('funding_types'):
+            grant_funding_type = grant.get('funding_nature', '').lower()
+            type_match = any(
+                'grant' in grant_funding_type and 'grant' in ft.lower()
+                or 'loan' in grant_funding_type and 'loan' in ft.lower()
+                or 'wage' in ft.lower() and 'wage' in grant_funding_type
+                for ft in filters['funding_types']
+            )
+            if not type_match:
+                continue
+        
+        # Filter 4: Geographic Scope
+        if filters.get('geographic_scope'):
+            grant_geography = grant.get('geography', '').lower()
+            geo_filter = filters['geographic_scope'].lower()
+            if geo_filter not in grant_geography and 'canada' not in grant_geography:
+                continue
+        
+        # If grant passed all filters, include it
+        filtered.append(grant)
+    
+    return filtered
 
 
 def search_grants(query, filters=None):
@@ -343,19 +445,48 @@ def search_grants(query, filters=None):
         List of grant dictionaries matching the search criteria
     """
     
-    # Check if advanced filters are active - use mock data for development
-    if filters and has_active_filters():
+    # Check data source preference from toggle
+    use_real_data = st.session_state.get('use_real_data_toggle', False)
+    
+    # Check if advanced filters are active
+    filters_active = filters and has_active_filters()
+    
+    # Decision logic:
+    # - If toggle is ON (use real data) → always use real backend, apply filters to results
+    # - If toggle is OFF (use mock) AND filters active → use mock data for demo
+    # - Otherwise → use real backend
+    
+    if filters_active and not use_real_data:
+        # Mock data mode: Fast demo mode without API calls
         return generate_mock_canadian_grants(filters, query)
     
-    # If user provided a search query, run the real workflow agent
+    # Real data mode: Use actual backend search
+    # Real data mode: Use actual backend search
     if query:
         try:
-            workflow_results = execute_grant_workflow(query)
+            # Get user preference for thoroughness
+            min_results = st.session_state.get('min_results_target', 3)
+            
+            # Determine if we should pass filters to backend
+            # Only pass filters if "Use Real Data" is checked
+            backend_filters = filters if (filters_active and use_real_data) else None
+            
+            # Execute workflow with iterative search parameters
+            workflow_results = execute_grant_workflow(
+                query, 
+                filters=backend_filters, 
+                min_results=min_results
+            )
+            
+            # Simulate token usage tracking (until backend returns actuals)
+            # Rough estimate: 15k per result found roughly
+            st.session_state.last_search_tokens = len(workflow_results) * 12000 + 5000
         except Exception as exc:
             st.error(f"Grant workflow failed: {exc}")
             return []
-        else:
-            return workflow_results
+        
+        # Results are already filtered by the backend if backend_filters provided
+        return workflow_results
 
     # Fallback: return any existing session results (no query provided)
     return st.session_state.get("search_results", [])
@@ -387,18 +518,61 @@ def render_grant_card(grant, col_key):
     description = grant.get("description", "No summary available for this opportunity.")
     tags = grant.get("tags", []) or []
     grant_id = grant.get("id", f"{col_key}_{abs(hash(title))}")
+    # New fields from backend
+    funding_nature = grant.get("funding_nature", "")
+    fit_score = grant.get("fit_score", 0)
 
     if not tags:
         tags = ["No tags available"]
 
+    # Deadline Verification Logic
+    deadline_lower = deadline.lower()
+    deadline_status = ""
+    deadline_color = "#4a5568"  # Default gray
+    
+    if "ongoing" in deadline_lower or "rolling" in deadline_lower or "open" in deadline_lower:
+        deadline_status = "🟢 (Active)"
+        deadline_color = "#38a169"  # Green
+    elif "expired" in deadline_lower or "closed" in deadline_lower:
+        deadline_status = "🔴 (Expired)" 
+        deadline_color = "#e53e3e"  # Red
+    elif any(char.isdigit() for char in deadline):
+        # Has specific date - assume valid for now (date parsing is complex)
+        deadline_status = "📅"
+        deadline_color = "#2d3748"  # Dark gray
+    else:
+        deadline_status = "⚠️ (Verify date)"
+        deadline_color = "#d69e2e"  # Yellow/Orange
+
+    # Freshness Indicator
+    # In a real app, 'extracted_at' would come from the backend
+    extracted_at = grant.get('extracted_at', 'Just now')
+
+    # Build badge HTML for funding type and fit score
+    badges_html = ""
+    if funding_nature and funding_nature != "Unknown":
+        badge_color = "#805AD5" if funding_nature == "Grant" else "#DD6B20" if funding_nature == "Loan" else "#319795"
+        badges_html += f'<span style="background-color: {badge_color}; color: white; padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.75rem; margin-right: 0.5rem;">{funding_nature}</span>'
+    if fit_score > 0:
+        score_color = "#38A169" if fit_score >= 70 else "#D69E2E" if fit_score >= 40 else "#E53E3E"
+        badges_html += f'<span style="background-color: {score_color}; color: white; padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.75rem;">{fit_score}% Match</span>'
+
     with st.container():
         st.markdown(f"""
             <div class="grant-card">
-                <div class="grant-title">{title}</div>
+                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                    <div class="grant-title">{title}</div>
+                    <div>{badges_html}</div>
+                </div>
                 <div class="grant-funder">🏛️ {funder}</div>
-                <div style="display: flex; gap: 1.5rem; margin: 0.5rem 0;">
-                    <span class="grant-deadline">📅 Deadline: {deadline}</span>
+                <div style="display: flex; gap: 1.5rem; margin: 0.5rem 0; flex-wrap: wrap;">
+                    <span class="grant-deadline" style="color: {deadline_color}; font-weight: 500;">
+                        📅 Deadline: {deadline} {deadline_status}
+                    </span>
                     <span class="grant-amount">💰 {amount}</span>
+                    <span style="color: #718096; font-size: 0.85em; display: flex; align-items: center;">
+                        ⚡ Verified: {extracted_at}
+                    </span>
                 </div>
                 <p style="color: #4a5568; margin: 0.75rem 0;">{description}</p>
                 <div>
@@ -446,6 +620,16 @@ def main():
     5. Sidebar with search tips
     """
     
+    # Initialize session state variables
+    if 'search_results' not in st.session_state:
+        st.session_state.search_results = []
+    if 'last_search_tokens' not in st.session_state:
+        st.session_state.last_search_tokens = 0
+    if 'searching' not in st.session_state:
+        st.session_state.searching = False
+    if 'has_searched' not in st.session_state:
+        st.session_state.has_searched = False
+    
     # Header
     col_back, col_title = st.columns([1, 5])
             
@@ -474,6 +658,53 @@ def main():
             use_container_width=True,
             disabled=st.session_state.searching
         )
+    
+    # ========================================================================
+    # DATA SOURCE TOGGLE - Choose between Mock and Real Data
+    # ========================================================================
+    st.markdown("### 🎛️ Data Source")
+    use_real_data = st.checkbox(
+        "Use Real Data (apply filters to actual search results)",
+        value=False,
+        key="use_real_data_toggle",
+        help="Uncheck to use Mock Data for demos (faster, no API calls). Check to filter actual backend search results."
+    )
+    
+    if use_real_data:
+        st.success("✅ Using REAL data from backend search")
+    else:
+        st.info("ℹ️ Using MOCK data for demonstration (faster, no API usage)")
+    
+    # ========================================================================
+    # MINIMUM RESULTS SELECTOR
+    # ========================================================================
+    st.markdown("### 🎯 Search Thoroughness")
+    
+    col1, col2 = st.columns([2, 1])
+    
+    with col1:
+        min_results = st.selectbox(
+            "Minimum results to find (iterative search)",
+            options=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+            index=2,  # Default to 3
+            key="min_results_target",
+            help="System will keep searching until it finds at least this many RELEVANT grants that match your filters. Higher numbers = more API calls."
+        )
+    
+    with col2:
+        # Show estimated cost
+        estimated_tokens = min_results * 15000  # Rough estimate
+        st.metric(
+            "Est. Tokens",
+            f"{estimated_tokens:,}",
+            help="Approximate token usage for this search"
+        )
+    
+    # Show token usage from last search if available
+    if 'last_search_tokens' in st.session_state and st.session_state.last_search_tokens:
+        st.caption(f"💰 Last search used ~{st.session_state.last_search_tokens:,} tokens")
+    
+    st.markdown("---")
     
     # ========================================================================
     # ADVANCED FILTERS SECTION (Collapsible Expander)
@@ -537,8 +768,8 @@ def main():
             "Non-repayable Grant",
             "Repayable Loan / Contribution",
             "Tax Credit",
-            "Wage Subsidy (Hiring grants)",
-            "In-Kind (Services/Equipment)"
+            # "Wage Subsidy (Hiring grants)",
+            # "In-Kind (Services/Equipment)"
         ]
         st.multiselect(
             "Select funding types",
@@ -632,7 +863,12 @@ def main():
                 1 if st.session_state.applicant_type else 0,
                 1 if st.session_state.project_stage else 0
             ])
-            st.info(f"✅ {active_count} filter(s) active - Using mock Canadian grant data for development")
+            # Show appropriate message based on data source
+            use_real_data = st.session_state.get('use_real_data_toggle', False)
+            if use_real_data:
+                st.success(f"✅ {active_count} filter(s) active - Filtering real backend data")
+            else:
+                st.info(f"ℹ️ {active_count} filter(s) active - Using mock data for demonstration")
         
         st.markdown("</div>", unsafe_allow_html=True)
     
