@@ -107,15 +107,15 @@ def main():
         st.markdown("""
             <div class="card-container">
                 <h3 style="text-align: center; color: #2d3748; margin-bottom: 1.5rem;">What We Help You Do</h3>
-                <div class="feature-item" style="color: #2d3748;>
+                <div class="feature-item" style="color: #2d3748;">
                     <span class="feature-icon">🔍</span>
                     <span><strong>Find relevant grants</strong> — Search our database or paste grant URLs to discover opportunities</span>
                 </div>
-                <div class="feature-item" style="color: #2d3748;>
+                <div class="feature-item" style="color: #2d3748;">
                     <span class="feature-icon">📋</span>
                     <span><strong>Extract eligibility & requirements</strong> — AI analyzes grant pages to pull key details</span>
                 </div>
-                <div class="feature-item" style="color: #2d3748;>
+                <div class="feature-item" style="color: #2d3748;">
                     <span class="feature-icon">✍️</span>
                     <span><strong>Generate a professional proposal</strong> — Draft compelling proposals with AI assistance</span>
                 </div>

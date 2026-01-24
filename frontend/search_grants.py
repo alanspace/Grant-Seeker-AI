@@ -287,8 +287,7 @@ def clear_all_filters():
 # ============================================================================
 
 
-<<<<<<< HEAD
-    return results or []
+
 
 
 def execute_grant_workflow(query: str, filters: dict = None, min_results: int = 1) -> list[dict]:
