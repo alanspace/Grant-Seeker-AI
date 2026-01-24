@@ -25,6 +25,30 @@ class GrantPDF(FPDF):
         self.multi_cell(0, 6, f"{text}")
         self.ln(4)
 
+def sanitize_text(text: str) -> str:
+    """
+    Sanitize text to be compatible with Latin-1 encoding for FPDF.
+    Replaces common smart characters with ASCII equivalents and strips others.
+    """
+    if not text:
+        return ""
+    
+    # Replace common smart characters
+    replacements = {
+        '\u2018': "'", '\u2019': "'",  # Smart quotes
+        '\u201c': '"', '\u201d': '"',  # Smart double quotes
+        '\u2013': '-', '\u2014': '-',  # Dashes
+        '\u2026': '...',               # Ellipsis
+        '\u00a0': ' ',                 # Non-breaking space
+        '\u2022': '*',                 # Bullet
+    }
+    
+    for char, replacement in replacements.items():
+        text = text.replace(char, replacement)
+        
+    # Final safety net: Force encode to ascii/latin-1 with replacement
+    return text.encode('latin-1', 'replace').decode('latin-1')
+
 def generate_grant_pdf(grant_data: dict) -> bytes:
     """
     Generates a PDF byte stream for the given grant data.
@@ -35,43 +59,45 @@ def generate_grant_pdf(grant_data: dict) -> bytes:
     
     # Title and Funder
     pdf.set_font('Arial', 'B', 16)
-    pdf.multi_cell(0, 8, grant_data.get('title', 'Untitled Grant'), align='C')
+    title = sanitize_text(grant_data.get('title', 'Untitled Grant'))
+    pdf.multi_cell(0, 8, title, align='C')
     pdf.ln(2)
     
     pdf.set_font('Arial', 'I', 12)
-    pdf.cell(0, 8, f"Funder: {grant_data.get('funder', 'Unknown Funder')}", 0, 1, 'C')
+    funder = sanitize_text(f"Funder: {grant_data.get('funder', 'Unknown Funder')}")
+    pdf.cell(0, 8, funder, 0, 1, 'C')
     pdf.ln(8)
     
     # Key Details Table-like structure
     pdf.set_font('Arial', 'B', 11)
     pdf.cell(40, 8, "Deadline:", 0, 0)
     pdf.set_font('Arial', '', 11)
-    pdf.cell(0, 8, grant_data.get('deadline', 'N/A'), 0, 1)
+    deadline = sanitize_text(grant_data.get('deadline', 'N/A'))
+    pdf.cell(0, 8, deadline, 0, 1)
     
     pdf.set_font('Arial', 'B', 11)
     pdf.cell(40, 8, "Amount:", 0, 0)
     pdf.set_font('Arial', '', 11)
-    pdf.cell(0, 8, grant_data.get('amount', 'N/A'), 0, 1)
+    amount = sanitize_text(grant_data.get('amount', 'N/A'))
+    pdf.cell(0, 8, amount, 0, 1)
     
     pdf.set_font('Arial', 'B', 11)
     pdf.cell(40, 8, "Location:", 0, 0)
     pdf.set_font('Arial', '', 11)
-    pdf.cell(0, 8, grant_data.get('geography', 'N/A'), 0, 1)
+    geography = sanitize_text(grant_data.get('geography', 'N/A'))
+    pdf.cell(0, 8, geography, 0, 1)
     
     pdf.ln(6)
     
     # Description
     pdf.chapter_title("Description")
     description = grant_data.get('description') or grant_data.get('detailed_overview') or "No description provided."
-    # Clean up text slightly if needed (basic replacement)
-    description = description.encode('latin-1', 'replace').decode('latin-1')
-    pdf.chapter_body(description)
+    pdf.chapter_body(sanitize_text(description))
     
     # Eligibility
     pdf.chapter_title("Eligibility")
     eligibility = grant_data.get('eligibility', 'Not specified')
-    eligibility = eligibility.encode('latin-1', 'replace').decode('latin-1')
-    pdf.chapter_body(eligibility)
+    pdf.chapter_body(sanitize_text(eligibility))
     
     # Requirements
     pdf.chapter_title("Application Requirements")
@@ -82,8 +108,7 @@ def generate_grant_pdf(grant_data: dict) -> bytes:
         req_text = reqs
     else:
         req_text = "Not specified"
-    req_text = req_text.encode('latin-1', 'replace').decode('latin-1')
-    pdf.chapter_body(req_text)
+    pdf.chapter_body(sanitize_text(req_text))
     
     # Link
     pdf.ln(4)
@@ -91,11 +116,11 @@ def generate_grant_pdf(grant_data: dict) -> bytes:
     pdf.cell(0, 8, "Official Link:", 0, 1)
     pdf.set_font('Arial', 'U', 11)
     pdf.set_text_color(0, 0, 255)
-    url = grant_data.get('url', '')
+    url = sanitize_text(grant_data.get('url', ''))
     if url:
         pdf.write(5, url, url)
     else:
         pdf.write(5, "No URL provided")
     
-    # Return bytes
-    return pdf.output(dest='S').encode('latin-1')
+    # Return bytes - Use error handling for final encoding
+    return pdf.output(dest='S').encode('latin-1', errors='replace')
