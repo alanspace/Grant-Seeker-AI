@@ -320,34 +320,19 @@ def execute_grant_workflow(query: str, filters: dict = None) -> list[dict]:
         # We merge query + filters context string for now to ensure immediately compatiblity
         
         # Construct specific filter context strings to append to query
-        # All semantic filters are appended as text to the search query.
-        # This allows the backend QueryGenerator agent to understand the user's intent.
+        # NOTE: Only semantic filters (demographic, geography, types) are appended as text
+        # to the search query. This allows immediate compatibility with the existing workflow.
+        # Other filters like funding_min/max and applicant_type require backend schema changes
+        # to properly handle structured filtering (planned for Part 2).
+        # This is a temporary workaround to ensure filters work end-to-end in Phase 1.
         filter_context = ""
         if filters:
-            # Add demographic focus context
             if filters.get('demographic_focus'):
                 filter_context += f" for {' '.join(filters['demographic_focus'])}"
-
-            # Add geographic scope context
             if filters.get('geographic_scope'):
                 filter_context += f" in {filters['geographic_scope']}"
-
-            # Add funding types context
             if filters.get('funding_types'):
                 filter_context += f" {', '.join(filters['funding_types'])}"
-            # Add funding range context
-            if filters.get('funding_min') is not None and filters.get('funding_max') is not None:
-                filter_context += f" funding amount between ${filters['funding_min']:,} and ${filters['funding_max']:,}"
-            elif filters.get('funding_min') is not None:
-                filter_context += f" funding amount minimum ${filters['funding_min']:,}"
-            elif filters.get('funding_max') is not None:
-                filter_context += f" funding amount maximum ${filters['funding_max']:,}"
-            # Add applicant type context
-            if filters.get('applicant_type'):
-                filter_context += f" for {filters['applicant_type']}"
-            # Add project stage context
-            if filters.get('project_stage'):
-                filter_context += f" at {filters['project_stage']} stage"
         
         full_query = f"{query} {filter_context}".strip()
         
