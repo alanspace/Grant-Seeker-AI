@@ -76,7 +76,15 @@ class GoogleSearchClient:
                     return results
 
             except httpx.HTTPStatusError as e:
-                print(f"❌ Google Search HTTP error: {e}")
+                print(f"❌ Google Search HTTP error: {e.response.status_code} - {e.response.reason_phrase}")
+                print(f"   Query: '{query}'")
+                if attempt == self.max_retries - 1:
+                    print(f"   ❌ All retries exhausted after {self.max_retries} attempts")
+                    return []
+                await asyncio.sleep(1)
+            except httpx.TimeoutException:
+                print(f"⏱️ Google Search timeout (attempt {attempt + 1}/{self.max_retries})")
+                print(f"   Query: '{query}', Timeout: {self.timeout}s")
                 if attempt == self.max_retries - 1:
                     return []
                 await asyncio.sleep(1)
@@ -122,6 +130,7 @@ class GoogleSearchClient:
             except httpx.HTTPStatusError as e:
                 print(f"❌ Scrape HTTP error for {url}")
                 print(f"   Status: {e.response.status_code} - {e.response.reason_phrase}")
+
                 if attempt == self.max_retries - 1:
                     print(f"   ❌ Failed to extract page content!")
                     return ""

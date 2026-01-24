@@ -32,6 +32,11 @@ try:
 except ImportError:
     from tavily_client import TavilyClient
 
+try:
+    from backend.google_search_client import GoogleSearchClient
+except ImportError:
+    pass # Handle if running as script or missing file
+
 # Configure logging
 logging.basicConfig(
     level=logging.WARNING,  # Set root logger to WARNING
@@ -55,6 +60,13 @@ MODEL_NAME = "gemini-flash-latest"
 SEARCH_MAX_RESULTS = 20
 MAX_CONCURRENT_EXTRACTIONS = 3
 CONTENT_PREVIEW_LENGTH = 12000
+
+# Note: GOOGLE_API_KEY validation is conditional on SEARCH_PROVIDER below
+
+# Search Provider Configuration
+# Search Provider Configuration
+SEARCH_PROVIDER = os.getenv("SEARCH_PROVIDER", "TAVILY") # Options: "TAVILY", "GOOGLE"
+GOOGLE_CSE_ID = os.getenv("GOOGLE_CSE_ID")
 
 # Cache settings
 CACHE_ENABLED = True
@@ -350,7 +362,30 @@ def create_extractor_agent() -> LlmAgent:
         Only extract grants with deadlines in the FUTURE (after {current_date_iso}).
         If a deadline has already passed, note it but mark as expired.
         
-        Extract the following information and return as a JSON object:
+        # Create the specialized extractor agent
+        # We give it a precise prompt to handle both single-grant pages and list/portal pages.
+        You are an expert Grant Data Extractor. Your job is to extract structured data from the provided text of a webpage.
+        
+        The text might be:
+        1. A specific grant opportunity page (Ideal) -> Extract its specific details.
+        2. A list/search results page with multiple grants -> Summarize the opportunities found.
+        
+        The text might be:
+        1. A specific grant opportunity page (Ideal) -> Extract its specific details.
+        2. A list/search results page with multiple grants -> Summarize the opportunities found.
+        
+        Extract the following fields in JSON format:
+        - title: The name of the grant (or "Various [Agency] Opportunities" if a list).
+        - funder: The government agency or organization providing the funding.
+        - deadline: CRITICAL: Extract the EXACT closing date. Look for 'Closing date', 'Applications due', 'Deadline', or 'Expires'. Convert to YYYY-MM-DD format. If multiple text dates exist, list them (e.g. "2025-03-14 (Health); 2026-10-29 (HANA)"). Do NOT say "See website" if a date is visible in the text.
+        - amount: The funding amounts. If multiple, range them (e.g. "$350k - $1M depending on stream").
+        - description: A brief summary covering the main opportunities found.
+        - eligibility: Who can apply?
+        - tags: A list of 3-5 relevant keywords.
+        
+        If the page is a "Portal" with many grants, do your best to summarize the *range* of deadlines and amounts available so the user knows options exist.
+        
+        Output valid JSON only.
         
         Required fields:
         - title: The grant program name/title
@@ -455,7 +490,18 @@ class GrantSeekerWorkflow:
         if CACHE_ENABLED:
             self.cache = CacheService(cache_dir=CACHE_DIR, ttl_hours=CACHE_TTL_HOURS)
         
-        # Initialize Tavily client
+        # Initialize Search Clients
+        # 1. Google Client (for Discovery/Phase 1)
+        self.google_client = None
+        if SEARCH_PROVIDER == "GOOGLE":
+            logger.info(f"Using Google Custom Search Engine (ID: {GOOGLE_CSE_ID[:4]}...)")
+            self.google_client = GoogleSearchClient(
+                api_key=GOOGLE_API_KEY, 
+                cse_id=GOOGLE_CSE_ID
+            )
+            
+        # 2. Tavily Client (Always init for Extraction/Phase 2)
+        logger.info("Initializing Tavily Client for Content Extraction")
         self.tavily = TavilyClient(api_key=TAVILY_API_KEY, max_retries=2, timeout=15.0)
         
         # Initialize session service
@@ -585,7 +631,17 @@ class GrantSeekerWorkflow:
         # Perform search
         try:
             logger.info(f"Searching for grants with query: {query}")
-            results = await self.tavily.search(query, max_results=SEARCH_MAX_RESULTS)
+            
+            # HYBRID SEARCH LOGIC
+            if self.google_client:
+                # Use Google CSE for Discovery (Phase 1)
+                logger.info("Phase 1: Using Google CSE for Discovery")
+                results = await self.google_client.search(query, max_results=SEARCH_MAX_RESULTS)
+            else:
+                # Fallback to Tavily for Discovery
+                logger.info("Phase 1: Using Tavily for Discovery")
+                results = await self.tavily.search(query, max_results=SEARCH_MAX_RESULTS)
+                
             logger.info(f"Found {len(results)} search results")
             
             # Cache results
@@ -646,27 +702,22 @@ class GrantSeekerWorkflow:
             return []
     
     async def extract_grant_data(self, lead: DiscoveredLead, query: str = "") -> list[dict]:
-        """Extract detailed grant data from a URL with caching (returns list of grants)."""
+        """Extract detailed grant data from a URL with caching. Returns a LIST of grants found."""
         # Check cache first
         cache_key = f"extract:{lead.url}"
         if self.cache:
             cached_data = self.cache.get(cache_key)
             if cached_data is not None:
-                logger.info(f"Using cached extraction for: {lead.url}")
-                
-                # Handle legacy cache (single dict) vs new cache (list)
+                # Handle legacy cache (dict) vs new cache (list)
                 if isinstance(cached_data, dict):
-                    results = [cached_data]
-                elif isinstance(cached_data, list):
-                    results = cached_data
-                else:
-                    results = []
+                    cached_data = [cached_data]
                 
-                # Recalculate fit score if query is provided
+                logger.info(f"Using cached extraction for: {lead.url}")
+                # Recalculate fit score for all cached items
                 if query:
-                    for grant in results:
-                        grant['fit_score'] = calculate_fit_score(grant, query)
-                return results
+                    for item in cached_data:
+                        item['fit_score'] = calculate_fit_score(item, query)
+                return cached_data
         
         # Create session for this extraction
         session_id = f"extract-{hashlib.md5(lead.url.encode()).hexdigest()[:8]}-{uuid.uuid4()}"
@@ -676,11 +727,24 @@ class GrantSeekerWorkflow:
             session_id=session_id
         )
         
+        extracted_grants = []
+        
         try:
             logger.info(f"Extracting data from: {lead.url}")
             
-            # Get page content
+            # Get page content - Using Tavily Extract for robust parsing
             content = await self.tavily.get_page_content(lead.url)
+            
+            # FALLBACK LOGIC: If Tavily yields little/no content, try Google Client Scraper
+            if (not content or len(content) < 200) and self.google_client:
+                logger.warning(f"Tavily content empty/short for {lead.url}. Trying Google Scraper fallback...")
+                try:
+                    google_content = await self.google_client.get_page_content(lead.url)
+                    if google_content and len(google_content) > len(content):
+                        logger.info("Google fallback successful! Using Google scraped content.")
+                        content = google_content
+                except Exception as e:
+                    logger.warning(f"Google fallback failed: {e}")
             
             if not content:
                 logger.warning(f"No content retrieved from {lead.url}")
@@ -850,6 +914,7 @@ class GrantSeekerWorkflow:
         
         # Process all leads concurrently
         tasks = [extract_with_semaphore(lead) for lead in leads]
+<<<<<<< HEAD
         raw_results_lists = await asyncio.gather(*tasks)
         
         # Flatten list of lists and filter
@@ -861,6 +926,49 @@ class GrantSeekerWorkflow:
         expired_count = sum(1 for g in all_grants if self._is_grant_expired(g))
         usa_count = sum(1 for g in all_grants if self._is_usa_grant(g) and not self._is_grant_expired(g))
         logger.info(f"Filtered {expired_count} expired grants and {usa_count} USA grants")
+=======
+        batch_results_nested = await asyncio.gather(*tasks)
+        
+        # Flatten the list of lists (since extract_grant_data now returns list[dict])
+        raw_results = [item for sublist in batch_results_nested for item in sublist]
+        
+        # Filter: Expired, USA, Invalid
+        valid_candidates = []
+        for g in raw_results:
+            title = g.get('title', '').lower()
+            # 1. Check for garbage titles (e.g. error pages or index lists)
+            if "no grant opportunity found" in title or "untitled grant" in title or "legislative index" in g.get('description', '').lower():
+                logger.info(f"Filtering out garbage result: {g.get('title', 'Unknown')}")
+                continue
+            
+            # 2. Check for Expired/USA
+            if not self._is_grant_expired(g) and not self._is_usa_grant(g):
+                valid_candidates.append(g)
+        
+        # Sort candidates by fit_score descending
+        valid_candidates.sort(key=lambda x: x.get('fit_score', 0), reverse=True)
+        
+        # Adaptive Threshold Logic:
+        # We want HIGH RELEVANCE (>40%) results.
+        # BUT we must return at least 3 results if possible.
+        final_results = []
+        for g in valid_candidates:
+            fit = g.get('fit_score', 0)
+            if fit >= 40:
+                final_results.append(g)
+            elif len(final_results) < 3:
+                # If we don't have 3 good ones yet, include this "okay" one
+                logger.info(f"Including lower relevance result ({fit}%) to meet minimum count: {g.get('title')}")
+                final_results.append(g)
+            else:
+                logger.info(f"Filtering out LOW RELEVANCE result ({fit}%): {g.get('title')}")
+        
+        results = final_results
+        
+        expired_count = sum(1 for g in raw_results if self._is_grant_expired(g))
+        usa_count = sum(1 for g in raw_results if self._is_usa_grant(g) and not self._is_grant_expired(g))
+        logger.info(f"Final Count: {len(results)} grants (Filtered expired/USA/irrelevant)")
+>>>>>>> origin/main
 
 
         # Assign IDs
