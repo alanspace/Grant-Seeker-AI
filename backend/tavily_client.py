@@ -72,6 +72,7 @@ class TavilyClient:
                     return data.get("results", [])
             except httpx.ConnectTimeout:
                 print(f"⚠️ Connection timeout (attempt {attempt + 1}/{self.max_retries})")
+                print(f"   Query: '{query}'")
                 if attempt == self.max_retries - 1:
                     print("❌ Could not connect to Tavily API. Check your internet connection or firewall.")
                     return []
@@ -82,12 +83,17 @@ class TavilyClient:
                     print(f"⚠️ Rate limited. Retrying in {wait_time}s...")
                     await asyncio.sleep(wait_time)
                     continue
-                print(f"❌ HTTP error: {e}")
+                print(f"❌ Tavily HTTP error: {e.response.status_code} - {e.response.reason_phrase}")
+                print(f"   Query: '{query}'")
                 if attempt == self.max_retries - 1:
+                    print(f"   All {self.max_retries} retries exhausted")
                     return []
             except Exception as e:
-                print(f"⚠️ Tavily search error (attempt {attempt + 1}/{self.max_retries}): {e}")
+                error_type = type(e).__name__
+                print(f"⚠️ Tavily search error (attempt {attempt + 1}/{self.max_retries}): {error_type}")
+                print(f"   Query: '{query}', Error: {str(e)}")
                 if attempt == self.max_retries - 1:
+                    print(f"   All {self.max_retries} retries exhausted")
                     return []
                 await asyncio.sleep(1)
         
@@ -118,9 +124,34 @@ class TavilyClient:
                     for item in data.get("results", []):
                         result[item.get("url", "")] = item.get("raw_content", "")
                     return result
-            except Exception as e:
-                print(f"⚠️ Extract error (attempt {attempt + 1}/{self.max_retries}): {e}")
+            except httpx.HTTPStatusError as e:
+            except httpx.HTTPStatusError as e:
+                print(f"❌ Tavily Extract HTTP error: {e.response.status_code} - {e.response.reason_phrase}")
+                print(f"   URLs: {urls}")
                 if attempt == self.max_retries - 1:
+                    return {}
+                await asyncio.sleep(1)
+            except Exception as e:
+                error_type = type(e).__name__
+                print(f"⚠️ Extract error (attempt {attempt + 1}/{self.max_retries}): {error_type}")
+                print(f"   URLs: {urls}, Error: {str(e)}")
+                if attempt == self.max_retries - 1:
+                    print(f"   All {self.max_retries} retries exhausted")
+                    return {}
+                await asyncio.sleep(1)
+            except httpx.TimeoutException:
+                print(f"⚠️ Extract timeout after {self.timeout}s (attempt {attempt + 1}/{self.max_retries})")
+                print(f"   URL: {url}")
+                if attempt == self.max_retries - 1:
+                    print(f"   All {self.max_retries} retries exhausted")
+                    return {}
+                await asyncio.sleep(1)
+            except Exception as e:
+                error_type = type(e).__name__
+                print(f"⚠️ Extract error (attempt {attempt + 1}/{self.max_retries}): {error_type}")
+                print(f"   URL: {url}, Error: {str(e)}")
+                if attempt == self.max_retries - 1:
+                    print(f"   All {self.max_retries} retries exhausted")
                     return {}
                 await asyncio.sleep(1)
         
