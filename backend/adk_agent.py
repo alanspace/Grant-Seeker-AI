@@ -19,6 +19,7 @@ import logging
 import uuid
 from pathlib import Path
 from datetime import datetime, timedelta
+import httpx # For URL validation
 from typing import Optional
 from dotenv import load_dotenv
 from google.adk.agents import LlmAgent
@@ -29,8 +30,10 @@ from google.genai import types
 from pydantic import BaseModel
 try:
     from backend.tavily_client import TavilyClient
+    from backend.content_extractor import RobustContentExtractor, is_viable_grant
 except ImportError:
     from tavily_client import TavilyClient
+    from content_extractor import RobustContentExtractor, is_viable_grant
 
 try:
     from backend.google_search_client import GoogleSearchClient
@@ -56,6 +59,13 @@ load_dotenv("../.env")
 
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 TAVILY_API_KEY = os.getenv("TAVILY_API_KEY")
+
+# Validate required API keys
+if not TAVILY_API_KEY:
+    raise ValueError("TAVILY_API_KEY must be set in .env file")
+if not GOOGLE_API_KEY:
+    raise ValueError("GOOGLE_API_KEY (for Gemini) must be set in .env file")
+
 MODEL_NAME = "gemini-flash-latest"
 SEARCH_MAX_RESULTS = 20
 MAX_CONCURRENT_EXTRACTIONS = 3
@@ -176,7 +186,8 @@ class CacheService:
                 json.dump(cache_data, f, indent=2, ensure_ascii=False)
             logger.debug(f"Cached: {key}")
         except Exception as e:
-            logger.error(f"Failed to cache {key}: {e}")
+            error_type = type(e).__name__
+            logger.error(f"Failed to cache {key}: {error_type}: {str(e)[:100]}")
     
     def clear(self) -> int:
         """Clear all cache files."""
@@ -509,6 +520,13 @@ class GrantSeekerWorkflow:
         logger.info("Initializing Tavily Client for Content Extraction")
         self.tavily = TavilyClient(api_key=TAVILY_API_KEY, max_retries=2, timeout=15.0)
         
+        # Initialize robust content extractor with fallback strategies
+        self.content_extractor = RobustContentExtractor(
+            tavily_client=self.tavily,
+            google_client=None,  # Will be set if Google is configured
+            timeout=30.0
+        )
+        
         # Initialize session service
         self.session_service = InMemorySessionService()
         
@@ -737,8 +755,11 @@ class GrantSeekerWorkflow:
         try:
             logger.debug(f"Extracting data from: {lead.url}")
             
-            # Get page content - Using Tavily Extract for robust parsing
-            content = await self.tavily.get_page_content(lead.url)
+            # Use robust content extractor with multiple fallback strategies
+            content, extraction_method = await self.content_extractor.extract(
+                url=lead.url,
+                min_length=200  # Minimum viable content length
+            )
             
             # FALLBACK LOGIC: If Tavily yields little/no content, try Google Client Scraper
             if (not content or len(content) < 200) and self.google_client:
@@ -752,46 +773,42 @@ class GrantSeekerWorkflow:
                     logger.warning(f"Google fallback failed: {e}")
             
             if not content:
-                logger.warning(f"No content retrieved from {lead.url}")
-                # Return list with single error object
-                return [{
+                logger.warning(f"All extraction strategies failed for {lead.url}")
+                grant_data = {
                     "url": lead.url,
-                    "title": lead.title or "Untitled Grant",
+                    "title": lead.title or "Content Extraction Failed",
                     "funder": lead.source or "Unknown",
-                    "error": "No content retrieved",
-                    **GrantData(url=lead.url).model_dump()
-                }]
-
-            # Truncate content if too long
-            content_preview = content[:CONTENT_PREVIEW_LENGTH]
-            
-            # Run extraction agent
-            runner = Runner(
-                agent=self.extractor_agent,
-                app_name="grant-seeker",
-                session_service=self.session_service
-            )
-            
-            prompt = f"Extract grant information from this webpage:\n\n{content_preview}"
-            user_msg = types.Content(role="user", parts=[types.Part(text=prompt)])
-            
-            response_text = ""
-            async for event in runner.run_async(
-                user_id="user-1",
-                session_id=session_id,
-                new_message=user_msg
-            ):
-                if event.is_final_response() and event.content and event.content.parts:
-                    response_text = event.content.parts[0].text
-            
-            
-            # Parse response
-            grant_data_list = []
-            try:
-                # Clean up response text (remove markdown if present)
-                response_text = response_text.replace("```json", "").replace("```", "").strip()
-                parsed_json = json.loads(response_text)
+                    "description": "⚠️ Unable to extract content from this page. Please visit the website directly to view details.",
+                    "error": "All extraction methods failed (Tavily, scraping, PDF)"
+                }
+            else:
+                # Log successful extraction with method used
+                logger.info(f"✅ Content extracted via {extraction_method} ({len(content)} chars)")
                 
+                # Truncate content if too long
+                content_preview = content[:CONTENT_PREVIEW_LENGTH]
+                
+                # Run extraction agent
+                runner = Runner(
+                    agent=self.extractor_agent,
+                    app_name="grant-seeker",
+                    session_service=self.session_service
+                )
+                
+                prompt = f"Extract grant information from this webpage:\n\n{content_preview}"
+                user_msg = types.Content(role="user", parts=[types.Part(text=prompt)])
+                
+                response_text = ""
+                async for event in runner.run_async(
+                    user_id="user-1",
+                    session_id=session_id,
+                    new_message=user_msg
+                ):
+                    if event.is_final_response() and event.content and event.content.parts:
+                        response_text = event.content.parts[0].text
+                
+                
+                # Parse response
                 extracted_grants = []
                 
                 # Helper to process a raw grant dict
@@ -802,57 +819,54 @@ class GrantSeekerWorkflow:
                     g["url"] = lead.url
                     return g
 
-                # Handle List vs Object
-                if isinstance(parsed_json, list):
-                    logger.info(f"Multi-grant page detected: {len(parsed_json)} grants")
-                    for item in parsed_json:
-                        try:
-                            extracted_grants.append(process_grant_dict(item))
-                        except Exception as e:
-                            logger.warning(f"Skipping invalid grant in list from {lead.url}: {e}")
-                elif isinstance(parsed_json, dict):
-                    extracted_grants.append(process_grant_dict(parsed_json))
+                try:
+                    # Clean up response text (remove markdown if present)
+                    response_text = response_text.replace("```json", "").replace("```", "").strip()
+                    parsed_json = json.loads(response_text)
                 
-                grant_data_list = extracted_grants
-                
-                # Check for "empty" single grant (legacy check)
-                if len(grant_data_list) == 1:
-                    g = grant_data_list[0]
-                    if (g["title"] == "Untitled Grant" and 
-                        g["deadline"] == "Not specified" and 
-                        g["amount"] == "Not specified" and
-                        g["description"] == "No description available" and
-                        g["funder"] == "Unknown"):
-                        logger.warning(f"Extracted data appears empty for {lead.url}")
-                        g["error"] = "Failed to extract meaningful data"
-                    
-<<<<<<< HEAD
-                    # Handle LIST response (common when multiple grants on one page)
+                    # Handle List vs Object
                     if isinstance(parsed_json, list):
-                        if len(parsed_json) > 0:
-                            for i, item in enumerate(parsed_json):
-                                try:
-                                    g_obj = GrantData.model_validate(item)
-                                    g_dict = g_obj.model_dump()
-                                    g_dict["url"] = lead.url
-                                    extracted_grants.append(g_dict)
-                                except Exception as e:
-                                    error_type = type(e).__name__
-                                    logger.warning(f"Skipping invalid grant at index {i+1}/{len(parsed_json)}: {error_type}")
-                                    logger.warning(f"   Failed grant data: {json.dumps(item, indent=2)[:500]}...")  # Truncate for readability
-                                    logger.warning(f"   Validation error: {str(e)[:200]}")  # Truncate long errors
-                                    logger.debug(f"   Source URL: {lead.url}")
-                        else:
-                            raise ValueError("Received empty list from LLM")
-                    else:
-                        # Handle standard OBJECT response
-                        grant_data_obj = GrantData.model_validate(parsed_json)
-                        g_dict = grant_data_obj.model_dump()
-                        g_dict["url"] = lead.url
-                        extracted_grants.append(g_dict)
-                        
+                        logger.info(f"Multi-grant page detected: {len(parsed_json)} grants")
+                        for item in parsed_json:
+                            try:
+                                extracted_grants.append(process_grant_dict(item))
+                            except Exception as e:
+                                logger.warning(f"Skipping invalid grant in list from {lead.url}: {e}")
+                    elif isinstance(parsed_json, dict):
+                        extracted_grants.append(process_grant_dict(parsed_json))
+                    
+                    grant_data_list = extracted_grants
+                    
+                    # Check for "empty" single grant (legacy check)
+                    if len(grant_data_list) == 1:
+                        g = grant_data_list[0]
+                        if (g["title"] == "Untitled Grant" and 
+                            g["deadline"] == "Not specified" and 
+                            g["amount"] == "Not specified" and
+                            g["description"] == "No description available" and
+                            g["funder"] == "Unknown"):
+                            logger.warning(f"Extracted data appears empty for {lead.url}")
+                            g["error"] = "Failed to extract meaningful data"
+                            
                 except Exception as e:
-                    logger.error(f"Failed to parse response for {lead.url}: {e}")
+                     logger.error(f"Failed to parse response for {lead.url}: {e}")
+                     # If parsing fails, we still want to return a basic error object
+                     extracted_grants.append({
+                        "url": lead.url,
+                        "title": lead.title or "Untitled Grant",
+                        "funder": lead.source or "Unknown",
+                        "error": f"Failed to parse LLM response: {str(e)}",
+                        **GrantData(url=lead.url).model_dump()
+                     })
+                     grant_data_list = extracted_grants
+                    
+                # Handle LIST response (common when multiple grants on one page)
+                # (Already handled above in lines 870-880, but keeping this block clean)
+                pass 
+                        
+            except Exception as e:
+                logger.error(f"Failed to parse response for {lead.url}: {e}")
+                extracted_grants.append({
                     "url": lead.url,
                     "title": lead.title or "Untitled Grant",
                     "funder": lead.source or "Unknown",
@@ -1015,9 +1029,40 @@ class GrantSeekerWorkflow:
         
         results = final_results
         
+        # Filter expired grants and USA grants
+        # Also validate URLs for 404s
+        results_after_location = []
+        for g in raw_results:
+            if self._is_grant_expired(g) or self._is_usa_grant(g):
+                continue
+            
+            # Verify URL is accessible
+            url = g.get('url')
+            if url and await self._validate_url(url):
+                results_after_location.append(g)
+            else:
+                logger.warning(f"Excluding unreachable URL: {url}")
+        
         expired_count = sum(1 for g in raw_results if self._is_grant_expired(g))
         usa_count = sum(1 for g in raw_results if self._is_usa_grant(g) and not self._is_grant_expired(g))
-        logger.info(f"Final Count: {len(results)} grants (Filtered expired/USA/irrelevant)")
+        logger.info(f"Filtered {expired_count} expired grants and {usa_count} USA grants")
+        
+        # Filter grants with insufficient data (prevent "Untitled Grant" from showing)
+        results = []
+        insufficient_data_grants = []
+        
+        for grant in results_after_location:
+            if is_viable_grant(grant):
+                results.append(grant)
+            else:
+                insufficient_data_grants.append(grant)
+                logger.debug(f"Filtered grant with insufficient data: {grant.get('url', 'unknown URL')}")
+        
+        if insufficient_data_grants:
+            logger.warning(
+                f"⚠️ {len(insufficient_data_grants)} grants filtered due to insufficient data. "
+                f"URLs are available but content extraction failed or returned incomplete information."
+            )
 
 
         # Assign IDs
@@ -1026,6 +1071,215 @@ class GrantSeekerWorkflow:
         
         logger.info("Workflow complete")
         return results
+
+    async def run_with_minimum_results(self, query: str, filters: dict = None, min_results: int = 3):
+        """
+        Iteratively search until minimum RELEVANT results found.
+        
+        Args:
+            query: User search query
+            filters: Dictionary of advanced filters (optional)
+            min_results: Target number of relevant grants
+            
+        Returns:
+            List of unique, relevant, filtered grants
+        """
+        all_results = []
+        attempted_queries = set()
+        attempt = 1
+        MAX_SEARCH_ATTEMPTS = 5
+        
+        # We need to filter results to check if we met the target.
+        # However, we want to return ALL extracted data, even if it doesn't match filters?
+        # No, user asked for RELEVANT results. So we should only count/return filtered ones.
+        
+        # Import filter logic dynamically to avoid circular import issues at toplevel
+        apply_filters = None
+        if filters:
+            try:
+                # We need to import this carefully. 
+                # Since this runs in backend, we should assume we can access frontend utils
+                # or better, move filter logic to a shared place.
+                # For now, local import is safest.
+                import sys
+                import os
+                # Ensure frontend path is accessible if not already
+                frontend_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'frontend')
+                if frontend_path not in sys.path:
+                    sys.path.append(frontend_path)
+                    
+                from search_grants import apply_filters_to_results
+                apply_filters = apply_filters_to_results
+            except ImportError:
+                logger.warning("Could not import apply_filters_to_results. Ignoring filters for count.")
+        
+        # Track seen URLs to avoid duplicates across attempts
+        seen_urls = set()
+        
+        while len(all_results) < min_results and attempt <= MAX_SEARCH_ATTEMPTS:
+            # Generate query variant
+            search_query = self._generate_search_variant(query, filters, attempt)
+            
+            # Skip if already tried
+            if search_query in attempted_queries:
+                attempt += 1
+                continue
+            
+            attempted_queries.add(search_query)
+            logger.info(f"🔄 Search Attempt {attempt}/{MAX_SEARCH_ATTEMPTS}: '{search_query}' (Need {min_results}, Have {len(all_results)})")
+            
+            # Run extraction workflow (standard run)
+            results = await self.run(search_query)
+            
+            # Filter duplicates immediately
+            new_unique_results = []
+            for grant in results:
+                url = grant.get('url', '')
+                if url and url not in seen_urls:
+                    seen_urls.add(url)
+                    new_unique_results.append(grant)
+            
+            if not new_unique_results:
+                logger.info(f"   No new unique results found in attempt {attempt}")
+                attempt += 1
+                continue
+                
+            # Apply filters to check relevance
+            relevant_batch = new_unique_results
+            if apply_filters and filters:
+                relevant_batch = apply_filters(new_unique_results, filters)
+            
+            count_new = len(relevant_batch)
+            logger.info(f"   Found {count_new} new relevant grants in this batch")
+            
+            all_results.extend(relevant_batch)
+            attempt += 1
+            
+            # Small delay to be nice to APIs
+            # await asyncio.sleep(1) 
+            
+        logger.info(f"✅ Iterative search complete. Found {len(all_results)} total relevant grants.")
+        
+        # Rank by multi-factor score (Relevance + Completeness + Freshness)
+        return self._rank_results(all_results, query)
+
+    def _generate_search_variant(self, query: str, filters: dict, attempt: int) -> str:
+        """Generate broader or related query variants."""
+        if attempt == 1:
+            return query
+        
+        # Attempt 2: Add specific filter keywords to query
+        if attempt == 2 and filters:
+            # E.g. "startup funding" -> "startup funding women"
+            filter_keywords = []
+            if filters.get('demographic_focus'):
+                # Take first demographic keyword (e.g. "Women")
+                demo = filters['demographic_focus'][0].split('/')[0].split('-')[0].strip()
+                filter_keywords.append(demo)
+            
+            if filters.get('geographic_scope'):
+                filter_keywords.append(filters['geographic_scope'])
+                
+            if filter_keywords:
+                return f"{query} {' '.join(filter_keywords)}"
+        
+        # Attempt 3: Broaden - remove "grant" or "funding" if present to find other types
+        if attempt == 3:
+            if "grant" in query.lower():
+                return query.lower().replace("grant", "funding")
+            elif "funding" in query.lower():
+                return query.lower().replace("funding", "grant")
+        
+        # Attempt 4: Simplify query (remove adjectives)
+        if attempt == 4:
+            # Very basic simplification strategy
+            words = query.split()
+            if len(words) > 2:
+                # Remove shortest word (likely stopword)
+                words.sort(key=len)
+                return " ".join(words[1:]) # dropped shortest
+            
+        # Attempt 5: Fallback to very broad category
+        if attempt == 5:
+            base = "business grants"
+            if filters and filters.get('geographic_scope'):
+                 base += f" {filters['geographic_scope']}"
+            else:
+                 base += " Canada"
+            return base
+            
+        return query # Fallback
+
+
+    
+        return query # Fallback
+
+
+    async def _validate_url(self, url: str) -> bool:
+        """Check if URL returns 200 OK (not 404)."""
+        try:
+            async with httpx.AsyncClient(timeout=5.0, follow_redirects=True) as client:
+                resp = await client.head(url)
+                if resp.status_code == 404:
+                    return False
+                # If HEAD fails (some servers block it), try mild GET
+                if resp.status_code >= 400:
+                    resp = await client.get(url, headers={"Range": "bytes=0-100"}) # Fetch first 100 bytes
+                    if resp.status_code == 404:
+                        return False
+            return True
+        except Exception:
+            # If checking fails (timeout etc), assume valid to be safe/permissive
+            # We don't want to exclude valid sites just because they block crawlers
+            return True
+
+    def _rank_results(self, results: list, query: str) -> list:
+        """
+        Rank grants by multiple factors:
+        1. Fit Score (Relevance) - 60%
+        2. Data Completeness - 20%
+        3. Freshness / Deadline Validity - 20%
+        """
+        scored_results = []
+        
+        for g in results:
+            score = 0
+            
+            # 1. Fit Score (Relevance)
+            fit = g.get('fit_score', 0)
+            score += fit * 0.6
+            
+            # 2. Completeness
+            completeness = 0
+            if g.get('amount') and "not provided" not in g['amount'].lower(): completeness += 50
+            if g.get('deadline') and "not specified" not in g['deadline'].lower(): completeness += 50
+            score += completeness * 0.2
+            
+            # 3. Deadline Validity (Bonus for active dates)
+            deadline = g.get('deadline', '').lower()
+            if "ongoing" in deadline or "rolling" in deadline:
+                score += 20 * 0.2
+            elif any(c.isdigit() for c in deadline) and "expired" not in deadline:
+                score += 20 * 0.2 # Specific valid date
+            
+            scored_results.append((score, g))
+            
+        # Sort desc by score
+        scored_results.sort(key=lambda x: x[0], reverse=True)
+        return [item[1] for item in scored_results]
+
+    def _deduplicate_results(self, results: list) -> list:
+        """Remove duplicate grants based on URL."""
+        seen = {}
+        for r in results:
+            url = r.get('url')
+            if url and url not in seen:
+                seen[url] = r
+            elif url and url in seen:
+                # Keep better fit score
+                if r.get('fit_score', 0) > seen[url].get('fit_score', 0):
+                    seen[url] = r
+        return list(seen.values())
 
     
     def print_results(self, results: list[dict]) -> None:
