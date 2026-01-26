@@ -125,7 +125,6 @@ class TavilyClient:
                         result[item.get("url", "")] = item.get("raw_content", "")
                     return result
             except httpx.HTTPStatusError as e:
-            except httpx.HTTPStatusError as e:
                 print(f"❌ Tavily Extract HTTP error: {e.response.status_code} - {e.response.reason_phrase}")
                 print(f"   URLs: {urls}")
                 if attempt == self.max_retries - 1:

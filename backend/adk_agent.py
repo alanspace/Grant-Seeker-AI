@@ -40,10 +40,12 @@ except ImportError:
     pass # Handle if running as script or missing file
 
 # Configure logging
-logging.basicConfig(
-    level=logging.WARNING,  # Set root logger to WARNING
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
+# Configure logging
+# Don't call basicConfig at module level - let the app handle it
+# logging.basicConfig(
+#     level=logging.WARNING, 
+#     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+# )
 # Set our app logger to INFO
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -60,10 +62,11 @@ GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 TAVILY_API_KEY = os.getenv("TAVILY_API_KEY")
 
 # Validate required API keys
-if not TAVILY_API_KEY:
-    raise ValueError("TAVILY_API_KEY must be set in .env file")
-if not GOOGLE_API_KEY:
-    raise ValueError("GOOGLE_API_KEY (for Gemini) must be set in .env file")
+# Validate required API keys - MOVED TO RUNTIME
+# if not TAVILY_API_KEY:
+#     raise ValueError("TAVILY_API_KEY must be set in .env file")
+# if not GOOGLE_API_KEY:
+#     raise ValueError("GOOGLE_API_KEY (for Gemini) must be set in .env file")
 
 MODEL_NAME = "gemini-flash-latest"
 SEARCH_MAX_RESULTS = 20
@@ -71,8 +74,9 @@ MAX_CONCURRENT_EXTRACTIONS = 3
 CONTENT_PREVIEW_LENGTH = 12000
 
 # Validate required API keys
-if not TAVILY_API_KEY:
-    raise ValueError("TAVILY_API_KEY must be set in .env file")
+# Validate required API keys - MOVED TO RUNTIME
+# if not TAVILY_API_KEY:
+#     raise ValueError("TAVILY_API_KEY must be set in .env file")
 # Note: GOOGLE_API_KEY validation is conditional on SEARCH_PROVIDER below
 
 # Search Provider Configuration
@@ -80,11 +84,12 @@ SEARCH_PROVIDER = os.getenv("SEARCH_PROVIDER", "TAVILY") # Options: "TAVILY", "G
 GOOGLE_CSE_ID = os.getenv("GOOGLE_CSE_ID")
 
 # Validate Google-specific environment variables if using Google search
-if SEARCH_PROVIDER == "GOOGLE":
-    if not GOOGLE_API_KEY:
-        raise ValueError("GOOGLE_API_KEY must be set in .env file when using SEARCH_PROVIDER=GOOGLE")
-    if not GOOGLE_CSE_ID:
-        raise ValueError("GOOGLE_CSE_ID must be set in .env file when using SEARCH_PROVIDER=GOOGLE")
+# Validate Google-specific environment variables if using Google search - MOVED TO RUNTIME
+# if SEARCH_PROVIDER == "GOOGLE":
+#     if not GOOGLE_API_KEY:
+#         raise ValueError("GOOGLE_API_KEY must be set in .env file when using SEARCH_PROVIDER=GOOGLE")
+#     if not GOOGLE_CSE_ID:
+#         raise ValueError("GOOGLE_CSE_ID must be set in .env file when using SEARCH_PROVIDER=GOOGLE")
 
 # Cache settings
 CACHE_ENABLED = True
@@ -500,6 +505,17 @@ class GrantSeekerWorkflow:
     
     def __init__(self):
         """Initialize the grant seeker workflow."""
+        # Runtime Validation of API Keys
+        if not TAVILY_API_KEY:
+            raise ValueError("TAVILY_API_KEY must be set in .env file")
+        if not GOOGLE_API_KEY:
+            # We need GOOGLE_API_KEY for Gemini even if using Tavily for search
+            raise ValueError("GOOGLE_API_KEY (for Gemini) must be set in .env file")
+            
+        if SEARCH_PROVIDER == "GOOGLE":
+            if not GOOGLE_CSE_ID:
+                raise ValueError("GOOGLE_CSE_ID must be set in .env file when using SEARCH_PROVIDER=GOOGLE")
+
         # Initialize cache service
         self.cache = None
         if CACHE_ENABLED:
@@ -773,13 +789,14 @@ class GrantSeekerWorkflow:
             
             if not content:
                 logger.warning(f"All extraction strategies failed for {lead.url}")
-                grant_data = {
+                extracted_grants.append({
                     "url": lead.url,
                     "title": lead.title or "Content Extraction Failed",
                     "funder": lead.source or "Unknown",
                     "description": "⚠️ Unable to extract content from this page. Please visit the website directly to view details.",
-                    "error": "All extraction methods failed (Tavily, scraping, PDF)"
-                }
+                    "error": "All extraction methods failed (Tavily, scraping, PDF)",
+                    **GrantData(url=lead.url).model_dump()
+                })
             else:
                 # Log successful extraction with method used
                 logger.info(f"✅ Content extracted via {extraction_method} ({len(content)} chars)")
@@ -806,10 +823,6 @@ class GrantSeekerWorkflow:
                     if event.is_final_response() and event.content and event.content.parts:
                         response_text = event.content.parts[0].text
                 
-                
-                # Parse response
-                extracted_grants = []
-                
                 # Helper to process a raw grant dict
                 def process_grant_dict(d):
                     # Use Pydantic to validate and set defaults
@@ -834,11 +847,9 @@ class GrantSeekerWorkflow:
                     elif isinstance(parsed_json, dict):
                         extracted_grants.append(process_grant_dict(parsed_json))
                     
-                    grant_data_list = extracted_grants
-                    
                     # Check for "empty" single grant (legacy check)
-                    if len(grant_data_list) == 1:
-                        g = grant_data_list[0]
+                    if len(extracted_grants) == 1:
+                        g = extracted_grants[0]
                         if (g["title"] == "Untitled Grant" and 
                             g["deadline"] == "Not specified" and 
                             g["amount"] == "Not specified" and
@@ -857,22 +868,17 @@ class GrantSeekerWorkflow:
                         "error": f"Failed to parse LLM response: {str(e)}",
                         **GrantData(url=lead.url).model_dump()
                      })
-                     grant_data_list = extracted_grants
-                    
-                # Handle LIST response (common when multiple grants on one page)
-                # (Already handled above in lines 870-880, but keeping this block clean)
-                pass 
-                        
-            except Exception as e:
-                logger.error(f"Failed to parse response for {lead.url}: {e}")
-                extracted_grants.append({
-                    "url": lead.url,
-                    "title": lead.title or "Untitled Grant",
-                    "funder": lead.source or "Unknown",
-                    "error": f"Failed to parse LLM response: {str(e)}",
-                     **GrantData(url=lead.url).model_dump()
-                })
-        
+
+        except Exception as e:
+            logger.error(f"Extraction failed for {lead.url}: {e}")
+            extracted_grants.append({
+                "url": lead.url,
+                "title": lead.title or "Untitled Grant",
+                "funder": lead.source or "Unknown",
+                "error": str(e),
+                **GrantData(url=lead.url).model_dump()
+            })
+            
         # Post-processing: Calculate scores and check fallbacks for ALL extracted items
         final_grants = []
         for grant_data in extracted_grants:
@@ -889,56 +895,11 @@ class GrantSeekerWorkflow:
             final_grants.append(grant_data)
         
         # Cache the result (store the LIST)
-        if self.cache:
+        if self.cache and final_grants:
             self.cache.set(cache_key, final_grants)
         
         logger.info(f"Successfully extracted {len(final_grants)} grants from {lead.url}")
         return final_grants
-        
-    except Exception as e:
-        logger.error(f"Extraction failed for {lead.url}: {e}")
-        return [
-            {
-                "url": lead.url,
-                "title": lead.title or "Untitled Grant",
-                "funder": lead.source or "Unknown",
-                "error": str(e),
-                **GrantData(url=lead.url).model_dump()
-            }
-        ]
-            
-            # Final processing for all extracted grants
-            final_results = []
-            defaults = GrantData(url=lead.url).model_dump()
-            
-            for g in grant_data_list:
-                # Fill in defaults for any missing fields (safety)
-                for key, value in defaults.items():
-                    if key not in g:
-                        g[key] = value
-                
-                # Calculate fit score
-                if query:
-                    g['fit_score'] = calculate_fit_score(g, query)
-                
-                final_results.append(g)
-            
-            # Cache the result
-            if self.cache:
-                self.cache.set(cache_key, final_results)
-            
-            logger.info(f"Successfully extracted {len(final_results)} items from {lead.url}")
-            return final_results
-            
-        except Exception as e:
-            logger.error(f"Extraction failed for {lead.url}: {e}")
-            return [{
-                "url": lead.url,
-                "title": lead.title or "Untitled Grant",
-                "funder": lead.source or "Unknown",
-                "error": str(e),
-                **GrantData(url=lead.url).model_dump()
-            }]
     
     async def run(self, query: str) -> list[dict]:
         """
@@ -1092,25 +1053,14 @@ class GrantSeekerWorkflow:
         # However, we want to return ALL extracted data, even if it doesn't match filters?
         # No, user asked for RELEVANT results. So we should only count/return filtered ones.
         
-        # Import filter logic dynamically to avoid circular import issues at toplevel
-        apply_filters = None
-        if filters:
-            try:
-                # We need to import this carefully. 
-                # Since this runs in backend, we should assume we can access frontend utils
-                # or better, move filter logic to a shared place.
-                # For now, local import is safest.
-                import sys
-                import os
-                # Ensure frontend path is accessible if not already
-                frontend_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'frontend')
-                if frontend_path not in sys.path:
-                    sys.path.append(frontend_path)
-                    
-                from search_grants import apply_filters_to_results
-                apply_filters = apply_filters_to_results
-            except ImportError:
-                logger.warning("Could not import apply_filters_to_results. Ignoring filters for count.")
+
+        # Import filter logic from shared module
+        try:
+            from backend.filters import apply_filters_to_results
+            apply_filters = apply_filters_to_results
+        except ImportError:
+            logger.warning("Could not import apply_filters_to_results. Ignoring filters for count.")
+            apply_filters = None
         
         # Track seen URLs to avoid duplicates across attempts
         seen_urls = set()
