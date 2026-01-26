@@ -160,7 +160,7 @@ Our system is built using the **Google Agent Development Kit (ADK)** and impleme
 - **Data Validation:** Pydantic for type-safe models
 - **Concurrency:** asyncio with Semaphore for parallel processing
 - **Caching:** File-based cache system with MD5 hashing (24h TTL)
-- **Testing:** pytest with 26 comprehensive unit tests
+- **Testing:** pytest with comprehensive unit and integration tests
 - **Deployment:** Ready for Streamlit Cloud
 
 ---
