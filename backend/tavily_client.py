@@ -130,25 +130,16 @@ class TavilyClient:
                 if attempt == self.max_retries - 1:
                     return {}
                 await asyncio.sleep(1)
+            except httpx.TimeoutException:
+                print(f"⚠️ Extract timeout after {self.timeout}s (attempt {attempt + 1}/{self.max_retries})")
+                print(f"   URLs: {urls}")
+                if attempt == self.max_retries - 1:
+                    return {}
+                await asyncio.sleep(1)
             except Exception as e:
                 error_type = type(e).__name__
                 print(f"⚠️ Extract error (attempt {attempt + 1}/{self.max_retries}): {error_type}")
                 print(f"   URLs: {urls}, Error: {str(e)}")
-                if attempt == self.max_retries - 1:
-                    print(f"   All {self.max_retries} retries exhausted")
-                    return {}
-                await asyncio.sleep(1)
-            except httpx.TimeoutException:
-                print(f"⚠️ Extract timeout after {self.timeout}s (attempt {attempt + 1}/{self.max_retries})")
-                print(f"   URL: {url}")
-                if attempt == self.max_retries - 1:
-                    print(f"   All {self.max_retries} retries exhausted")
-                    return {}
-                await asyncio.sleep(1)
-            except Exception as e:
-                error_type = type(e).__name__
-                print(f"⚠️ Extract error (attempt {attempt + 1}/{self.max_retries}): {error_type}")
-                print(f"   URL: {url}, Error: {str(e)}")
                 if attempt == self.max_retries - 1:
                     print(f"   All {self.max_retries} retries exhausted")
                     return {}

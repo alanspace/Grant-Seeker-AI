@@ -62,34 +62,23 @@ GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 TAVILY_API_KEY = os.getenv("TAVILY_API_KEY")
 
 # Validate required API keys
-# Validate required API keys - MOVED TO RUNTIME
-# if not TAVILY_API_KEY:
-#     raise ValueError("TAVILY_API_KEY must be set in .env file")
-# if not GOOGLE_API_KEY:
-#     raise ValueError("GOOGLE_API_KEY (for Gemini) must be set in .env file")
+if not GOOGLE_API_KEY:
+    raise ValueError("GOOGLE_API_KEY (for Gemini) must be set in .env file")
+if not TAVILY_API_KEY:
+    raise ValueError("TAVILY_API_KEY must be set in .env file")
 
 MODEL_NAME = "gemini-flash-latest"
 SEARCH_MAX_RESULTS = 20
 MAX_CONCURRENT_EXTRACTIONS = 3
 CONTENT_PREVIEW_LENGTH = 12000
 
-# Validate required API keys
-# Validate required API keys - MOVED TO RUNTIME
-# if not TAVILY_API_KEY:
-#     raise ValueError("TAVILY_API_KEY must be set in .env file")
-# Note: GOOGLE_API_KEY validation is conditional on SEARCH_PROVIDER below
-
 # Search Provider Configuration
 SEARCH_PROVIDER = os.getenv("SEARCH_PROVIDER", "TAVILY") # Options: "TAVILY", "GOOGLE"
 GOOGLE_CSE_ID = os.getenv("GOOGLE_CSE_ID")
 
-# Validate Google-specific environment variables if using Google search
-# Validate Google-specific environment variables if using Google search - MOVED TO RUNTIME
-# if SEARCH_PROVIDER == "GOOGLE":
-#     if not GOOGLE_API_KEY:
-#         raise ValueError("GOOGLE_API_KEY must be set in .env file when using SEARCH_PROVIDER=GOOGLE")
-#     if not GOOGLE_CSE_ID:
-#         raise ValueError("GOOGLE_CSE_ID must be set in .env file when using SEARCH_PROVIDER=GOOGLE")
+# Validate Google-specific search environment variables if using Google search
+if SEARCH_PROVIDER == "GOOGLE" and not GOOGLE_CSE_ID:
+    raise ValueError("GOOGLE_CSE_ID must be set in .env file when using SEARCH_PROVIDER=GOOGLE")
 
 # Cache settings
 CACHE_ENABLED = True
