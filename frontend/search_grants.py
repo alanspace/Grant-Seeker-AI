@@ -291,7 +291,7 @@ def clear_all_filters():
 
 
 
-from backend.filters import apply_filters_to_results  # Imported from shared module
+
 
 def execute_grant_workflow(query: str, filters: dict = None, min_results: int = 1) -> list[dict]:
     """

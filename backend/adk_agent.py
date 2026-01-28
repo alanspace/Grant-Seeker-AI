@@ -39,6 +39,14 @@ try:
 except ImportError:
     pass # Handle if running as script or missing file
 
+try:
+    from backend.filters import apply_filters_to_results
+except ImportError:
+    try:
+        from filters import apply_filters_to_results
+    except ImportError:
+        apply_filters_to_results = None
+
 # Configure logging
 # Configure logging
 # Don't call basicConfig at module level - let the app handle it
@@ -494,16 +502,7 @@ class GrantSeekerWorkflow:
     
     def __init__(self):
         """Initialize the grant seeker workflow."""
-        # Runtime Validation of API Keys
-        if not TAVILY_API_KEY:
-            raise ValueError("TAVILY_API_KEY must be set in .env file")
-        if not GOOGLE_API_KEY:
-            # We need GOOGLE_API_KEY for Gemini even if using Tavily for search
-            raise ValueError("GOOGLE_API_KEY (for Gemini) must be set in .env file")
-            
-        if SEARCH_PROVIDER == "GOOGLE":
-            if not GOOGLE_CSE_ID:
-                raise ValueError("GOOGLE_CSE_ID must be set in .env file when using SEARCH_PROVIDER=GOOGLE")
+
 
         # Initialize cache service
         self.cache = None
@@ -1043,13 +1042,7 @@ class GrantSeekerWorkflow:
         # No, user asked for RELEVANT results. So we should only count/return filtered ones.
         
 
-        # Import filter logic from shared module
-        try:
-            from backend.filters import apply_filters_to_results
-            apply_filters = apply_filters_to_results
-        except ImportError:
-            logger.warning("Could not import apply_filters_to_results. Ignoring filters for count.")
-            apply_filters = None
+
         
         # Track seen URLs to avoid duplicates across attempts
         seen_urls = set()
@@ -1084,8 +1077,8 @@ class GrantSeekerWorkflow:
                 
             # Apply filters to check relevance
             relevant_batch = new_unique_results
-            if apply_filters and filters:
-                relevant_batch = apply_filters(new_unique_results, filters)
+            if apply_filters_to_results and filters:
+                relevant_batch = apply_filters_to_results(new_unique_results, filters)
             
             count_new = len(relevant_batch)
             logger.info(f"   Found {count_new} new relevant grants in this batch")
