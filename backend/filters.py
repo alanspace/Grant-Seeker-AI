@@ -102,12 +102,36 @@ def apply_filters_to_results(results, filters):
         # Filter 3: Funding Type
         if filters.get('funding_types'):
             grant_funding_type = grant.get('funding_nature', '').lower()
-            type_match = any(
-                'grant' in grant_funding_type and 'grant' in ft.lower()
-                or 'loan' in grant_funding_type and 'loan' in ft.lower()
-                or 'wage' in ft.lower() and 'wage' in grant_funding_type
-                for ft in filters['funding_types']
-            )
+            
+            def check_funding_match(grant_str, filter_str):
+                g = grant_str.lower()
+                f = filter_str.lower()
+                
+                if 'grant' in f: # User wants Non-repayable / Grant
+                    # Explicit reject if it's strictly a loan/repayable
+                    if 'loan' in g: return False
+                    if 'repayable' in g and 'non-repayable' not in g: return False
+                    
+                    # Accept if it looks like free money
+                    # Note: Many Canadian grants are called "Contributions" or "Funds"
+                    return ('grant' in g or 
+                            'contribution' in g or 
+                            'non-repayable' in g or 
+                            'fund' in g or
+                            'award' in g or
+                            'bursary' in g)
+                            
+                if 'loan' in f: # User wants Loan
+                    return ('loan' in g or 
+                            'repayable' in g or 
+                            'debt' in g or 
+                            'financing' in g)
+                
+                # Fallback for other types (Tax Credit, Wage Subsidy)
+                return f in g or g in f
+
+            type_match = any(check_funding_match(grant_funding_type, ft) for ft in filters['funding_types'])
+            
             if not type_match:
                 continue
         
