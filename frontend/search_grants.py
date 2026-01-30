@@ -305,9 +305,27 @@ def execute_grant_workflow(query: str, filters: dict = None, min_results: int = 
     Returns:
         List of filtered, relevant grant results
     """
-    # Import locally to avoid circular top-level imports if any remain
+    # Import locally and FORCE RELOAD to ensure latest backend code is used
+    # (Streamlit caching can sometimes hold onto old module versions)
     import importlib
-    agent_module = importlib.import_module("adk_agent")
+    import sys
+    import os
+    
+    # Ensure project root is in path to import 'backend' as a package
+    root_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+    if root_path not in sys.path:
+        sys.path.insert(0, root_path)
+
+    # Reload filters first (dependency)
+    try:
+        filters_module = importlib.import_module("backend.filters")
+        importlib.reload(filters_module)
+    except ImportError:
+        pass # Might not exist or fail, ignore
+        
+    # Import and reload agent
+    agent_module = importlib.import_module("backend.adk_agent")
+    importlib.reload(agent_module)
     
     # Create a fresh workflow instance each time
     workflow = agent_module.GrantSeekerWorkflow()
@@ -389,6 +407,12 @@ def search_grants(query, filters=None):
             # Simulate token usage tracking (until backend returns actuals)
             # Rough estimate: 15k per result found roughly
             st.session_state.last_search_tokens = len(workflow_results) * 12000 + 5000
+            
+            # DEBUG FEEDBACK (Temporary: Proof of Life)
+            if not workflow_results:
+                 st.warning(f"⚠️ Backend search completed but found 0 results for: '{query}'")
+            else:
+                 st.success(f"✅ Backend successfully found {len(workflow_results)} grants!")
         except Exception as exc:
             st.error(f"Grant workflow failed: {exc}")
             return []
