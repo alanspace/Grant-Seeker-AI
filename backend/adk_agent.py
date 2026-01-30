@@ -982,10 +982,11 @@ class GrantSeekerWorkflow:
             
             # Verify URL is accessible
             url = g.get('url')
-            if url and await self._validate_url(url):
+            # Verify URL is accessible
+            # SKIP validation - if we extracted content (in process_lead), it's reachable enough.
+            # HEAD requests are legally rejected by many government sites (403/405), causing false negatives.
+            if url:
                 results_after_location.append(g)
-            else:
-                logger.warning(f"Excluding unreachable URL: {url}")
         
         expired_count = sum(1 for g in raw_results if self._is_grant_expired(g))
         usa_count = sum(1 for g in raw_results if self._is_usa_grant(g) and not self._is_grant_expired(g))
