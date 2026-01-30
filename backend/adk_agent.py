@@ -859,53 +859,41 @@ class GrantSeekerWorkflow:
                      })
                      grant_data_list = extracted_grants
                     
-                # Handle LIST response (common when multiple grants on one page)
-                # (Already handled above in lines 870-880, but keeping this block clean)
-                pass 
-                        
-            except Exception as e:
-                logger.error(f"Failed to parse response for {lead.url}: {e}")
-                extracted_grants.append({
+
+        
+            # Post-processing: Calculate scores and check fallbacks for ALL extracted items
+            final_grants = []
+            for grant_data in extracted_grants:
+                # Fill in defaults
+                defaults = GrantData(url=lead.url).model_dump()
+                for key, value in defaults.items():
+                    if key not in grant_data:
+                        grant_data[key] = value
+                
+                # Calculate fit score
+                if query:
+                    grant_data['fit_score'] = calculate_fit_score(grant_data, query)
+                
+                final_grants.append(grant_data)
+            
+            # Cache the result (store the LIST)
+            if self.cache:
+                self.cache.set(cache_key, final_grants)
+            
+            logger.info(f"Successfully extracted {len(final_grants)} grants from {lead.url}")
+            return final_grants
+        
+        except Exception as e:
+            logger.error(f"Extraction failed for {lead.url}: {e}")
+            return [
+                {
                     "url": lead.url,
                     "title": lead.title or "Untitled Grant",
                     "funder": lead.source or "Unknown",
-                    "error": f"Failed to parse LLM response: {str(e)}",
-                     **GrantData(url=lead.url).model_dump()
-                })
-        
-        # Post-processing: Calculate scores and check fallbacks for ALL extracted items
-        final_grants = []
-        for grant_data in extracted_grants:
-            # Fill in defaults
-            defaults = GrantData(url=lead.url).model_dump()
-            for key, value in defaults.items():
-                if key not in grant_data:
-                    grant_data[key] = value
-            
-            # Calculate fit score
-            if query:
-                grant_data['fit_score'] = calculate_fit_score(grant_data, query)
-            
-            final_grants.append(grant_data)
-        
-        # Cache the result (store the LIST)
-        if self.cache:
-            self.cache.set(cache_key, final_grants)
-        
-        logger.info(f"Successfully extracted {len(final_grants)} grants from {lead.url}")
-        return final_grants
-        
-    except Exception as e:
-        logger.error(f"Extraction failed for {lead.url}: {e}")
-        return [
-            {
-                "url": lead.url,
-                "title": lead.title or "Untitled Grant",
-                "funder": lead.source or "Unknown",
-                "error": str(e),
-                **GrantData(url=lead.url).model_dump()
-            }
-        ]
+                    "error": str(e),
+                    **GrantData(url=lead.url).model_dump()
+                }
+            ]
             
             # Final processing for all extracted grants
             final_results = []
