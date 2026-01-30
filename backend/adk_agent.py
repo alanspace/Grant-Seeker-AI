@@ -39,13 +39,8 @@ try:
 except ImportError:
     pass # Handle if running as script or missing file
 
-try:
-    from backend.filters import apply_filters_to_results
-except ImportError:
-    try:
-        from filters import apply_filters_to_results
-    except ImportError:
-        apply_filters_to_results = None
+# Standard absolute import (execution from project root expected)
+from backend.filters import apply_filters_to_results
 
 # Configure logging
 # Configure logging

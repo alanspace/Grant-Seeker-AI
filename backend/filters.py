@@ -96,7 +96,7 @@ def apply_filters_to_results(results, filters):
                          
                      # 2. Check Maximum:
                      # If the SMALLEST amount offered is larger than user's maximum, reject.
-                     if funding_max is not None and min_found > float(funding_max):
+                     if funding_max is not None and min_found > float(funding_max): # Safe: min_found is valid float
                          continue
         
         # Filter 3: Funding Type
