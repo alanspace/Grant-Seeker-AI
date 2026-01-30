@@ -859,6 +859,7 @@ class GrantSeekerWorkflow:
 
         except Exception as e:
             logger.error(f"Extraction failed for {lead.url}: {e}")
+            # Fail-safe: Return an error object so the UI can still display the link
             extracted_grants.append({
                 "url": lead.url,
                 "title": lead.title or "Untitled Grant",

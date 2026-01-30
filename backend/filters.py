@@ -45,7 +45,7 @@ def apply_filters_to_results(results, filters):
             
             # Keyword expansion map
             keyword_map = {
-                'women': ['women', 'female', 'girl'],
+                'women': ['women', 'woman', 'female', 'girl'],
                 'indigenous': ['indigenous', 'first nations', 'inuit', 'métis', 'aboriginal'],
                 'youth': ['youth', 'young', 'student']
             }
@@ -87,7 +87,7 @@ def apply_filters_to_results(results, filters):
                  
                  if numbers:
                      min_found = min(numbers)
-                     max_found = max(numbers)
+                     max_found = max(numbers) # Safe: numbers list is guaranteed non-empty
                      
                      # 1. Check Minimum:
                      # If the LARGEST amount offered is still less than user's minimum, reject.
