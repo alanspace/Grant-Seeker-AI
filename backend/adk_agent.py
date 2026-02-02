@@ -28,18 +28,11 @@ from google.adk.runners import Runner
 from google.adk.sessions import InMemorySessionService
 from google.genai import types
 from pydantic import BaseModel
-try:
-    from backend.tavily_client import TavilyClient
-    from backend.content_extractor import RobustContentExtractor, is_viable_grant
-except ImportError:
-    from tavily_client import TavilyClient
-    from content_extractor import RobustContentExtractor, is_viable_grant
-try:
-    from backend.google_search_client import GoogleSearchClient
-except ImportError:
-    pass # Handle if running as script or missing file
 
-# Standard absolute import (execution from project root expected)
+# Standard absolute imports (execution from project root expected)
+from backend.tavily_client import TavilyClient
+from backend.content_extractor import RobustContentExtractor, is_viable_grant
+from backend.google_search_client import GoogleSearchClient
 from backend.filters import apply_filters_to_results
 
 # Configure logging
