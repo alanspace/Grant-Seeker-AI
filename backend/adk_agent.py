@@ -43,7 +43,6 @@ except ImportError:
 from backend.filters import apply_filters_to_results
 
 # Configure logging
-# Configure logging
 # Don't call basicConfig at module level - let the app handle it
 # logging.basicConfig(
 #     level=logging.WARNING, 
