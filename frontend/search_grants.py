@@ -4,15 +4,29 @@ Allows users to search the grant database or paste grant URLs/description to fin
 Includes advanced filtering for Canadian grant context with mock data fallback for development.
 """
 import asyncio
-import importlib
-
 import streamlit as st
 import sys
 import os
+import importlib
 
-# Add backend to path for imports
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'backend'))
-from pdf_generator import generate_grant_pdf  # Used to generate PDF exports of grants
+# Add project root to path for absolute imports
+root_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+if root_path not in sys.path:
+    sys.path.insert(0, root_path)
+
+# Module cleanup (force fresh reload)
+for module_name in ["backend.adk_agent", "backend.filters", "adk_agent"]:
+    if module_name in sys.modules:
+        del sys.modules[module_name]
+
+# Import backend modules
+from backend import adk_agent
+from backend import filters
+from backend.pdf_generator import generate_grant_pdf
+
+# Force reload to ensure latest code changes are picked up
+importlib.reload(adk_agent)
+importlib.reload(filters)
 
 # Page configuration handled in home_page.py
 
@@ -297,30 +311,9 @@ def execute_grant_workflow(query: str, filters: dict = None, min_results: int = 
     Returns:
         List of filtered, relevant grant results
     """
-    # Import locally and FORCE RELOAD to ensure latest backend code is used
-    # (Streamlit caching can sometimes hold onto old module versions)
-    import importlib
-    import sys
-    import os
-    
-    # Ensure project root is in path to import 'backend' as a package
-    root_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-    if root_path not in sys.path:
-        sys.path.insert(0, root_path)
-
-    # Reload filters first (dependency)
-    try:
-        filters_module = importlib.import_module("backend.filters")
-        importlib.reload(filters_module)
-    except ImportError:
-        pass # Might not exist or fail, ignore
-        
-    # Import and reload agent
-    agent_module = importlib.import_module("backend.adk_agent")
-    importlib.reload(agent_module)
     
     # Create a fresh workflow instance each time
-    workflow = agent_module.GrantSeekerWorkflow()
+    workflow = adk_agent.GrantSeekerWorkflow()
 
     # Run in a fresh event loop
     loop = asyncio.new_event_loop()
