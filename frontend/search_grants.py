@@ -281,17 +281,9 @@ def clear_all_filters():
 
 
 
-
 # ============================================================================
 # DATA LOADING & CACHING (Removed file-based persistence)
 # ============================================================================
-
-
-
-
-
-
-
 
 def execute_grant_workflow(query: str, filters: dict = None, min_results: int = 1) -> list[dict]:
     """
@@ -346,10 +338,6 @@ def execute_grant_workflow(query: str, filters: dict = None, min_results: int = 
     finally:
         loop.close()
         asyncio.set_event_loop(None)
-
-    return results or []
-
-
 
 def search_grants(query, filters=None):
     """
