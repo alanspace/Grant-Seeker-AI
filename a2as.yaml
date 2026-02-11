@@ -1,0 +1,460 @@
+manifest:
+  version: "0.1.3"
+  schema: https://a2as.org/cert/schema
+  subject:
+    name: alanspace/grant-seeker-ai
+    source: https://github.com/alanspace/grant-seeker-ai
+    branch: main
+    commit: "ab39c2a6"
+    scope: [backend/content_extractor.py, backend/tavily_client.py, backend/writer_agent.py, frontend/proposal_builder.py,
+      backend/adk_agent.py, backend/filters.py, backend/google_search_client.py]
+  issued:
+    by: A2AS.org
+    at: '2026-02-11T16:46:54Z'
+    url: https://a2as.org/certified/agents/alanspace/grant-seeker-ai
+  signatures:
+    digest: sha256:yuDfYyDOeRSb5sokrnr8QOG5koZdtw6vM1bMmu2Kd4I
+    key: ed25519:9yzNo26U6EAYn2ZPYjp1VTYvM-uEgalSkqLaIdMep6E
+    sig: ed25519:wLjoP6ILb_a5qW7opYhweWnaK2UmDiE4qk0NZO2tfkwWYfYJe6J56dNo7DaHMCMYwaUNAG2mgUIAxektfgOaCw
+
+agents:
+  agent.create_extractor_agent:
+    type: factory
+    models: [gemini-flash-latest]
+    params:
+      name: GrantExtractor
+      instruction: [You are a Data Extractor. You will receive the content of a grant webpage., 'IMPORTANT - CURRENT DATE
+          CONTEXT:', 'Today''s date is: {current_date} ({current_date_iso})', 'Only extract grants with deadlines in the FUTURE
+          (after {current_date_iso}).', 'If a deadline has already passed, note it but mark as expired.', '# Create the specialized
+          extractor agent', '# We give it a precise prompt to handle both single-grant pages and list/portal pages.', You
+          are an expert Grant Data Extractor. Your job is to extract structured data from the provided text of a webpage.,
+        'The text might be:', 1. A specific grant opportunity page (Ideal) -> Extract its specific details., 2. A list/search
+          results page with multiple grants -> Summarize the opportunities found., 'Extract the following fields in JSON format:',
+        '- title: The name of the grant (or "Various [Agency] Opportunities" if a list).', '- funder: The government agency
+          or organization providing the funding.', '- deadline: CRITICAL: Extract the EXACT closing date. Look for ''Closing
+          date'', ''Applications due'', ''Deadline'', or ''Expires''. Convert to YYYY-MM-DD format. If multiple text dates
+          exist, list them (e.g. "2025-03-14 (Health); 2026-10-29 (HANA)"). Do NOT say "See website" if a date is visible
+          in the text.', '- amount: The funding amounts. If multiple, range them (e.g. "$350k - $1M depending on stream").',
+        '- description: A brief summary covering the main opportunities found.', '- eligibility: Who can apply?', '- tags:
+          A list of 3-5 relevant keywords.', 'If the page is a "Portal" with many grants, do your best to summarize the *range*
+          of deadlines and amounts available so the user knows options exist.', Output valid JSON only., 'Required fields:',
+        '- title: The grant program name/title', '- funder: The organization or foundation offering the grant', '- deadline:
+          Application deadline date (BE THOROUGH - look for ANY dates, cycles, rounds)', '- amount: Funding amount (BE THOROUGH
+          - look for $, ranges, "up to", award amounts)', '- description: Brief 1-2 sentence summary of what the grant funds',
+        '- detailed_overview: Comprehensive description of the grant program, goals, and purpose', '- tags: Array of relevant
+          category tags (e.g., ["Education", "Youth", "Community"])', '- eligibility: Full eligibility requirements text',
+        '- url: The URL provided', '- application_requirements: Array of application requirements (e.g., ["501(c)(3) status",
+          "Program budget"])', '- funding_nature: Type of funding (Must be "Grant", "Loan", "Tax Credit", or "Unknown")',
+        '- geography: Geographic scope. ONLY extract CANADIAN grants, loans, and tax credits:', '* "Federal - Canada" -> if
+          keywords: "Government of Canada", "Federal", "Canada-wide", "National", "Canadian"', '* "[Province Name]" -> if
+          specific to a province (e.g., "Ontario", "British Columbia", "Quebec")', '* "[City, Province]" -> if city-specific
+          (e.g., "Toronto, Ontario", "Vancouver, BC")', '* If you detect USA geography (states, US federal, American cities),
+          SKIP this grant entirely or mark as "USA - Not Applicable"', '- founder_demographics: Tag any specific demographics
+          focus. List of strings. PRIORITIZE these keywords:', '* "Women" -> if keywords: "Women", "Female", "Girl", "She/Her",
+          "Women-owned"', '* "Youth" -> if keywords: "Youth", "Student", "Young Entrepreneur", "Next Gen" or ages 15-30',
+        '* "Indigenous" -> if keywords: "Indigenous", "First Nations", "Inuit", "Métis", "Aboriginal Peoples", "Inuk"', 'Also
+          tag other demographic groups if mentioned (e.g., "Veterans", "LGBTQ+", "Immigrants", "People with Disabilities",
+          "Minorities", etc.)', 'CRITICAL - Deadline & Amount Extraction:', '- deadline: Search ENTIRE page for dates! Look
+          for "deadline", "due", "apply by", "submit by", grant cycles, fiscal years', '* If you find "rolling" or "ongoing",
+          use "Rolling deadline"', '* If multiple cycles, list the NEXT upcoming date AFTER {current_date_iso}', '* Format
+          as YYYY-MM-DD if possible', '* If deadline is BEFORE {current_date_iso}, use "Expired (YYYY-MM-DD)"', '- amount:
+          Search ENTIRE page for dollar signs, numbers, ranges!', '* Look in titles, headings, tables, fine print', '* If
+          you see "up to $X", use exactly "Up to $X"', '* If range "$5,000-$25,000", format as "$5,000 - $25,000"', 'Other
+          requirements:', '- Extract actual data from the page content', '- If truly not found after thorough search, use
+          defaults', '- Be thorough with detailed_overview', '- Generate 3-5 relevant tags based on content', 'Example format:',
+        '{', '"title": "Community Garden Grant Program",', '"funder": "Green Cities Foundation",', '"deadline": "2026-05-15",',
+        '"amount": "$1,000 - $5,000",', '"description": "Funding for urban community gardens that serve youth populations.",',
+        '"detailed_overview": "The Community Garden Grant Program supports urban gardens...",', '"tags": ["Community", "Gardens",
+          "Youth", "Urban"],', '"eligibility": "501(c)(3) non-profit organizations serving Chicago communities",', '"url":
+          "https://example.com/grant",', '"application_requirements": ["501(c)(3) status", "Project budget", "Site plan"],',
+        '"funding_nature": "Grant",', '"geography": "Federal - Canada",', '"founder_demographics": ["Women", "Youth", "Indigenous"]',
+        '}']
+      function: create_extractor_agent
+  agent.create_finder_agent:
+    type: factory
+    models: [gemini-flash-latest]
+    params:
+      name: GrantFinder
+      instruction: ['You are a Grant Scout specializing in CANADIAN grants, loans, and tax credits.', You will receive search
+          results from Tavily., Your job is to analyze these results and identify the top 5-7 most promising CANADIAN grant
+          opportunities., 'CRITICAL FILTERING RULES:', '- ONLY select grants from Canadian sources (Government of Canada,
+          provincial governments, Canadian foundations)', '- EXCLUDE any USA grants (federal, state, or US-based foundations)',
+        '- Look for .gc.ca, .canada.ca, provincial .ca domains, and Canadian organization websites', '- Verify the source
+          is Canadian before including it', Return a structured response with discovered_leads list., 'Each lead must have:',
+        '- url: the URL of the grant page', '- source: the name of the Canadian organization', '- title: the grant title or
+          program name', 'Focus on official Canadian funder pages and active grant programs, NOT grant directories or lists.',
+        'IMPORTANT: Return RAW JSON only. Do not include markdown formatting like ```json ... ```.', 'Start with { and end
+          with }.']
+      function: create_finder_agent
+  agent.create_query_agent:
+    type: factory
+    models: [gemini-flash-latest]
+    params:
+      name: QueryGenerator
+      instruction: [You are a Search Query Expert. Your job is to convert a user's project description into a targeted search
+          query for finding grants IN CANADA ONLY., 'Rules:', '1. Extract the core topic (e.g., "community garden", "youth
+          education", "renewable energy").', '2. Identify the location if mentioned, but ALWAYS prioritize Canadian context.',
+        '3. Identify the target audience (e.g., "non-profit", "schools").', 4. Combine these into a concise search query string.,
+        5. ALWAYS add "Canada" or "Canadian" to the query to ensure Canadian results., '6. Add ACTION keywords to find specific
+          opportunities: "announcement of opportunity", "call for proposals", "application guide", "intake".', 7. Exclude
+          USA-specific terms unless explicitly converting them to Canadian equivalents., '8. Return ONLY the query string,
+          no other text.', 'Example Input: "We are a non-profit looking to build a community garden."', 'Example Output: community
+          garden grants Canada non-profit funding application', 'Example Input: "Youth education program in Toronto"', 'Example
+          Output: youth education grants Toronto Ontario Canada funding']
+      function: create_query_agent
+  writer_agent:
+    type: instance
+    models: [gemini-flash-latest]
+    params:
+      name: GrantWriter
+      instruction: [You are an expert professional Grant Writer for non-profits., 'Your Task: Write a compelling "Statement
+          of Need" and "Alignment" section.', 'Inputs:', 1. Project Description, '2. Grant Details (Budget, Deadline, Eligibility)',
+        'Guidelines:', '- Tone: Professional, persuasive, and urgent.', '- Explicitly reference the eligibility criteria and
+          how we meet them.', '- Mention the deadline if it is approaching.', '- Use Markdown headers.']
+
+models:
+  gemini-flash-latest:
+    type: function
+    agents: [writer_agent, agent.create_finder_agent, agent.create_extractor_agent, agent.create_query_agent]
+    params:
+      wrapper: Gemini
+      model: gemini-flash-latest
+      retry_options: retry_config
+
+imports:
+  apply_filters_to_results: backend.filters.apply_filters_to_results
+  asyncio: asyncio
+  BaseModel: pydantic.BaseModel
+  BeautifulSoup: bs4.BeautifulSoup
+  BytesIO: io.BytesIO
+  copy_button: st_copy.copy_button
+  datetime: datetime.datetime
+  Dict: typing.Dict
+  Gemini: google.adk.models.Gemini
+  GoogleSearchClient: backend.google_search_client.GoogleSearchClient
+  hashlib: hashlib
+  httpx: httpx
+  importlib: importlib
+  InMemorySessionService: google.adk.sessions.InMemorySessionService
+  is_viable_grant: content_extractor.is_viable_grant
+  json: json
+  List: typing.List
+  LlmAgent: google.adk.agents.LlmAgent
+  load_dotenv: dotenv.load_dotenv
+  logging: logging
+  math: math
+  Optional: typing.Optional
+  os: os
+  Path: pathlib.Path
+  PdfReader: pypdf.PdfReader
+  re: re
+  RobustContentExtractor: content_extractor.RobustContentExtractor
+  Runner: google.adk.runners.Runner
+  st: streamlit
+  sys: sys
+  TavilyClient: tavily_client.TavilyClient
+  time: time
+  timedelta: datetime.timedelta
+  Tuple: typing.Tuple
+  types: google.genai.types
+  uuid: uuid
+
+functions:
+  __init__:
+    type: sync
+    module: backend.google_search_client
+    args: [self, api_key, cse_id, max_retries, timeout]
+  _deduplicate_results:
+    type: sync
+    module: backend.adk_agent
+    args: [self, results]
+    params:
+      returns: list
+  _generate_search_variant:
+    type: sync
+    module: backend.adk_agent
+    args: [self, query, filters, attempt]
+    params:
+      returns: str
+  _get_cache_key:
+    type: sync
+    module: backend.adk_agent
+    args: [self, key]
+    params:
+      returns: str
+  _get_cache_path:
+    type: sync
+    module: backend.adk_agent
+    args: [self, cache_key]
+    params:
+      returns: Path
+  _is_grant_expired:
+    type: sync
+    module: backend.adk_agent
+    args: [self, grant_data]
+    params:
+      returns: bool
+  _is_pdf_url:
+    type: sync
+    module: backend.content_extractor
+    args: [self, url]
+    params:
+      returns: bool
+  _is_usa_grant:
+    type: sync
+    module: backend.adk_agent
+    args: [self, grant_data]
+    params:
+      returns: bool
+  _rank_results:
+    type: sync
+    module: backend.adk_agent
+    args: [self, results, query]
+    params:
+      returns: list
+  _run_agent:
+    type: async
+    module: backend.writer_agent
+  _try_direct_scrape:
+    type: async
+    module: backend.content_extractor
+    args: [self, url, min_length]
+    params:
+      returns: Tuple
+  _try_google_scraper:
+    type: async
+    module: backend.content_extractor
+    args: [self, url, min_length]
+    params:
+      returns: Tuple
+  _try_pdf_extraction:
+    type: async
+    module: backend.content_extractor
+    args: [self, url, min_length]
+    params:
+      returns: Tuple
+  _try_tavily:
+    type: async
+    module: backend.content_extractor
+    args: [self, url, min_length]
+    params:
+      returns: Tuple
+  _validate_url:
+    type: async
+    module: backend.adk_agent
+    args: [self, url]
+    params:
+      returns: bool
+  analyze_results:
+    type: async
+    module: backend.adk_agent
+    args: [self, search_results, session_id]
+    params:
+      returns: list[DiscoveredLead]
+  apply_filters_to_results:
+    type: sync
+    module: backend.filters
+    args: [results, filters]
+  calculate_fit_score:
+    type: sync
+    module: backend.adk_agent
+    args: [grant_data, query]
+    params:
+      returns: int
+  check_funding_match:
+    type: sync
+    module: backend.filters
+    args: [grant_str, filter_str]
+  clear:
+    type: sync
+    module: backend.adk_agent
+    args: [self]
+    params:
+      returns: int
+  create_extractor_agent:
+    type: sync
+    module: backend.adk_agent
+    params:
+      returns: LlmAgent
+  create_finder_agent:
+    type: sync
+    module: backend.adk_agent
+    params:
+      returns: LlmAgent
+  create_query_agent:
+    type: sync
+    module: backend.adk_agent
+    params:
+      returns: LlmAgent
+  create_retry_config:
+    type: sync
+    module: backend.adk_agent
+    params:
+      returns: types.HttpRetryOptions
+  draft_proposal_section:
+    type: sync
+    module: backend.writer_agent
+    args: [project_details, grant_json]
+    params:
+      returns: str
+  extract:
+    type: async
+    module: backend.tavily_client
+    args: [self, urls]
+    params:
+      returns: Dict
+  extract_grant_data:
+    type: async
+    module: backend.adk_agent
+    args: [self, lead, query]
+    params:
+      returns: list[dict]
+  extract_with_semaphore:
+    type: async
+    module: backend.adk_agent
+    args: [lead]
+  generate_proposal_with_agent:
+    type: sync
+    module: frontend.proposal_builder
+    args: [project_description, grant]
+    params:
+      returns: str
+  generate_search_query:
+    type: async
+    module: backend.adk_agent
+    args: [self, description]
+    params:
+      returns: str
+  get:
+    type: sync
+    module: backend.adk_agent
+    args: [self, key]
+    params:
+      returns: Optional[dict]
+  get_current_date:
+    type: sync
+    module: backend.adk_agent
+    params:
+      returns: tuple
+  get_page_content:
+    type: async
+    module: backend.google_search_client
+    args: [self, url]
+    params:
+      returns: str
+  is_viable_grant:
+    type: sync
+    module: backend.content_extractor
+    args: [grant]
+    params:
+      returns: bool
+  main:
+    type: async
+    module: backend.adk_agent
+  normalize_funding_nature:
+    type: sync
+    module: backend.adk_agent
+    args: [value]
+    params:
+      returns: str
+  normalize_value:
+    type: sync
+    module: backend.adk_agent
+    args: [value, default]
+    params:
+      returns: str
+  print_results:
+    type: sync
+    module: backend.adk_agent
+    args: [self, results]
+    params:
+      returns: None
+  process_grant_dict:
+    type: sync
+    module: backend.adk_agent
+    args: [d]
+  run:
+    type: async
+    module: backend.adk_agent
+    args: [self, query]
+    params:
+      returns: list[dict]
+  run_with_minimum_results:
+    type: async
+    module: backend.adk_agent
+    args: [self, query, filters, min_results]
+  search:
+    type: async
+    module: backend.google_search_client
+    args: [self, query, max_results]
+    params:
+      returns: List[Dict]
+  search_grants:
+    type: async
+    module: backend.adk_agent
+    args: [self, query]
+    params:
+      returns: list[dict]
+  set:
+    type: sync
+    module: backend.adk_agent
+    args: [self, key, data]
+    params:
+      returns: None
+
+variables:
+  GEMINI_API_KEY:
+    type: env
+    params:
+      caller: [os.getenv]
+      path: [backend.writer_agent]
+  GOOGLE_API_KEY:
+    type: env
+    params:
+      caller: [os.getenv]
+      path: [backend.adk_agent]
+  GOOGLE_CSE_ID:
+    type: env
+    params:
+      caller: [os.getenv]
+      path: [backend.adk_agent]
+  SEARCH_PROVIDER:
+    type: env
+    params:
+      caller: [os.getenv]
+      path: [backend.adk_agent]
+  TAVILY_API_KEY:
+    type: env
+    params:
+      caller: [os.getenv]
+      path: [backend.adk_agent]
+
+files:
+  ./:
+    type: pattern
+    actions: [read]
+    params:
+      patterns: ['*.json']
+      caller: [clear]
+  .json:
+    type: literal
+    actions: [read]
+    params:
+      caller: [_get_cache_path]
+      path: [self.cache_dir]
+  cache_dir:
+    type: variable
+    actions: [read]
+    params:
+      caller: [Path]
+  cache_file:
+    type: variable
+    actions: [delete]
+    params:
+      caller: [cache_file.unlink]
+  cache_path:
+    type: variable
+    actions: [read, delete, write]
+    params:
+      caller: [open, json.load, cache_path.unlink]
+      alias: [f]
