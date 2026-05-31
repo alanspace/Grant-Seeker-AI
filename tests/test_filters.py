@@ -12,9 +12,10 @@ Tests Advanced Filters with Real Data to ensure:
 
 import asyncio
 import sys
-sys.path.insert(0, 'backend')
+import os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
-from adk_agent import GrantSeekerWorkflow
+from backend.adk_agent import GrantSeekerWorkflow
 
 
 class FilterTester:

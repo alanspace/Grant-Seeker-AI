@@ -215,28 +215,25 @@ def is_viable_grant(grant: dict) -> bool:
     # Check for error field
     if grant.get('error'):
         return False
-    
-    # Must have at least 2 of these 3 critical fields with real values
+
+    # Must have a real title (not a placeholder)
     has_title = grant.get('title') and grant['title'] not in ['Untitled Grant', '', 'N/A']
-    has_deadline = grant.get('deadline') and grant['deadline'] not in ['Not specified', '', 'N/A', 'Unknown']
-    has_amount = grant.get('amount') and grant['amount'] not in ['Not specified', '', 'N/A', 'Unknown']
-    
-    critical_fields_count = sum([has_title, has_deadline, has_amount])
-    
-    # Must have at least 2 out of 3 critical fields
-    if critical_fields_count < 2:
-        logger.debug(f"Grant rejected: Only {critical_fields_count}/3 critical fields present")
+    if not has_title:
+        logger.debug("Grant rejected: Missing or placeholder title")
         return False
-    
-    # Must have some meaningful description
+
+    # Must have a meaningful description (the primary signal that extraction worked)
     description = grant.get('description', '')
     if not description or description in ['No description available', '', 'N/A']:
-        logger.debug(f"Grant rejected: No meaningful description")
+        logger.debug("Grant rejected: No meaningful description")
         return False
-    
-    # Description should be substantial (at least 50 characters)
+
     if len(description) < 50:
         logger.debug(f"Grant rejected: Description too short ({len(description)} chars)")
         return False
-    
+
+    # Deadline and amount are desirable but intentionally NOT required —
+    # many legitimate Canadian programs have rolling intakes (no fixed deadline)
+    # or case-by-case funding (no published amount).  Rejecting them would
+    # systematically exclude a large share of real opportunities.
     return True

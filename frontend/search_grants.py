@@ -4,29 +4,30 @@ Allows users to search the grant database or paste grant URLs/description to fin
 Includes advanced filtering for Canadian grant context with mock data fallback for development.
 """
 import asyncio
+import concurrent.futures
+import logging
 import streamlit as st
 import sys
 import os
 import importlib
+import traceback
+
+logger = logging.getLogger("search_grants")
 
 # Add project root to path for absolute imports
 root_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 if root_path not in sys.path:
     sys.path.insert(0, root_path)
 
-# Module cleanup (force fresh reload)
+# Module cleanup (force fresh import on every Streamlit rerun)
 for module_name in ["backend.adk_agent", "backend.filters", "adk_agent"]:
     if module_name in sys.modules:
         del sys.modules[module_name]
 
 # Import backend modules
 from backend import adk_agent
-from backend import filters
+from backend.filters import apply_filters_to_results
 from backend.pdf_generator import generate_grant_pdf
-
-# Force reload to ensure latest code changes are picked up
-importlib.reload(adk_agent)
-importlib.reload(filters)
 
 # Page configuration handled in home_page.py
 
@@ -302,6 +303,7 @@ def clear_all_filters():
 def execute_grant_workflow(query: str, filters: dict = None, min_results: int = 1) -> list[dict]:
     """
     Run the ADK workflow for the given query with optional iterative refinement.
+    Runs async code in a dedicated thread to avoid event loop conflicts with Streamlit.
     
     Args:
         query: User's search query
@@ -312,37 +314,43 @@ def execute_grant_workflow(query: str, filters: dict = None, min_results: int = 
         List of filtered, relevant grant results
     """
     
-    # Create a fresh workflow instance each time
-    workflow = adk_agent.GrantSeekerWorkflow()
+    # Capture flag before entering thread (st.session_state is not accessible in worker threads)
+    use_iterative = min_results > 1
 
-    # Run in a fresh event loop
-    loop = asyncio.new_event_loop()
-    try:
+    def _run_async():
+        """Run async workflow in a dedicated thread with its own event loop."""
+        workflow = adk_agent.GrantSeekerWorkflow()
+        loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
-        # Decide which method to run
-        if min_results > 1 or (filters and has_active_filters()):
-            # Use new iterative search if we need minimum results or enforce strict filtering
-            results = loop.run_until_complete(
-                workflow.run_with_minimum_results(query, filters=filters, min_results=min_results)
-            )
-        else:
-            # Standard single-pass search
-            results = loop.run_until_complete(workflow.run(query))
-    finally:
-        loop.close()
-        asyncio.set_event_loop(None)
+        try:
+            if use_iterative:
+                result = loop.run_until_complete(
+                    workflow.run_with_minimum_results(query, filters=filters, min_results=min_results)
+                )
+            else:
+                result = loop.run_until_complete(workflow.run(query))
+            logger.info(f"[execute_grant_workflow] _run_async returned {len(result) if result else 0} results (type={type(result).__name__})")
+            return result
+        except Exception as e:
+            logger.error(f"[execute_grant_workflow] _run_async exception: {e}\n{traceback.format_exc()}")
+            raise
+        finally:
+            loop.close()
+            asyncio.set_event_loop(None)
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
+        future = executor.submit(_run_async)
+        result = future.result(timeout=300)
+        logger.info(f"[execute_grant_workflow] future.result() = {len(result) if result else 0} results")
+        return result
 
 def search_grants(query, filters=None):
     """
     Search grants based on query and filters.
     
     Logic flow:
-    1. If advanced filters are active → return mock Canadian grants (dev mode)
-    2. If query provided → run ADK agent workflow for real search
-    3. If no query → return all grants from file as fallback
-    
-    This allows developers to test filter UI without waiting for agent execution,
-    while preserving normal search behavior when no filters are selected.
+    1. Pass filters to backend for filter-aware iterative search
+    2. Also apply filters client-side as a safety net
     
     Args:
         query: Search keywords entered by user
@@ -352,53 +360,37 @@ def search_grants(query, filters=None):
         List of grant dictionaries matching the search criteria
     """
     
-    # Check data source preference from toggle
-    use_real_data = st.session_state.get('use_real_data_toggle', False)
-    
     # Check if advanced filters are active
     filters_active = filters and has_active_filters()
     
-    # Decision logic:
-    # - If toggle is ON (use real data) → always use real backend, apply filters to results
-    # - If toggle is OFF (use mock) AND filters active → use mock data for demo
-    # - Otherwise → use real backend
-    
-    if filters_active and not use_real_data:
-        # Mock data mode: Fast demo mode without API calls
-        return generate_mock_canadian_grants(filters, query)
-    
-    # Real data mode: Use actual backend search
-    # Real data mode: Use actual backend search
     if query:
         try:
             # Get user preference for thoroughness
             min_results = st.session_state.get('min_results_target', 3)
+            logger.info(f"[search_grants] query='{query}' filters_active={filters_active} min_results={min_results}")
             
-            # Determine if we should pass filters to backend
-            # Only pass filters if "Use Real Data" is checked
-            backend_filters = filters if (filters_active and use_real_data) else None
+            # Backend searches broadly by query only — no filters injected.
+            # Filters are applied client-side after results are returned.
+            workflow_results = execute_grant_workflow(query, filters=None, min_results=min_results)
+            logger.info(f"[search_grants] execute_grant_workflow returned {len(workflow_results) if workflow_results else 0} results")
             
-            # Execute workflow with iterative search parameters
-            workflow_results = execute_grant_workflow(
-                query, 
-                filters=backend_filters, 
-                min_results=min_results
-            )
+            # Apply filters client-side
+            if filters_active and workflow_results:
+                before = len(workflow_results)
+                workflow_results = apply_filters_to_results(workflow_results, filters)
+                logger.info(f"[search_grants] client-side filter: {before} -> {len(workflow_results)}")
             
             # Simulate token usage tracking (until backend returns actuals)
-            # Rough estimate: 15k per result found roughly
             st.session_state.last_search_tokens = len(workflow_results) * 12000 + 5000
             
-            # DEBUG FEEDBACK (Temporary: Proof of Life)
             if not workflow_results:
-                 st.warning(f"⚠️ Backend search completed but found 0 results for: '{query}'")
+                st.session_state.last_search_message = ("warning", f"⚠️ No results found for: '{query}'. Try broader keywords.")
             else:
-                 st.success(f"✅ Backend successfully found {len(workflow_results)} grants!")
+                st.session_state.last_search_message = ("success", f"✅ Found {len(workflow_results)} grant(s) matching your search!")
         except Exception as exc:
-            st.error(f"Grant workflow failed: {exc}")
+            st.session_state.last_search_message = ("error", f"❌ Search failed: {exc}")
             return []
         
-        # Results are already filtered by the backend if backend_filters provided
         return workflow_results
 
     # Fallback: return any existing session results (no query provided)
@@ -542,6 +534,8 @@ def main():
         st.session_state.searching = False
     if 'has_searched' not in st.session_state:
         st.session_state.has_searched = False
+    if 'last_search_message' not in st.session_state:
+        st.session_state.last_search_message = None
     
     # Header
     col_back, col_title = st.columns([1, 5])
@@ -571,22 +565,6 @@ def main():
             use_container_width=True,
             disabled=st.session_state.searching
         )
-    
-    # ========================================================================
-    # DATA SOURCE TOGGLE - Choose between Mock and Real Data
-    # ========================================================================
-    st.markdown("### 🎛️ Data Source")
-    use_real_data = st.checkbox(
-        "Use Real Data (apply filters to actual search results)",
-        value=False,
-        key="use_real_data_toggle",
-        help="Uncheck to use Mock Data for demos (faster, no API calls). Check to filter actual backend search results."
-    )
-    
-    if use_real_data:
-        st.success("✅ Using REAL data from backend search")
-    else:
-        st.info("ℹ️ Using MOCK data for demonstration (faster, no API usage)")
     
     # ========================================================================
     # MINIMUM RESULTS SELECTOR
@@ -776,12 +754,7 @@ def main():
                 1 if st.session_state.applicant_type else 0,
                 1 if st.session_state.project_stage else 0
             ])
-            # Show appropriate message based on data source
-            use_real_data = st.session_state.get('use_real_data_toggle', False)
-            if use_real_data:
-                st.success(f"✅ {active_count} filter(s) active - Filtering real backend data")
-            else:
-                st.info(f"ℹ️ {active_count} filter(s) active - Using mock data for demonstration")
+            st.success(f"✅ {active_count} filter(s) active — backend will search for matching grants")
         
         st.markdown("</div>", unsafe_allow_html=True)
     
@@ -820,6 +793,17 @@ def main():
     # RESULTS DISPLAY SECTION
     # ========================================================================
     # Only show results if user has performed a search
+    # Show persistent message from last search (survives st.rerun())
+    if st.session_state.last_search_message:
+        msg_type, msg_text = st.session_state.last_search_message
+        if msg_type == "success":
+            st.success(msg_text)
+        elif msg_type == "warning":
+            st.warning(msg_text)
+        elif msg_type == "error":
+            st.error(msg_text)
+        st.session_state.last_search_message = None  # Clear after showing
+
     if st.session_state.has_searched:
         results = st.session_state.search_results
         

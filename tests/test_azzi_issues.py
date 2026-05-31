@@ -14,9 +14,10 @@ Run this to verify all issues are fixed.
 
 import asyncio
 import sys
-sys.path.insert(0, 'backend')
+import os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
-from adk_agent import GrantSeekerWorkflow
+from backend.adk_agent import GrantSeekerWorkflow
 
 
 # Test queries that previously caused "Untitled Grant" issues

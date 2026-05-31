@@ -923,7 +923,7 @@ class GrantSeekerWorkflow:
         
         async def extract_with_semaphore(lead):
             async with sem:
-                return await self.extract_grant_data(lead, query)
+                return await self.extract_grant_data(lead, search_query)
         
         # Process all leads concurrently
         tasks = [extract_with_semaphore(lead) for lead in leads]
@@ -932,8 +932,11 @@ class GrantSeekerWorkflow:
         # Flatten the list of lists (since extract_grant_data now returns list[dict])
         raw_results = [item for sublist in batch_results_nested for item in sublist]
         
-        # Filter: Expired, USA, Invalid
+        # Filter: Expired, USA, Invalid, Insufficient Data
         valid_candidates = []
+        expired_count = 0
+        usa_count = 0
+        insufficient_data_grants = []
         for g in raw_results:
             title = g.get('title', '').lower()
             # 1. Check for garbage titles (e.g. error pages or index lists)
@@ -941,65 +944,53 @@ class GrantSeekerWorkflow:
                 logger.info(f"Filtering out garbage result: {g.get('title', 'Unknown')}")
                 continue
             
-            # 2. Check for Expired/USA
-            if not self._is_grant_expired(g) and not self._is_usa_grant(g):
-                valid_candidates.append(g)
+            # 2. Check for Expired
+            if self._is_grant_expired(g):
+                expired_count += 1
+                continue
+            
+            # 3. Check for USA
+            if self._is_usa_grant(g):
+                usa_count += 1
+                continue
+            
+            # 4. Must have a URL
+            if not g.get('url'):
+                continue
+            
+            # 5. Check for insufficient data (prevent "Untitled Grant" from showing)
+            if not is_viable_grant(g):
+                insufficient_data_grants.append(g)
+                logger.debug(f"Filtered grant with insufficient data: {g.get('url', 'unknown URL')}")
+                continue
+            
+            valid_candidates.append(g)
+        
+        logger.info(f"Filtered {expired_count} expired grants and {usa_count} USA grants")
+        if insufficient_data_grants:
+            logger.warning(
+                f"⚠️ {len(insufficient_data_grants)} grants filtered due to insufficient data. "
+                f"URLs are available but content extraction failed or returned incomplete information."
+            )
         
         # Sort candidates by fit_score descending
         valid_candidates.sort(key=lambda x: x.get('fit_score', 0), reverse=True)
         
         # Adaptive Threshold Logic:
         # We want HIGH RELEVANCE (>40%) results.
-        # BUT we must return at least 3 results if possible.
-        final_results = []
+        # BUT we must return at least 5 results if possible, to give the user
+        # a meaningful set to choose from.
+        results = []
         for g in valid_candidates:
             fit = g.get('fit_score', 0)
             if fit >= 40:
-                final_results.append(g)
-            elif len(final_results) < 3:
-                # If we don't have 3 good ones yet, include this "okay" one
+                results.append(g)
+            elif len(results) < 5:
+                # If we don't have 5 good ones yet, include this "okay" one
                 logger.info(f"Including lower relevance result ({fit}%) to meet minimum count: {g.get('title')}")
-                final_results.append(g)
+                results.append(g)
             else:
                 logger.info(f"Filtering out LOW RELEVANCE result ({fit}%): {g.get('title')}")
-        
-        results = final_results
-        
-        # Filter expired grants and USA grants
-        # Also validate URLs for 404s
-        results_after_location = []
-        for g in raw_results:
-            if self._is_grant_expired(g) or self._is_usa_grant(g):
-                continue
-            
-            # Verify URL is accessible
-            url = g.get('url')
-            # Verify URL is accessible
-            # SKIP validation - if we extracted content (in process_lead), it's reachable enough.
-            # HEAD requests are legally rejected by many government sites (403/405), causing false negatives.
-            if url:
-                results_after_location.append(g)
-        
-        expired_count = sum(1 for g in raw_results if self._is_grant_expired(g))
-        usa_count = sum(1 for g in raw_results if self._is_usa_grant(g) and not self._is_grant_expired(g))
-        logger.info(f"Filtered {expired_count} expired grants and {usa_count} USA grants")
-        
-        # Filter grants with insufficient data (prevent "Untitled Grant" from showing)
-        results = []
-        insufficient_data_grants = []
-        
-        for grant in results_after_location:
-            if is_viable_grant(grant):
-                results.append(grant)
-            else:
-                insufficient_data_grants.append(grant)
-                logger.debug(f"Filtered grant with insufficient data: {grant.get('url', 'unknown URL')}")
-        
-        if insufficient_data_grants:
-            logger.warning(
-                f"⚠️ {len(insufficient_data_grants)} grants filtered due to insufficient data. "
-                f"URLs are available but content extraction failed or returned incomplete information."
-            )
 
 
         # Assign IDs
@@ -1084,55 +1075,37 @@ class GrantSeekerWorkflow:
         return self._rank_results(all_results, query)
 
     def _generate_search_variant(self, query: str, filters: dict, attempt: int) -> str:
-        """Generate broader or related query variants."""
+        """Generate broader or related query variants for iterative search."""
         if attempt == 1:
             return query
         
-        # Attempt 2: Add specific filter keywords to query
-        if attempt == 2 and filters:
-            # E.g. "startup funding" -> "startup funding women"
-            filter_keywords = []
-            if filters.get('demographic_focus'):
-                # Take first demographic keyword (e.g. "Women")
-                demo = filters['demographic_focus'][0].split('/')[0].split('-')[0].strip()
-                filter_keywords.append(demo)
-            
-            if filters.get('geographic_scope'):
-                filter_keywords.append(filters['geographic_scope'])
-                
-            if filter_keywords:
-                return f"{query} {' '.join(filter_keywords)}"
+        # Attempt 2: Add geographic context if available
+        if attempt == 2 and filters and filters.get('geographic_scope'):
+            return f"{query} {filters['geographic_scope']}"
         
-        # Attempt 3: Broaden - remove "grant" or "funding" if present to find other types
+        # Attempt 3: Broaden - swap "grant" / "funding"
         if attempt == 3:
             if "grant" in query.lower():
                 return query.lower().replace("grant", "funding")
             elif "funding" in query.lower():
                 return query.lower().replace("funding", "grant")
+            return f"{query} funding"
         
-        # Attempt 4: Simplify query (remove adjectives)
+        # Attempt 4: Simplify query (remove shortest word)
         if attempt == 4:
-            # Very basic simplification strategy
             words = query.split()
             if len(words) > 2:
-                # Remove shortest word (likely stopword)
                 words.sort(key=len)
-                return " ".join(words[1:]) # dropped shortest
+                return " ".join(words[1:])
             
-        # Attempt 5: Fallback to very broad category
+        # Attempt 5: Very broad category search
         if attempt == 5:
-            base = "business grants"
+            base = "business grants Canada"
             if filters and filters.get('geographic_scope'):
-                 base += f" {filters['geographic_scope']}"
-            else:
-                 base += " Canada"
+                base += f" {filters['geographic_scope']}"
             return base
             
-        return query # Fallback
-
-
-    
-        return query # Fallback
+        return query
 
 
     async def _validate_url(self, url: str) -> bool:

@@ -14,17 +14,18 @@ import asyncio
 import sys
 import os
 import logging
+import pytest
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Add backend to path
-sys.path.insert(0, os.path.abspath('backend'))
-sys.path.insert(0, os.path.abspath('frontend'))
+# Add project root to path
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
-from adk_agent import GrantSeekerWorkflow
+from backend.adk_agent import GrantSeekerWorkflow
 
+@pytest.mark.asyncio
 async def test_iterative_search():
     print("\n" + "="*80)
     print("TEST: ITERATIVE SEARCH WITH MINIMUM RESULTS")

@@ -7,7 +7,9 @@ Tests challenging scenarios to validate system robustness
 
 import asyncio
 import sys
-sys.path.insert(0, 'backend')
+import os
+import pytest
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
 
 ADVANCED_TESTS = [
@@ -39,9 +41,10 @@ ADVANCED_TESTS = [
 ]
 
 
+@pytest.mark.asyncio
 async def test_robustness():
     """Test system robustness with challenging queries."""
-    from adk_agent import GrantSeekerWorkflow
+    from backend.adk_agent import GrantSeekerWorkflow
     
     print("=" * 80)
     print("ADVANCED ROBUSTNESS & ACCURACY TESTS")
@@ -142,9 +145,10 @@ async def test_robustness():
         print(f"\n⚠️ {total - passed} tests had issues")
 
 
+@pytest.mark.asyncio
 async def test_accuracy():
     """Test accuracy of grant data extraction."""
-    from adk_agent import GrantSeekerWorkflow
+    from backend.adk_agent import GrantSeekerWorkflow
     
     print("\n" + "=" * 80)
     print("ACCURACY TEST - Known Grant Verification")

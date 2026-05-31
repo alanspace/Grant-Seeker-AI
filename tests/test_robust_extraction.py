@@ -11,9 +11,10 @@ Tests the new multi-strategy content extraction system with:
 import asyncio
 import sys
 import os
+import pytest
 
-# Add backend to path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'backend'))
+# Add project root to path
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
 from dotenv import load_dotenv
 from backend.tavily_client import TavilyClient
@@ -61,6 +62,7 @@ TEST_GRANTS = [
 ]
 
 
+@pytest.mark.asyncio
 async def test_content_extraction():
     """Test multi-strategy content extraction."""
     print("=" * 80)

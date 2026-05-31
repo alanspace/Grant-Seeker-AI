@@ -32,40 +32,41 @@ def apply_filters_to_results(results, filters):
     filtered = []
     
     for grant in results:
-        # Filter 1: Demographic Focus - STRICT matching
+        # Filter 1: Demographic Focus
+        # Grants that carry an explicit demographic tag must match the selected focus.
+        # Grants with NO demographic tag are treated as "open to all" and always pass —
+        # many government programs don't restrict by demographic but are still eligible.
         if filters.get('demographic_focus'):
             grant_demographics = grant.get('founder_demographics', [])
-            
-            # Must have demographics field populated
-            if not grant_demographics:
-                continue
-            
-            # Check if grant matches ANY of the selected demographics
-            demographic_match = False
-            
-            # Keyword expansion map
-            keyword_map = {
-                'women': ['women', 'woman', 'female', 'girl'],
-                'indigenous': ['indigenous', 'first nations', 'inuit', 'métis', 'aboriginal'],
-                'youth': ['youth', 'young', 'student']
-            }
 
-            for demo_filter in filters['demographic_focus']:
-                demo_lower = demo_filter.lower()
-                
-                # Build search terms
-                search_terms = {demo_lower}
-                for key, terms in keyword_map.items():
-                    if key in demo_lower:
-                        search_terms.update(terms)
-                
-                # Check for match against grant data
-                if any(term in gd.lower() for gd in grant_demographics for term in search_terms):
-                    demographic_match = True
-                    break
-            
-            if not demographic_match:
-                continue
+            # No tag → open to all → pass through
+            if grant_demographics:
+                # Check if grant matches ANY of the selected demographics
+                demographic_match = False
+
+                # Keyword expansion map
+                keyword_map = {
+                    'women': ['women', 'woman', 'female', 'girl'],
+                    'indigenous': ['indigenous', 'first nations', 'inuit', 'métis', 'aboriginal'],
+                    'youth': ['youth', 'young', 'student']
+                }
+
+                for demo_filter in filters['demographic_focus']:
+                    demo_lower = demo_filter.lower()
+
+                    # Build search terms
+                    search_terms = {demo_lower}
+                    for key, terms in keyword_map.items():
+                        if key in demo_lower:
+                            search_terms.update(terms)
+
+                    # Check for match against grant data
+                    if any(term in gd.lower() for gd in grant_demographics for term in search_terms):
+                        demographic_match = True
+                        break
+
+                if not demographic_match:
+                    continue
         
         # Filter 2: Funding Amount Range
         funding_min = filters.get('funding_min')
@@ -123,7 +124,7 @@ def apply_filters_to_results(results, filters):
                             
                 if 'loan' in f: # User wants Loan
                     return ('loan' in g or 
-                            'repayable' in g or 
+                            ('repayable' in g and 'non-repayable' not in g) or
                             'debt' in g or 
                             'financing' in g)
                 
@@ -139,9 +140,69 @@ def apply_filters_to_results(results, filters):
         if filters.get('geographic_scope'):
             grant_geography = grant.get('geography', '').lower()
             geo_filter = filters['geographic_scope'].lower()
-            if geo_filter not in grant_geography and 'canada' not in grant_geography:
+
+            # Terms that all indicate "national / federal / all of Canada"
+            NATIONAL_TERMS = (
+                'canada', 'national', 'federal', 'pan-canadian',
+                'all provinces', 'coast to coast', 'country-wide',
+                'canada-wide', 'pan canadian', 'canadawide',
+            )
+            filter_is_national = any(t in geo_filter for t in NATIONAL_TERMS)
+            grant_is_national  = any(t in grant_geography for t in NATIONAL_TERMS)
+
+            if filter_is_national:
+                # User specifically wants federal/national grants → only national grants pass
+                geo_pass = grant_is_national
+            else:
+                # User wants a province/territory → include provincial match OR national grants
+                # (federal grants apply everywhere, so they are always relevant)
+                geo_pass = geo_filter in grant_geography or grant_is_national
+
+            if not geo_pass:
                 continue
-        
+
+        # Filter 5: Applicant Type
+        # The backend Pydantic model does not include a structured applicant_type field,
+        # so we only hard-filter when the grant explicitly stores one.  When the field is
+        # absent we let the grant through—the selection is already used as a search hint.
+        if filters.get('applicant_type'):
+            explicit_type = grant.get('applicant_type', '').strip()
+            if explicit_type:
+                applicant_filter = filters['applicant_type'].lower()
+                APPLICANT_KEYWORD_MAP = {
+                    'startup':      ['startup', 'start-up', 'early stage', 'new business', 'entrepreneur'],
+                    'non-profit':   ['non-profit', 'nonprofit', 'not-for-profit', 'charity', 'charitable'],
+                    'social':       ['social enterprise', 'social entrepreneurship'],
+                    'co-operative': ['co-operative', 'cooperative', 'co-op'],
+                    'for-profit':   ['for-profit', 'profit', 'corporation', 'business', 'company', 'enterprise'],
+                    'sme':          ['sme', 'small business', 'medium business', 'small and medium'],
+                }
+                search_terms = {applicant_filter}
+                for key, terms in APPLICANT_KEYWORD_MAP.items():
+                    if key in applicant_filter:
+                        search_terms.update(terms)
+                if not any(t in explicit_type.lower() for t in search_terms):
+                    continue
+
+        # Filter 6: Project Stage
+        # Same rationale as above: only hard-filter when the structured field is present.
+        if filters.get('project_stage'):
+            explicit_stage = grant.get('project_stage', '').strip()
+            if explicit_stage:
+                stage_filter = filters['project_stage'].lower()
+                STAGE_KEYWORD_MAP = {
+                    'early stage':  ['early stage', 'early-stage', 'pre-seed', 'seed', 'prototype', 'proof of concept'],
+                    'r&d':          ['r&d', 'research and development', 'research & development', 'research', 'development', 'innovation'],
+                    'growth':       ['growth', 'scaling', 'scale-up', 'expansion', 'growing'],
+                    'commerciali':  ['commercialisation', 'commercialization', 'market-ready', 'launch'],
+                }
+                search_terms = {stage_filter}
+                for key, terms in STAGE_KEYWORD_MAP.items():
+                    if key in stage_filter:
+                        search_terms.update(terms)
+                if not any(t in explicit_stage.lower() for t in search_terms):
+                    continue
+
         # If grant passed all filters, include it
         filtered.append(grant)
     
